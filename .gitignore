@@ -4,3 +4,9 @@
 .httr-oauth
 .DS_Store
 .quarto
+/.quarto/
+data/
+**/*.quarto_ipynb
+exercise_template.qmd
+*.RData
+*.RDataTmp*

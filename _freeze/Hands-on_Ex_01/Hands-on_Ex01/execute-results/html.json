@@ -1,0 +1,15 @@
+{
+  "hash": "52290864954846368a3e230b57c73919",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"01: A Layered Grammar of Graphics: ggplot2 methods\"\nauthor: \"Yiqiong PAN\"\ndate: \"Jan 14, 2026\"\ndate-modified: last-modified\n\nexecute:\n  echo: true    # display the code\n  eval: true    # run the code\n  message: false\n  warning: false\n  freeze: true  # do not re-render if nothing edited\n\nformat: \n  html:\n    toc: true\n    code-link: true\n\nnumber-sections: true\nnumber-depth: 6\n\neditor: visual\n---\n\n## Learning Outcome\n\nIn this chapter, we will learn the core concepts of `ggplot2` and practise using them to create statistical graphics based on the **Layered Grammar of Graphics**. By the end, we will be able to produce elegant and effective visualisations using `ggplot2`.\n\n## Getting Started\n\n### Installing and Loading the Required Libraries\n\nBefore getting started, let's install and load the required R packages into R environment. In this exercise, we need to install and load `tidyverse`.\n\n| Package | Description |\n|---------------------------|--------------------------------------------------------|\n| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., readr, dplyr, tidyr, ggplot2). |\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(tidyverse)\n```\n:::\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

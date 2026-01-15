@@ -2,18 +2,74 @@ project:
   type: website
 
 website:
-  title: "ISSS608-VAA"
+  title: "ISSS608-VAA-yiqiong-pan"
   navbar:
     left:
+      - text: "Hands-on Exercise"
+        menu: 
+          - text: "01: A Layered Grammar of Graphics: ggplot2 methods"
+            href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html"
+          - text: "02: Beyond ggplot2 Fundamentals"
+            href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
+          - text: "03-1: Programming Interactive Data Visualisation with R"
+            href: "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_1.html"            
+          - text: "03-2: Programming Animated Statistical Graphics with R"
+            href: "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_2.html"
+          - text: "04-1: Visualising Distribution"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_1.html"           
+          - text: "04-2: Visual Statistical Analysis"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_2.html"  
+          - text: "04-3: Visualising Uncertainty"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_3.html"  
+          - text: "04-4: Building Funnel Plot with R"
+            href: "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_4.html"  
+          - text: "05-1: Building Ternary Plot with R"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_1.html"          
+          - text: "05-2: Visual Correlation Analysis"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05-2.html"
+          - text: "05-3: Visual Multivariate Analysis with Heatmap"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05-3.html"          
+          - text: "05-4: Visual Multivariate Analysis with Parallel Coordinates Plot"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05-4.html"
+          - text: "05-5: Treemap Visualisation with R"
+            href: "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05-5.html"
+          - text: "06:Shiny?"
+            href: "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html"
+          - text: "07: Visualising and Analysing Time-oriented Data"
+            href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html"
+          - text: "08-1: Choropleth Mapping in R"
+            href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_1.html"
+          - text: "08-2: Visualising Geospatial Point Data"
+            href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_2.html"
+          - text: "08-3: Analytical Mapping"
+            href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_3.html"
+          - text: "10: Information Dashboard Design: R methods"
+            href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex10.html"     
+      - text: "Take-home Exercise"
+        menu: 
+          - text: "01: "
+            href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
+          - text: "02: "
+            href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" 
+          - text: "03: "
+            href: "Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html" 
+    right: 
       - href: index.qmd
         text: Home
-      - about.qmd
+      - icon: github
+        href: https://github.com/lsrgc
+        aria-label: Github
+      - icon: eyeglasses
+        href: https://isss608-ay2025-26jan.netlify.app/
+        aria-label: Course Textbook
+
 
 format:
   html:
+    respect-user-color-scheme: true
     theme:
-      - cosmo
-      - brand
+      light: flatly
+      dark: darkly
     css: styles.css
     toc: true
 
