@@ -33,7 +33,7 @@ In this chapter, we will learn the core concepts of `ggplot2` and practise using
 Before getting started, let's install and load the required R packages into R environment. In this exercise, we need to install and load `tidyverse`.
 
 | Package | Description |
-|-------------------|-----------------------------------------------------|
+|--------------------|----------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/). |
 
 ```{r}
@@ -106,7 +106,6 @@ ggplot2 implements Leland Wilkinson’s Grammar of Graphics and is built on seve
 
 The code chunk below creates a blank canvas by initialising a ggplot object with the `data` argument. Here, `exam_data` is used for plotting. If the dataset is not a data.frame, it will be converted automatically and internally using `fortify()`.
 
-
 ```{r}
 ggplot(data=exam_data)
 ```
@@ -122,18 +121,8 @@ ggplot(data=exam_data, aes(x=MATHS))
 ```
 
 ## Essential Grammatical Elements in ggplot2: geom()
-Geometric objects define the actual marks drawn on a plot. Common [examples](https://ggplot2.tidyverse.org/reference/#section-layer-geoms) include:
-- `geom_point()` for points, 
-- `geom_line()` for lines, 
-- `geom_smooth` for trend lines, 
-- `geom_bar` for bar charts, 
-- `geom_histogram()` for histograms, 
-- `geom_polygon()` for shapes, 
-- `geom_map()` for map-based polygons,
-- `geom_col()` for bar charts where the height of each bar comes directly from the variable,
-- `geom_boxplot()` for box plot
-- `geom_density()` for kernel density estimate(KDE)
-- `geom_abline() geom_hline() geom_vline()` for horizontal, vertical, and diagonal reference lines
+
+Geometric objects define the actual marks drawn on a plot. Common [examples](https://ggplot2.tidyverse.org/reference/#section-layer-geoms) include: - `geom_point()` for points, - `geom_line()` for lines, - `geom_smooth` for trend lines, - `geom_bar` for bar charts, - `geom_histogram()` for histograms, - `geom_polygon()` for shapes, - `geom_map()` for map-based polygons, - `geom_col()` for bar charts where the height of each bar comes directly from the variable, - `geom_boxplot()` for box plot - `geom_density()` for kernel density estimate(KDE) - `geom_abline() geom_hline() geom_vline()` for horizontal, vertical, and diagonal reference lines
 
 ### Geometric Objects: geom_bar() & geom_col()
 
@@ -149,8 +138,8 @@ avg_english <- exam_data %>%
 ggplot(avg_english, aes(x = RACE, y = avg_english, fill=RACE, alpha = 0.5)) + geom_col()
 ```
 
-
 ### Geometric Objects: geom_dotplot()
+
 In a dot plot, the width of each dot reflects the bin width, and dots are stacked so that each dot represents one observation. The plot created by using [`geom_dotplot()`](https://ggplot2.tidyverse.org/reference/geom_dotplot.html) has a misleading y-axis.
 
 ```{r}
@@ -175,7 +164,7 @@ The code chunk below creates a histogram of Maths scores with default bin width 
 ggplot(data=exam_data, aes(x=MATHS)) +geom_histogram()
 ```
 
-###  Modifying a Geometric Object by Changing geom()
+### Modifying a Geometric Object by Changing geom()
 
 In the code chunk below, the `bins` argument sets the number of bins to 20, the `fill` argument shades the histogram in light blue, and the `colour` argument changes the bar outlines to black.
 
@@ -185,6 +174,7 @@ ggplot(data=exam_data, aes(x=MATHS)) +
 ```
 
 ### Modifying a Geometric Object by Changing aes()
+
 Yes, it is similar to **`hue`** in Python (for example in seaborn).
 
 In ggplot2, mapping `fill`, `alpha`, `colour` inside `aes()` splits the data into subgroups and assigns different colours to each group. This works in a similar way to `hue` (seaborn Python), which colours plots based on a categorical variable.
@@ -195,7 +185,6 @@ ggplot(data=exam_data, aes(x=MATHS,
                            fill = GENDER, colour = GENDER)) +
   geom_histogram(bins = 20, colour = "gray30") #setting colour in geom will override the ourline colours in aes()
 ```
-
 
 ```{r}
 ggplot(data=exam_data, aes(x=MATHS, 
@@ -211,6 +200,7 @@ ggplot(data=exam_data, aes(x=MATHS,
 ggplot(data=exam_data, aes(x=MATHS)) +
   geom_density()
 ```
+
 The code chunk below plots two kernel density curves by mapping `colour` or `fill` within `aes()`.
 
 ```{r}
@@ -226,11 +216,9 @@ ggplot(data=exam_data,
   geom_density()
 ```
 
-
 ### Geometric Objects: [geom_boxplot()](https://ggplot2.tidyverse.org/reference/geom_boxplot.html)
 
 A boxplot summarises the distribution of MATHS scores by GENDER, which is categorical on the x-axis.
-
 
 ```{r}
 ggplot(data=exam_data, 
@@ -239,8 +227,7 @@ ggplot(data=exam_data,
   geom_boxplot()
 ```
 
-The code below shows a notched plot of Maths scores by gender.
-Notches in box plots help compare medians across groups. If the notches do not overlap, it suggests the medians are different.
+The code below shows a notched plot of Maths scores by gender. Notches in box plots help compare medians across groups. If the notches do not overlap, it suggests the medians are different.
 
 ```{r}
 ggplot(data=exam_data, 
@@ -252,6 +239,7 @@ ggplot(data=exam_data,
 geom_line() is designed to connect points along a continuous or ordered x-axis. Here, GENDER is categorical, so drawing lines across it has no meaningful interpretation.
 
 Mapping group = RACE forces ggplot2 to connect observations of the same race across gender categories, which results in arbitrary zig-zag lines that do not represent a valid trend.
+
 ```{r}
 ggplot(data=exam_data, 
        aes(y = MATHS,       
@@ -262,8 +250,7 @@ ggplot(data=exam_data,
 
 ### Geometric Objects: [geom_violin()](https://ggplot2.tidyverse.org/reference/geom_violin.html)
 
-geom_violin() creates violin plots for comparing multiple data distributions. By placing distributions side by side, it makes comparisons easier than overlapping density curves.
-The code below shows the distribution of Maths scores by gender using a violin plot.
+geom_violin() creates violin plots for comparing multiple data distributions. By placing distributions side by side, it makes comparisons easier than overlapping density curves. The code below shows the distribution of Maths scores by gender using a violin plot.
 
 In a violin plot, stat = "ydensity" controls how the shape of the violin is calculated, based on the distribution of the data along the y-axis.
 
@@ -296,8 +283,8 @@ ggplot(data=exam_data,
   geom_point(position="jitter", 
              size = 0.5)        
 ```
-`geom_point(position = "identity")` plots all points at the exact same x-position for each gender category. Since GENDER is categorical, many points overlap completely. `position = "identity"` is suitable for continuous x-values.
-For categorical x-values, we should use `jitter` to avoid overplotting like the example above.
+
+`geom_point(position = "identity")` plots all points at the exact same x-position for each gender category. Since GENDER is categorical, many points overlap completely. `position = "identity"` is suitable for continuous x-values. For categorical x-values, we should use `jitter` to avoid overplotting like the example above.
 
 ```{r}
 ggplot(data=exam_data, 
@@ -308,13 +295,14 @@ ggplot(data=exam_data,
              size = 0.5)        
 ```
 
-##  Essential Grammatical Elements in ggplot2: stat()
+## Essential Grammatical Elements in ggplot2: stat()
 
 [Statistical functions](https://ggplot2.tidyverse.org/reference/index.html#stats) summarise or transform data, such as means, or confidence limits in a bar chart. They can be used by adding a `stat_()` function and overriding the default geom, or by adding a `geom_()` function and overriding the default stat.
 
 ### Working with stat()
 
 The plot does not display the means by default.
+
 ```{r}
 ggplot(data = exam_data, aes(y = MATHS, x = GENDER)) +
   geom_boxplot()
@@ -333,10 +321,9 @@ ggplot(data = exam_data, aes(x=GENDER, y = MATHS)) +
                size = 4)
 ```
 
-
 ### Working with stat: the geom() method
 
-The code chunk below demonstrates the alternative approach using `geom_point()`. The point [shape](https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html) can be specified using integer numbers from 0 to 25, or by using single alphanumeric characters. `fill` argument can also be utilised under `geom_point()`. 
+The code chunk below demonstrates the alternative approach using `geom_point()`. The point [shape](https://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html) can be specified using integer numbers from 0 to 25, or by using single alphanumeric characters. `fill` argument can also be utilised under `geom_point()`.
 
 ```{r}
 ggplot(data= exam_data,
@@ -349,7 +336,6 @@ ggplot(data= exam_data,
              shape = "*")
 ```
 
-
 ### Adding a Best Fit Curve on a Scatterplot
 
 The code below adds a best fit curve on the catterplot for Maths/English scores by adding a [`geom_smooth()`](https://ggplot2.tidyverse.org/reference/geom_smooth.html) with the method "loess" that stands for Local Polynomial Regression Fitting and used for observations less than 1k.
@@ -359,7 +345,7 @@ ggplot(data=exam_data, aes(x=MATHS, y=ENGLISH)) +
   geom_point() + geom_smooth(linewidth=0.5)
 ```
 
-The other smoothing methods include "lm", "glm", "gam" etc. The chart below is smoothed using a linear regression model based on *y ~ x*.
+The other smoothing methods include "lm", "glm", "gam" etc. The chart below is smoothed using a linear regression model based on *y \~ x*.
 
 ```{r}
 ggplot(data = exam_data, aes(x=MATHS, y=ENGLISH)) +
@@ -397,6 +383,7 @@ ggplot(data= exam_data, aes(x=MATHS)) +
 The coordinate functions determine how data values are translated into positions on the plotting plane. ggplot2 provides several coordinate systems, each suited to different visual needs. The main ones are:
 
 -   [`coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html): the default Cartesian coordinate system, where you specify x and y values (e.g. allows you to zoom in or out).
+
 -   [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html): a Cartesian system with the x and y flipped.
 
 -   [`coord_fixed()`](https://ggplot2.tidyverse.org/reference/coord_fixed.html): a Cartesian system with a "fixed" aspect ratio (e.g. 1.78 for a "widescreen" plot).
@@ -417,13 +404,11 @@ The code chunk below flips the x-axis to y-axis.
 ggplot(exam_data, aes(x=RACE)) + geom_bar() + coord_flip()
 ```
 
-
 ### Chaning the y-axis and x-axis Range
 
 The scatterplot appears slightly off-centre because the **axes start at different minimum values**. In this case, the **y-axis starts at 20**, while the **x-axis starts at 0**, so the plotting area is not symmetric around the origin.
 
 This happens when ggplot2 automatically sets axis limits based on the range of the data rather than forcing both axes to start at the same value. As a result, the visual centre of the plot shifts, even though the data points themselves are correctly positioned.
-
 
 ```{r}
 ggplot(data=exam_data, 
@@ -441,7 +426,7 @@ ggplot(exam_data, aes(x=MATHS, y=ENGLISH)) +
         coord_cartesian(xlim = c(0,100), ylim= c(0,100))
 ```
 
- Adding an additional coordinate system replaces the existing one.
+Adding an additional coordinate system replaces the existing one.
 
 ```{r}
 ggplot(exam_data, aes(x=MATHS, y=ENGLISH)) +
@@ -494,20 +479,20 @@ ggplot(exam_data, aes(x=RACE,fill=CLASS, alpha = 0.5)) +
   coord_flip() +
   theme_light()
 ```
+
 Or the theme can be set to test.
 
 ```{r}
 ggplot(exam_data, aes(x=RACE,fill=CLASS)) + 
   geom_bar(alpha=0.5) +
   coord_flip() +
-  scale_fill_brewer(palette="Paired")
+  scale_fill_brewer(palette="Paired") +
   theme_test()
 ```
 
-
 ## Reference
 
-Kam, Tin Seong (2026). [1 A Layered Grammar of Graphics: ggplot2 methods](https://r4va.netlify.app/chap01). R for Visual Analytics. 
+Kam, Tin Seong (2026). [1 A Layered Grammar of Graphics: ggplot2 methods](https://r4va.netlify.app/chap01). R for Visual Analytics.
 
 Hadley Wickham (2010) “[A layered grammar of graphics](https://vita.had.co.nz/papers/layered-grammar.html)” Journal of Computational and Graphical Statistics, vol. 19, no. 1, pp. 3–28.
 
@@ -522,4 +507,3 @@ Healy, Kieran (2019) [Data Visualization: A practical introduction](https://socv
 [Learning ggplot2 on Paper – Layer](https://henrywang.nl/learning-ggplot2-on-paper-layer/)
 
 [Learning ggplot2 on Paper – Scale](https://henrywang.nl/tag/learning-ggplot2-on-paper/)
-
