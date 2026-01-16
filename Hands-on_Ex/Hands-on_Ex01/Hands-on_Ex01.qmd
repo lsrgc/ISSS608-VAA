@@ -33,7 +33,7 @@ In this chapter, we will learn the core concepts of `ggplot2` and practise using
 Before getting started, let's install and load the required R packages into R environment. In this exercise, we need to install and load `tidyverse`.
 
 | Package | Description |
-|--------------------|----------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/). |
 
 ```{r}
@@ -447,17 +447,17 @@ ggplot2 includes built in [themes](https://ggplot2.tidyverse.org/reference/ggthe
 `theme_grey()` is the default theme with background colour in grey.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE)) +
+ggplot(exam_data, aes(x= RACE)) +
   geom_bar() +
-  coord_flip() + 
+  coord_flip() +
   theme_grey()
 ```
 
 The colour theme could be changed to classic where background in white and gridlines removed by using theme_classic().
 
 ```{r}
-ggplot(exam_data, aes(x=RACE,fill = GENDER)) + 
-  geom_bar() +
+ggplot(exam_data, aes(x = RACE, fill = GENDER)) +
+  geom_bar(position = "dodge") +
   coord_flip() +
   theme_classic()
 ```
@@ -465,17 +465,30 @@ ggplot(exam_data, aes(x=RACE,fill = GENDER)) +
 Or the theme can be set to minimal.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE)) + 
-  geom_bar() +
+exam_data %>%
+  count(GENDER, ENGLISH)%>%
+  mutate(n = ifelse(GENDER== "Male", -n, n)) %>%
+  ggplot(aes(x = ENGLISH, y = n, fill = GENDER)) +
+  geom_col(width = 1) + 
   coord_flip() +
-  theme_minimal()
+  theme_minimal() +
+  scale_y_continuous(label=abs)
 ```
 
 Or the theme can be set to light.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE)) + 
-  geom_bar() +
+ggplot(exam_data, aes(x=RACE, y =MATHS)) + 
+  geom_boxplot() + 
+  stat_summary(geom="point",
+               fun =mean,
+               shape = 21,
+               fill = "red",
+               colour= "black", size =3) +
+  stat_summary(fun = mean, geom = "text",
+               aes(label = round(..y.., 0)),
+               hjust = -0.5, size = 3) +
+
   coord_flip() +
   theme_light()
 ```
