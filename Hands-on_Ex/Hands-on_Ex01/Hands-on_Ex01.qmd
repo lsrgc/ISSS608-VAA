@@ -433,7 +433,7 @@ ggplot(exam_data, aes(x=MATHS, y=ENGLISH)) +
         geom_point() +
         geom_smooth(method=lm, size = 0.5) +
   coord_cartesian(xlim = c(0,100), ylim= c(0,100)) +
-        coord_fixed(ratio=1.78)
+        coord_fixed(ratio=0.8)
 ```
 
 ## Essential Grammatical Elements in ggplot2: themes
@@ -447,7 +447,7 @@ ggplot2 includes built in [themes](https://ggplot2.tidyverse.org/reference/ggthe
 `theme_grey()` is the default theme with background colour in grey.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE, fill=RACE, alpha=0.5)) +
+ggplot(exam_data, aes(x=RACE)) +
   geom_bar() +
   coord_flip() + 
   theme_grey()
@@ -456,7 +456,7 @@ ggplot(exam_data, aes(x=RACE, fill=RACE, alpha=0.5)) +
 The colour theme could be changed to classic where background in white and gridlines removed by using theme_classic().
 
 ```{r}
-ggplot(exam_data, aes(x=RACE,fill = GENDER, alpha=0.5)) + 
+ggplot(exam_data, aes(x=RACE,fill = GENDER)) + 
   geom_bar() +
   coord_flip() +
   theme_classic()
@@ -465,7 +465,7 @@ ggplot(exam_data, aes(x=RACE,fill = GENDER, alpha=0.5)) +
 Or the theme can be set to minimal.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE, fill=CLASS, alpha = 0.5)) + 
+ggplot(exam_data, aes(x=RACE)) + 
   geom_bar() +
   coord_flip() +
   theme_minimal()
@@ -474,7 +474,7 @@ ggplot(exam_data, aes(x=RACE, fill=CLASS, alpha = 0.5)) +
 Or the theme can be set to light.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE,fill=CLASS, alpha = 0.5)) + 
+ggplot(exam_data, aes(x=RACE)) + 
   geom_bar() +
   coord_flip() +
   theme_light()
@@ -483,8 +483,8 @@ ggplot(exam_data, aes(x=RACE,fill=CLASS, alpha = 0.5)) +
 Or the theme can be set to test.
 
 ```{r}
-ggplot(exam_data, aes(x=RACE,fill=CLASS)) + 
-  geom_bar(alpha=0.5) +
+ggplot(exam_data, aes(x=CLASS,fill=RACE)) + 
+  geom_bar() +
   coord_flip() +
   scale_fill_brewer(palette="Paired") +
   theme_test()
