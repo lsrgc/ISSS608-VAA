@@ -33,7 +33,7 @@ In this chapter, we will learn the core concepts of `ggplot2` and practise using
 Before getting started, let's install and load the required R packages into R environment. In this exercise, we need to install and load `tidyverse`.
 
 | Package | Description |
-|---------------------|---------------------------------------------------|
+|----|----|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/). |
 
 ```{r}
