@@ -82,7 +82,7 @@ To visualise the Maths and English scores for each student in a scatterplot, we 
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth = 0.5) +
   geom_label(aes(label = ID, hjust = 0.5, vjust= -0.5)) +
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
   ggtitle("English scores VS Math scores for Primary 3")
@@ -95,7 +95,7 @@ ggplot(data = exam_data,
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth  = 0.5) +
   geom_label(aes(label = ID, hjust = 0.5, vjust= -0.5)) + 
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
   ggtitle("English scores VS Math scores for Primary 3")
@@ -116,7 +116,7 @@ ggrepel automatically places labels nicely to minimise overlap. However, we can 
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth  = 0.5) +
   geom_label_repel(aes(label = ID, fontface = "bold")) +
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
   ggtitle("English scores VS Math scores for Primary 3")
@@ -129,7 +129,7 @@ ggplot(data = exam_data,
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth  = 0.5) +
   geom_label_repel(aes(label = ID, fontface = "bold")) + 
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
   ggtitle("English scores VS Math scores for Primary 3")
@@ -142,7 +142,7 @@ ggplot(data = exam_data,
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth  = 0.5) +
    geom_text_repel(aes(label = ID), 
                   family = "serif", box.padding = 0.4)+
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
@@ -156,7 +156,7 @@ ggplot(data = exam_data,
 ggplot(data = exam_data,
        aes(x= MATHS, y = ENGLISH)) +
          geom_point() +
-    geom_smooth(method = lm, size = 0.5) +
+    geom_smooth(method = lm, linewidth  = 0.5) +
    geom_text_repel(aes(label = ID), 
                   family = "serif", box.padding = 0.5)+
   coord_cartesian(xlim = c(0,100), ylim = c(0,100)) +
