@@ -55,10 +55,8 @@ pacman::p_load(tidyverse, ggrepel, ggthemes, hrbrthemes, patchwork)
 The code chunk below solves the system warning when using **hrbthemes** on Windows.
 
 ```{r}
-#| code-fold: true
 #| code-summary: Font Setup
 extrafont::loadfonts(device = "win")
-sysfonts::font_add_google("PT Sans Narrow", "Arial Narrow")
 sysfonts::font_add_google("Roboto Condensed", "Roboto Condensed")
 showtext::showtext_auto()
 ```
@@ -600,7 +598,6 @@ patchwork & theme_linedraw()
 ```{r, fig.width=12, fig.height=8}
 #| code-fold: true
 #| code-summary: "VIEW CODE"
-#| 
 patchwork <- (p1 / p2) | p3
 patchwork  & theme_modern_rc(grid="Y")
 ```
