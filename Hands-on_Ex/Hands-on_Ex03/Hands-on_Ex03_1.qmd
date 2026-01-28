@@ -1,5 +1,5 @@
 ---
-title: "03  Programming Interactive Data Visualisation with R"
+title: "03-1  Programming Interactive Data Visualisation with R"
 author: "Yiqiong PAN"
 date: "Jan 26, 2026"
 date-modified: last-modified
@@ -15,7 +15,7 @@ format:
   html:
     toc: true
     code-link: true
-    self_contained: true
+
 
 number-sections: true
 number-depth: 6
@@ -34,7 +34,7 @@ In this chapter, we use functions from **ggiraph** and **plotlyr** packages to c
 There are five packages that will be used in this exercise.
 
 | Package | Description |
-|------------------|-----------------------------------------------------|
+|-------------------|-----------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [ggiraph](https://davidgohel.github.io/ggiraph/) | Turns ggplot charts interactive with tooltips and clicks etc., and works smoothly with Shiny. |
 | [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
@@ -440,16 +440,13 @@ There are two main ways to build interactive graphs in Plotly:
 -   using `plot_ly()`, and
 -   using `ggplotly()`
 
-In our geospatial visualisation applications, We learned that ggplotly() is versatile and simpler than many other interactive graphing approaches because it builds directly on the **ggplot2** grammar. 
+In our geospatial visualisation applications, We learned that ggplotly() is versatile and simpler than many other interactive graphing approaches because it builds directly on the **ggplot2** grammar.
 
 In the next examples, the scatterplot data starts around 20, which is realistic, but we still want **0** to be visible on the plot. The zeros on the x and y axes look cleaner than when they are strictly enforced in `plot_ly()`. When `range = c(0, 100)` is applied, `plot_ly()` keeps the data tight to the axes, causing the two zeros at the origin to appear cramped. This can be improved by extending the canvas, for example to `c(-5, 105)`. By contrast, `ggplotly()` inherits settings from `ggplot()` such as `coord_cartesian()`, which automatically produces a more balanced and elegant display.
 
-
-
 ![](image2.jpg)
 
-:::{.panel-tabset}
-
+::: panel-tabset
 ### Interactive scatter plot: plot_ly()
 
 ```{r}
@@ -478,7 +475,6 @@ plot_ly(data = exam_data,
     yaxis = list(title = "English",range = c(-5, 105), dtick = 20, tick0 = 0),
     margin = list(t= 90))
 ```
-
 
 ### Visual variable: plot_ly()
 
@@ -514,12 +510,9 @@ plot_ly(data = exam_data,
     margin = list(t= 90))
 ```
 
-
-
 ### Interactive scatter plot: ggplotly()
 
 The code chunk below creates an interactive scatter plot using `ggplotly()`. The only additional step required is calling `ggplotly()` to convert the ggplot into an interactive Plotly graph. The `labs()` function is used for ggplot2 settings, while `layout()` controls Plotly-specific options. When using `ggplotly()`, most ggplot2 elements are carried over unless they are explicitly overridden in `layout()`.
-
 
 ```{r}
 p <- ggplot(data = exam_data, 
@@ -541,11 +534,9 @@ ggplotly(p, tooltip = "text")
 
 ```
 
-
 ### Visual variable: ggplotly()
 
-Similarly, we can assign colour hues by **Race** in `ggplotly()`, and each cohort can be toggled on or off by clicking the legend. 
-
+Similarly, we can assign colour hues by **Race** in `ggplotly()`, and each cohort can be toggled on or off by clicking the legend.
 
 ```{r}
 
@@ -571,15 +562,13 @@ ggplotly(p, tooltip = "text")
 
 ### Coordinated Multiple Views
 
-The creation of a coordinated linked plot using Plotly involves three main steps. 
+The creation of a coordinated linked plot using Plotly involves three main steps.
 
 First, [`highlight_key()`](https://www.rdocumentation.org/packages/plotly/versions/4.9.2/topics/highlight_key) from the **plotly** package is used to define shared data. `highlight_key()` creates an object of class `crosstalk::SharedData`, which enables linked interactions across multiple plots. **Crosstalk** is an R framework that allows multiple HTML widgets (such as Plotly charts, tables, and maps) to share the same data and respond together to user interactions like hovering, selecting, or filtering.
 
-Next, two scatter plots are created using **ggplot2** functions. 
+Next, two scatter plots are created using **ggplot2** functions.
 
 Finally, [`subplot()`](https://plotly.com/r/subplots/) from the **plotly** package is used to arrange the plots side by side.
-
-
 
 ```{r, fig.width=16, fig.height=10}
 d <- highlight_key(exam_data)
@@ -610,19 +599,13 @@ subplot(
   nrows = 1           # arrange in 1 row
 )
 ```
-
-
 :::
-
 
 ## Interactive Data Visualisation - crosstalk methods
 
 [Crosstalk](https://rstudio.github.io/crosstalk/index.html) is an extension of the **htmlwidgets** package that provides classes, functions, and conventions to enable cross-widget interactions, such as linked brushing and filtering, across multiple interactive widgets.
 
-
-:::{.panel-tabset}
-
-
+::: panel-tabset
 ### Interactive Data Table: DT package
 
 DT is a wrapper for the JavaScript library [DataTables](https://datatables.net/), allowing R data objects to be rendered as interactive HTML tables, typically in R Markdown or Shiny.
@@ -666,11 +649,9 @@ datatable(
 
 ```
 
-
 ### Linked brushing: crosstalk method
 
 The code uses `highlight()` from Plotly to control brushing and linking across plots, mainly for Plotly graphs. It also uses `bscols()` from Crosstalk to arrange widgets side by side in R Markdown, noting that it loads Bootstrap.
-
 
 ```{r}
 d <- highlight_key(exam_data[,c(1, 5, 6)]) 
@@ -690,16 +671,11 @@ dt <- datatable(d,rownames = FALSE,
 
 crosstalk::bscols(gg, dt, widths = c(6, 6))    
 ```
-
 :::
-
-
-
-
 
 ## Reference
 
-Kam, Tin Seong (2026). [3  Programming Interactive Data Visualisation with R](https://r4va.netlify.app/chap03) R for Visual Analytics.
+Kam, Tin Seong (2026). [3 Programming Interactive Data Visualisation with R](https://r4va.netlify.app/chap03) R for Visual Analytics.
 
 [How to Plot With Ggiraph](https://www.r-bloggers.com/2018/04/how-to-plot-with-ggiraph/)
 
@@ -711,7 +687,7 @@ Kam, Tin Seong (2026). [3  Programming Interactive Data Visualisation with R](ht
 
 [**Carson Sievert (2020) Interactive web-based data visualization with R, plotly, and shiny, Chapman and Hall/CRC**](https://plotly-r.com/)
 
-[Plotly R Figure Reference ](https://plotly.com/r/reference/index/)
+[Plotly R Figure Reference](https://plotly.com/r/reference/index/)
 
 [gganimate: Getting Started](https://gganimate.com/articles/gganimate.html)
 
@@ -720,4 +696,3 @@ Kam, Tin Seong (2026). [3  Programming Interactive Data Visualisation with R](ht
 [Creating a composite gif with multiple gganimate panels](https://solarchemist.se/2021/08/02/composite-gif-gganimate/)
 
 [Implementation of gganimate by Senior Student](https://rpubs.com/raymondteo/dataviz8)
-

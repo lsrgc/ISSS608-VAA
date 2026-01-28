@@ -1,5 +1,5 @@
 ---
-title: "04  Programming Animated Statistical Graphics with R"
+title: "03-2  Programming Animated Statistical Graphics with R"
 author: "Yiqiong PAN"
 date: "Jan 27, 2026"
 date-modified: last-modified
@@ -15,7 +15,7 @@ format:
   html:
     toc: true
     code-link: true
-    self_contained: true
+
 
 number-sections: true
 number-depth: 6
@@ -52,7 +52,7 @@ Use animation thoughtfully. It is often unnecessary for exploration, but can be 
 There are five packages that will be used in this exercise.
 
 | Package | Description |
-|---------------------|---------------------------------------------------|
+|----------------------|--------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
 | [gifski](https://cran.r-project.org/web/packages/gifski/index.html) | A rendering engine used by gganimate to turn animation frames into high quality GIFs. It handles the final export, not the animation logic itself. |
@@ -244,10 +244,9 @@ sakura_overall %>%
   kable_styling()
 ```
 
-### Creating Animation 
+### Creating Animation
 
-:::{.panel-tabset}
-
+::: panel-tabset
 #### 1. Plot a static graph
 
 ```{r}
@@ -258,8 +257,7 @@ ggplot() +
              aes(longitude, latitude))
 ```
 
-
-####  2. Create the simplest animation
+#### 2. Create the simplest animation
 
 `aes()` specifies where points appear on the map and how they are grouped so **gganimate** knows how to animate them smoothly over time.
 
@@ -276,6 +274,7 @@ p <- ggplot() +
 
 animate(p, height = 715, width = 600) 
 ```
+
 ```{r}
 #| eval: false
 #| echo: false
@@ -284,9 +283,7 @@ anim_save("sakura1.gif", p)
 
 ![](anime/sakura1.gif)
 
-
-
-####  3. Refine the transition
+#### 3. Refine the transition
 
 ```{r}
 #| eval: false
@@ -303,7 +300,6 @@ p <- ggplot() +
 animate(p, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -313,8 +309,6 @@ anim_save("anime/sakura2.gif", p)
 ![](anime/sakura2.gif)
 
 #### 4. Add a dynamic title
-
-
 
 ```{r}
 #| eval: false
@@ -332,7 +326,6 @@ p <- ggplot() +
 animate(p, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -340,7 +333,6 @@ anim_save("anime/sakura3.gif", p)
 ```
 
 ![](anime/sakura3.gif)
-
 
 #### 5. Add start and end pauses
 
@@ -368,9 +360,7 @@ anim_save("anime/sakura4.gif", p)
 
 ![](anime/sakura4.gif)
 
-
 #### 6. Add Japan country borders
-
 
 ```{r}
 #| eval: false
@@ -389,7 +379,6 @@ p <- ggplot() +
 animate(p, height = 715, width = 600, start_pause  = 15, end_pause = 15)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -397,7 +386,6 @@ anim_save("anime/sakura5.gif", p)
 ```
 
 ![](anime/sakura5.gif)
-
 
 #### 7. Use map theming
 
@@ -421,7 +409,6 @@ p <- ggplot() +
 animate(p, height = 715, width = 600, start_pause  = 15, end_pause = 15)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -431,7 +418,6 @@ anim_save("anime/sakura6.gif", p)
 ![](anime/sakura6.gif)
 
 #### 8. Add major cities as reference points
-
 
 ```{r}
 #| code-fold: true
@@ -446,7 +432,6 @@ sakura_labels %>%
   kable(format = "html") %>%
   kable_styling()
 ```
-
 
 ```{r}
 #| eval: false
@@ -476,7 +461,6 @@ p <- ggplot() +
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -485,7 +469,7 @@ anim_save("anime/sakura7.gif", p)
 
 ![](anime/sakura7.gif)
 
-####  9. Replace default points with sakura icon
+#### 9. Replace default points with sakura icon
 
 ```{r}
 #| eval: false
@@ -519,7 +503,6 @@ p <- ggplot() +
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -527,9 +510,6 @@ anim_save("anime/sakura8.gif", p)
 ```
 
 ![](anime/sakura8.gif)
-
-
-
 
 #### 10.Convert dynamic day-of-year to calendar date
 
@@ -563,8 +543,6 @@ p <- ggplot() +
 
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
-
-
 
 ```{r}
 #| eval: false
@@ -603,7 +581,6 @@ p <- ggplot() +
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -612,10 +589,9 @@ anim_save("anime/sakura9.gif", p)
 
 ![](anime/sakura9.gif)
 
-
 #### 11. Change font
 
-[`setup instruction for extrafont`](https://github.com/fbertran/extrafont?tab=readme-ov-file) 
+[`setup instruction for extrafont`](https://github.com/fbertran/extrafont?tab=readme-ov-file)
 
 ```{r}
 #| eval: false
@@ -651,7 +627,6 @@ p <- ggplot() +
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
 
-
 ```{r}
 #| eval: false
 #| echo: false
@@ -661,7 +636,6 @@ anim_save("anime/sakura10.gif", p)
 ![](anime/sakura10.gif)
 
 #### 12. Change colour palette
-
 
 ```{r}
 #| eval: false
@@ -702,7 +676,6 @@ p <- ggplot() +
 
 animate(p, start_pause = 15, end_pause = 15, height = 715, width = 600)
 ```
-
 
 ```{r}
 #| eval: false
@@ -823,8 +796,6 @@ anim_save("anime/sakura13.gif", p)
 
 #### 15. Add title and explanation blurb
 
-
-
 ```{r}
 #| eval: false
 #| code-fold: true
@@ -876,7 +847,6 @@ anim_save("anime/sakura14.gif", p)
 ```
 
 ![](anime/sakura14.gif)
-
 
 #### 16. Adjust title size and location
 
@@ -937,7 +907,6 @@ anim_save("anime/sakura15.gif", p)
 
 #### 17. Add colour to title with ggtext
 
-
 ```{r}
 #| eval: false
 #| code-fold: true
@@ -994,9 +963,7 @@ anim_save("anime/sakura16.gif", p)
 ```
 
 ![](anime/sakura16.gif)
-
 :::
-
 
 ## Reference
 
