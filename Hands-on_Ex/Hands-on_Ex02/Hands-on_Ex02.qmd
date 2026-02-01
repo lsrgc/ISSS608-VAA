@@ -42,7 +42,7 @@ There are five packages that will be used in this exercise.
 |------------------------------------|------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [ggrepel](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html) | Provides geoms for non-overlapping text labels in ggplot2 |
-| [ggthemes](https://cran.r-project.org/web/packages/ggthemes/refman/ggthemes.html) | Provides **ggplot2** themes, geoms and scales that replicate the famous styles ( e.g. Tufte, Economist, Tufte) |
+| [ggthemes](https://cran.r-project.org/web/packages/ggthemes/refman/ggthemes.html) | Provides **ggplot2** themes, geoms and scales that replicate the famous styles ( e.g. Tufte, Economist, WSJ) |
 | [hrbrthemes](https://github.com/hrbrmstr/hrbrthemes) | Provides minimal and professional looking themes and better typography and styleing |
 | [patchwork](https://cran.r-project.org/web/packages/patchwork/refman/patchwork.html) | Extends ggplot2 by letting user combine plots easily using operators. |
 
@@ -59,8 +59,6 @@ The code chunk below solves the system warning when using **hrbthemes** on Windo
 extrafont::loadfonts(device = "all") # quiet = TRUE
 ```
 
-
-
 ### Importing the Data
 
 A CSV file containing the final exam results of 322 local Primary 3 students has been imported into the R environment by using function [`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) from [**readr**](https://readr.tidyverse.org/) package, one of tidyverse family. The dataset includes variables such as student ID, class, gender, race, and grades for English, Maths, and Science.
@@ -73,7 +71,7 @@ exam_data <- read_csv("data/Exam_data.csv")
 
 To visualise the Maths and English scores for each student in a scatterplot, we can use `geom_point()` and `geom_smooth()` to add a reference line. However since all the student IDs are shown on the chart, the labels overlap and become difficult to read.
 
-:::{.panel-tabset}
+::: panel-tabset
 ### The plot
 
 ```{r}
@@ -107,7 +105,7 @@ Here we could use functions like [`geom_text_repel()`](https://ggrepel.slowkow.c
 
 ggrepel automatically places labels nicely to minimise overlap. However, we can still force all labels to be displayed by using the argument `max.overlaps = Inf`. The text font can be adjusted using the `family` argument, while the font style can be changed using `fontface.` In addition,`box.padding` controls the spacing between labels, the smaller the value, the closer the labels will be.
 
-:::{.panel-tabset}
+::: panel-tabset
 #### The plot - label
 
 ```{r}
@@ -167,7 +165,7 @@ ggplot(data = exam_data,
 
 There are 8 [built-in themes](https://ggplot2.tidyverse.org/reference/ggtheme.html) in ggplot2. They are: `theme_gray()`(default), `theme_bw()`, `theme_classic()`, `theme_dark()`, `theme_light()`, `theme_linedraw()`, `theme_minimal()`, and `theme_void()`, some of them we tried out in [Hand-on Exercise 1.11](https://isss608-ypan.netlify.app/hands-on_ex/hands-on_ex01/hands-on_ex01#essential-grammatical-elements-in-ggplot2-themes).
 
-:::{.panel-tabset}
+::: panel-tabset
 ### The plot - linedraw
 
 ```{r}
@@ -226,7 +224,7 @@ ggplot(data = exam_data,
 
 Here we try all out again.
 
-:::{.panel-tabset}
+::: panel-tabset
 #### Stata
 
 ```{r}
@@ -321,7 +319,7 @@ ggplot(data = exam_data,
 
 [**hrbthemes**](https://github.com/hrbrmstr/hrbrthemes) provides typographic themes and components for ggplot2 e.g. themes(`theme_ipsum()`), scales (`scale_y_percent()`), palettes(`ft_cols()`), fonts(`font_ps()`), Bit12 colour scales (`scale_fill_bit12_continuous()`), Flexoki palettes (`flexoki_light()`), utilities (`flush_ticks()`).
 
-:::{.panel-tabset}
+::: panel-tabset
 #### theme_ipsum()
 
 ```{r}
@@ -355,8 +353,7 @@ ggplot(data = exam_data, aes(x = MATHS)) +
 ```
 :::
 
-:::{.callout-tip}
-
+::: callout-tip
 #### Tips
 
 -   `axis_title_size` controls the axis title font size
@@ -366,14 +363,13 @@ ggplot(data = exam_data, aes(x = MATHS)) +
 -   `grid` Controls whether grid lines appear. If set to "Y", it shows grid lines mainly to help track values along the y-axis (making it easier to compare heights/levels).
 
 -   `base_family` is used to set the font family. On Windows, the default fonts used by `theme_ipsum()` (Arial Narrow) and `theme_ft_rc()` (Roboto Condensed) may not be installed, which causes warning messages. If `base_family` is not specified, R will fall back to the default `sans` font. However, we can use `font_import()` from **extrafont** package to import the fonts from system fonts folder to a R font database (the process might take a few minutes) and then load the fonts into the R environment by using `loadfonts(device = "win")`. Alternatively, we use `font_add_google()` from **sysfonts** package to download the fonts and load the fonts using `showtext_auto()` from **showtext** package.
-
 :::
 
 ## Beyond Single Graph
 
 We usually need multiple graphs to tell a compelling visual story. Several ggplot2 extensions provide functions for composing figures made up of multiple plots. In this section, we learn how to create a composite plot by combining multiple graphs. First, let us create three statistical graphics using the code chunk below.
 
-:::{.panel-tabset}
+::: panel-tabset
 ### p1
 
 ```{r}
@@ -430,18 +426,17 @@ Several ggplot2 extension packages support composite figures, such as [`grid.arr
 
 > Patchwork has a simple syntax:
 
-> - `+` arranges plots side by side 
+> -   `+` arranges plots side by side
 
-> - `()` groups plots 
+> -   `()` groups plots
 
-> - `/` stacks plots vertically
+> -   `/` stacks plots vertically
 
 ### Combining Two ggplot2 Graphs
 
 The tabset below shows two histograms combined using patchwork by using `+`. The syntax is simple and intuitive.
 
-:::{.panel-tabset}
-
+::: panel-tabset
 #### Left & right
 
 ```{r}
@@ -465,7 +460,7 @@ More complex composite plots can be created using patchwork operators. For examp
 
 Further examples can be found on [plot Assembly](https://patchwork.data-imaginist.com/articles/guides/assembly.html).
 
-:::{.panel-tabset}
+::: panel-tabset
 #### Three graphs
 
 ```{r, fig.width=12, fig.height=8}
@@ -489,8 +484,7 @@ p3 + wrap_table(exam_data[1:10, c("MATHS", "ENGLISH")], panel = "full", space = 
 
 To help reference subplots in the text, patchwork also supports auto-tagging, as shown in the figure below. Auto-tagging can be enabled by setting `tag_levels` in `plot_annotation()` to specify the tag style: `'1'` for Arabic numerals, `'A'` for uppercase letters, `'a'` for lowercase letters, `'I'` for uppercase Roman numerals, and `'i'` for lowercase Roman numerals.
 
-:::{.panel-tabset}
-
+::: panel-tabset
 #### Simple tagging
 
 ```{r, fig.width=12, fig.height=8}
@@ -533,7 +527,7 @@ Besides arranging plots using predefined layouts, we could use [`inset_element()
 -   `ignore_tag`: exclude inset from auto-tagging
 :::
 
-:::{.panel-tabset}
+::: panel-tabset
 #### Basic use
 
 Tip: keep values between 0 and 1 (npc units) and always ensure left \< right, bottom \< top.
@@ -576,7 +570,7 @@ p3 + inset_element(p2, 0.5, 0.05, 1, 0.3, align_to= "plot",ignore_tag= TRUE) +
 
 ### Creating a Composite Figure by Using patchwork and ggtheme
 
-:::{.panel-tabset}
+::: panel-tabset
 #### ggthemes
 
 Figure below is created by combining patchwork and `theme_economist()` of ggthemes package using operator `&`, applying to all plots in the patchwork layout. If you use `+` , the theme is applied only to the last patchwork object, not every subplot.
