@@ -52,7 +52,7 @@ The code below installs and loads the required packages into R environment. **hr
 pacman::p_load(tidyverse, ggrepel, ggthemes, hrbrthemes, patchwork)
 ```
 
-The code chunk below solves the system warning when using **hrbthemes** on Windows.
+The code chunk below solves the system warning when using **hrbrthemes** on Windows.
 
 ```{r}
 #| code-summary: Font Setup
@@ -315,9 +315,9 @@ ggplot(data = exam_data,
 ```
 :::
 
-### Working with hrbthemes Package
+### Working with hrbrthemes Package
 
-[**hrbthemes**](https://github.com/hrbrmstr/hrbrthemes) provides typographic themes and components for ggplot2 e.g. themes(`theme_ipsum()`), scales (`scale_y_percent()`), palettes(`ft_cols()`), fonts(`font_ps()`), Bit12 colour scales (`scale_fill_bit12_continuous()`), Flexoki palettes (`flexoki_light()`), utilities (`flush_ticks()`).
+**hrbrthemes** provides typographic themes and components for ggplot2 e.g. themes(`theme_ipsum()`), scales (`scale_y_percent()`), palettes(`ft_cols()`), fonts(`font_ps()`), Bit12 colour scales (`scale_fill_bit12_continuous()`), Flexoki palettes (`flexoki_light()`), utilities (`flush_ticks()`).
 
 ::: panel-tabset
 #### theme_ipsum()
@@ -591,7 +591,7 @@ patchwork <- (p1 / p2) | p3
 patchwork & theme_linedraw() 
 ```
 
-#### hrbthemes
+#### hrbrthemes
 
 ```{r, fig.width=12, fig.height=8}
 #| code-fold: true
