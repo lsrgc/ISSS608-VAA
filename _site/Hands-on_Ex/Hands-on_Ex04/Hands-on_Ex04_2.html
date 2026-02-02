@@ -515,7 +515,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 1, 2026</p>
+      <p class="date-modified">February 2, 2026</p>
     </div>
   </div>
     
@@ -719,6 +719,10 @@ window.Quarto = {
 <p>Mathematically, <span class="math inline">\(log_e(BF_{01})\)</span> = - <span class="math inline">\(log_e(BF_{10})\)</span></p>
 <p><strong>Interpretation</strong>:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 42%">
+<col style="width: 57%">
+</colgroup>
 <thead><tr class="header">
 <th>Value of <span class="math inline">\(log_e(BF_{01})\)</span>
 </th>
@@ -726,27 +730,47 @@ window.Quarto = {
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(= 0\)</span></td>
+<td><span class="math inline">\(&gt;4.6\)</span></td>
+<td>Extreme evidence for <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(&gt;2.3\)</span></td>
+<td>Strong evidence for <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(&gt;1\)</span></td>
+<td>Moderate Evidence for <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(&gt;0\)</span></td>
+<td>Week evidence for <span class="math inline">\(H_0\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(=0\)</span></td>
 <td>No evidence (BF = 1)</td>
 </tr>
 <tr class="even">
-<td>$&gt; 0 $</td>
-<td>Evidence for <span class="math inline">\(H_0\)</span>
+<td><span class="math inline">\(&lt;0\)</span></td>
+<td>Week evidence for <span class="math inline">\(H_1\)</span>
 </td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(&lt;0\)</span></td>
-<td>Evidence for <span class="math inline">\(H_01\)</span>
+<td><span class="math inline">\(&lt;-1\)</span></td>
+<td>Moderate evidence for <span class="math inline">\(H_1\)</span>
 </td>
 </tr>
 <tr class="even">
-<td>Large positive</td>
-<td>Strong /extreme evidence for <span class="math inline">\(H_0\)</span>
+<td><span class="math inline">\(&lt; -2.3\)</span></td>
+<td>Strong Evidence for <span class="math inline">\(H_1\)</span>
 </td>
 </tr>
 <tr class="odd">
-<td>Large negative</td>
-<td>Strong /extreme evidence for <span class="math inline">\(H_1\)</span>
+<td><span class="math inline">\(&lt;-4.6\)</span></td>
+<td>Extreme evidence for <span class="math inline">\(H_1\)</span>
 </td>
 </tr>
 </tbody>
@@ -835,7 +859,7 @@ Important
 <li><p><code>type = "p"</code> requests a parametric test. Since there are more than two groups, this results in a Welch one-way ANOVA, which does not assume equal variances across groups.</p></li>
 <li><p><code>p.adjust.method = "fdr"</code>applies False Discovery Rate (FDR) correction to adjust p-values for multiple pairwise comparisons.</p></li>
 <li><p><strong>Welch ANOVA</strong> result <span class="math inline">\(p\)</span> = 3.35e-7. This indicates a statistically significant difference in mean Maths scores among the race groups.</p></li>
-<li><p>The plot also includes Bayesian summaries: <span class="math inline">\(log_e(BF_{01})\)</span> = −11.63, indicating strong evidence against the null hypothesis</p></li>
+<li><p>The plot also includes Bayesian summaries: <span class="math inline">\(log_e(BF_{01})\)</span> = −11.63, indicating extremely strong evidence against the null hypothesis</p></li>
 <li><p>Bayesian <span class="math inline">\(R^2\)</span> 0.09 means about 9% of variance is explained</p></li>
 <li><p>Summary: Chinese students show higher mean Maths scores (around 76), while Malay students have lowest means (around57). Both the overall Bayesian test and the pairwise comparisons indicate statistically significant differences in average Maths scores.</p></li>
 </ul>
@@ -869,7 +893,7 @@ Tip
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>If <code>marginal = TRUE</code>, marginal histograms or density plots would be added to show the individual distributions of each variable.</p></li>
-<li><p><strong>Summary:</strong> The Pearson correlation coefficient is 0.83 with a p-value of (<span class="math inline">\(1.70e-83\)</span>), and the Bayesian result shows <span class="math inline">\(log_e(BF_{01})\)</span> = -183.55. Both results confirm that Maths and English scores are <strong>strongly and positively correlated</strong>.</p></li>
+<li><p><strong>Summary:</strong> The Pearson correlation coefficient is 0.83 with a p-value of (<span class="math inline">\(1.70e-83\)</span>), and the Bayesian result shows strong evidence against hull hypothesis <span class="math inline">\(log_e(BF_{01})\)</span> = -183.55. Both results confirm that Maths and English scores are <strong>very strongly and positively correlated</strong>.</p></li>
 </ul>
 </div>
 </div>
@@ -911,7 +935,7 @@ Tip
 <div class="callout-body-container callout-body">
 <ul>
 <li><p><strong>Chi-square test of independence</strong>: <span class="math inline">\(p\)</span> value (0.79) indicates <strong>no</strong> statistically significant association between gender and Maths score.</p></li>
-<li><p><span class="math inline">\(log_e(BF_{01})\)</span> = 4.73, indicating moderate evidence in favour of the null hypothesis (independence).</p></li>
+<li><p><span class="math inline">\(log_e(BF_{01})\)</span> = 4.73, indicating extremely strong evidence in favour of the null hypothesis (independence).</p></li>
 <li><p><strong>Summary</strong>: the chart shows that Maths score categories are independent of gender with both visual patterns and statistical evidence supporting the conclusion of no association.</p></li>
 </ul>
 </div>

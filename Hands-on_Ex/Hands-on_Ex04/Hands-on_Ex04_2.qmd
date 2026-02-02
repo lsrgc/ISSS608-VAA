@@ -37,7 +37,7 @@ All hypothesis tests in this exercise are conducted at the **5% significance lev
 There are four packages that will be used in this exercise.
 
 | Package | Description |
-|-----------------------|-------------------------------------------------|
+|------------------------|------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/index.html) | A gglot extension that creates graphics with statistical details. |
 | [performance](https://easystats.github.io/performance/) | An R package that provides a streamlined workflow for assessing model quality, generating diagnostic plots, and evaluating overall model performance. |
@@ -139,12 +139,16 @@ Mathematically, $log_e(BF_{01})$ = - $log_e(BF_{10})$
 
 | Value of $log_e(BF_{01})$ | Implication                        |
 |---------------------------|------------------------------------|
-|  $= 0$                    | No evidence (BF = 1)               |
-| \$\> 0 \$                 | Evidence for $H_0$                 |
-| $<0$                      | Evidence for $H_01$                |
-| Large positive            | Strong /extreme evidence for $H_0$ |
-| Large negative            | Strong /extreme evidence for $H_1$ |
-
+| $>4.6$                     | Extreme evidence for $H_0$               |
+| $>2.3$                 | Strong evidence for $H_0$                 |
+| $>1$                      | Moderate Evidence for $H_0$                 |
+| $>0$            | Week evidence for $H_0$ |
+|$=0$            | No evidence (BF = 1) |
+| $<0$                     | Week evidence for $H_1$              |
+| $<-1$                 | Moderate evidence for $H_1$                 |
+|  $< -2.3$                     | Strong Evidence for $H_1$                 |
+| $<-4.6$             | Extreme evidence for $H_1$ |
+  
 ::: callout-important
 Since `test.value` is 60, then:
 
@@ -214,7 +218,7 @@ ggbetweenstats(data = exam, x = RACE, y = MATHS,
 
 -   **Welch ANOVA** result $p$ = 3.35e-7. This indicates a statistically significant difference in mean Maths scores among the race groups.
 
--   The plot also includes Bayesian summaries: $log_e(BF_{01})$ = −11.63, indicating strong evidence against the null hypothesis
+-   The plot also includes Bayesian summaries: $log_e(BF_{01})$ = −11.63, indicating extremely strong evidence against the null hypothesis
 
 -   Bayesian $R^2$ 0.09 means about 9% of variance is explained
 
@@ -239,7 +243,7 @@ ggscatterstats(exam, x= MATHS, y=ENGLISH, marginal = TRUE) +
 ::: callout-tip
 -   If `marginal = TRUE`, marginal histograms or density plots would be added to show the individual distributions of each variable.
 
--   **Summary:** The Pearson correlation coefficient is 0.83 with a p-value of ($1.70e-83$), and the Bayesian result shows $log_e(BF_{01})$ = -183.55. Both results confirm that Maths and English scores are **strongly and positively correlated**.
+-   **Summary:** The Pearson correlation coefficient is 0.83 with a p-value of ($1.70e-83$), and the Bayesian result shows strong evidence against hull hypothesis $log_e(BF_{01})$ = -183.55. Both results confirm that Maths and English scores are **very strongly and positively correlated**.
 :::
 
 ### Significant Test of Association (Depedence) : ggbarstats() methods
@@ -273,7 +277,7 @@ ggbarstats(exam1, x= MATHS_bins, y = GENDER) +
 ::: callout-tip
 -   **Chi-square test of independence**: $p$ value (0.79) indicates **no** statistically significant association between gender and Maths score.
 
--   $log_e(BF_{01})$ = 4.73, indicating moderate evidence in favour of the null hypothesis (independence).
+-   $log_e(BF_{01})$ = 4.73, indicating extremely strong evidence in favour of the null hypothesis (independence).
 
 -   **Summary**: the chart shows that Maths score categories are independent of gender with both visual patterns and statistical evidence supporting the conclusion of no association.
 :::
