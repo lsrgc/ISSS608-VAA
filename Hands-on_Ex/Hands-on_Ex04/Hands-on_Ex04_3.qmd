@@ -37,7 +37,7 @@ All hypothesis tests in this exercise are conducted at the **5% significance lev
 There are four packages that will be used in this exercise.
 
 | Package | Description |
-|-------------------------|----------------------------------------------|
+|----|----|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [ggdist](https://mjskay.github.io/ggdist/) | An R package that extends ggplot2 with flexible geoms and stats for visualising distributions and uncertainty. |
 | [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
@@ -309,7 +309,6 @@ htmltools::tagList(
 ```
 
 ::: callout-important
-
 -   Error bars show the 99% confidence interval (z = 2.58).
 
 -   `SharedData$new()`: `SharedData` is a class from the crosstalk package that enables linked interaction between HTML widgets such as plotly, DT, and leaflet. `SharedData$new()` creates a new **instance** of this class using the R6 object system, which supports reference based objects with mutable state. An R6 class allows objects to be modified without copying, unlike standard R objects that use copy on modify behaviour. The data frame is **wrapped** inside this crosstalk enabled container so it can be shared across multiple widgets for coordinated interaction.
@@ -471,11 +470,9 @@ animate(p)
 anim_save("Hop.gif", p)
 ```
 
-![](hop.gif) 
+![](hop.gif)
 
-
-:::callout-tip
-
+::: callout-tip
 -   The jittered points show the raw distribution of individual maths scores by race, reducing overlap so dense regions are visible.
 
 -   `geom_hpline()` from ungeviz overlays distribution summaries based on repeated random sampling within each race group.
@@ -483,7 +480,6 @@ anim_save("Hop.gif", p)
 -   `sampler(25, group = RACE)` repeatedly resamples the data, allowing uncertainty and variability in the distribution to be visualised.
 
 -   `transition_states(.draw, …)` animates these repeated samples, showing how the estimated distribution changes across draws rather than presenting a single fixed summary.
-
 :::
 
 ## Reference
