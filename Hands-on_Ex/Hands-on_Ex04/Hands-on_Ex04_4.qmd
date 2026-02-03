@@ -26,7 +26,6 @@ editor: visual
 
 A funnel plot is a specialised data visualisation used to support fair and unbiased comparisons across outlets, stores, or business entities. In this hands on exercise, we learn how to create funnel plots using the **funnelPlotR** package, build static funnel plots with **ggplot2**, and develop interactive funnel plots by combining **ggplot2** with **plotly**.
 
-
 **Assumption:**
 
 All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
@@ -38,12 +37,11 @@ All hypothesis tests in this exercise are conducted at the **5% significance lev
 There are four packages that will be used in this exercise.
 
 | Package | Description |
-|-------------------------|----------------------------------------------|
+|--------------------------|----------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [FunnelPlotR](https://github.com/nhs-r-community/FunnelPlotR) | An R package that extends ggplot2 for funnel plots |
-| [knitr](https://github.com/yihui/knitr) | Elegant, flexible, and fast dynamic report generation with R|
+| [knitr](https://github.com/yihui/knitr) | Elegant, flexible, and fast dynamic report generation with R |
 | [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
-
 
 The code below installs and loads the required packages into R environment.
 
@@ -55,38 +53,32 @@ pacman::p_load(tidyverse, FunnelPlotR, knitr, plotly)
 
 This section uses the **COVID-19_DKI_Jakarta** dataset from the [Open Data COVID-19 Provinsi DKI Jakarta portal](https://riwayat-file-covid-19-dki-jakarta-jakartagis.hub.arcgis.com/), containing cumulative cases and deaths by sub-district (e.g. kelurahan) as at 31 July 2021. The code below imports the data into R as a tibble named **covid19** and converts the City, District and sub-district variables into categorical factors.
 
-
 ```{r}
 covid19 <- read_csv("data/COVID-19_DKI_Jakarta.csv") %>%
   mutate_if(is.character, as.factor)
 ```
+
 ```{r}
 kable(head(covid19, n=6),format = "html")
 ```
 
-
-
 ## FunnelPlotR methods
 
-
-The [**funnelPlotR**](https://nhs-r-community.github.io/FunnelPlotR/) package uses **ggplot2** to create funnel plots and requires a `numerator` (events of interest), a `denominator` (population at risk), and a `group` variable. 
+The [**funnelPlotR**](https://nhs-r-community.github.io/FunnelPlotR/) package uses **ggplot2** to create funnel plots and requires a `numerator` (events of interest), a `denominator` (population at risk), and a `group` variable.
 
 ::: callout-tip
-
 ### Key arguments
 
-- `limit` (95 or 99 plot limits), 
+-   `limit` (95 or 99 plot limits),
 
-- `label_outliers` (to label outlying points), 
+-   `label_outliers` (to label outlying points),
 
-- `Poisson_limits` and `OD_adjust` (to add Poisson or overdispersed limits), 
+-   `Poisson_limits` and `OD_adjust` (to add Poisson or overdispersed limits),
 
-- `xrange` and `yrange` (to control the displayed axis ranges). 
+-   `xrange` and `yrange` (to control the displayed axis ranges).
 
-- Other visual elements such as `title` and `label` can also be customised.
-
+-   Other visual elements such as `title` and `label` can also be customised.
 :::
-
 
 The code below uses [`funnel_plot()`](https://www.rdocumentation.org/packages/rmeta/versions/3.0/topics/funnelplot) to generate a funnel plot the ratio of positive cases to deaths across sub-districts, adjusted for overdispersion. But the y-values are closely clustered and difficult to distinguish visually, so additional customisation is required to improve readability.
 
@@ -98,23 +90,18 @@ funnel_plot(.data = covid19,
 ```
 
 ::: callout-tip
-
 ### Things to learn from the code chunk above:
 
-- In `funnel_plot()`, `group` defines the aggregation level of the points rather than a grouping aesthetic as in a scatterplot.
+-   In `funnel_plot()`, `group` defines the aggregation level of the points rather than a grouping aesthetic as in a scatterplot.
 
-- The `group` argument can be set to sub-district, district, or city, which determines how many points are plotted.
+-   The `group` argument can be set to sub-district, district, or city, which determines how many points are plotted.
 
-- If `City` is selected, only six data points are shown in the funnel plot.
+-   If `City` is selected, only six data points are shown in the funnel plot.
 
-- By default, the `data_type` argument is set to `"SR"`.
+-   By default, the `data_type` argument is set to `"SR"`.
 
-- The `limit` argument controls the funnel limits, where `95` and `99` correspond to the 95% and 99.8% control limits, respectively.
-
-
+-   The `limit` argument controls the funnel limits, where `95` and `99` correspond to the 95% and 99.8% control limits, respectively.
 :::
-
-
 
 ### FunnelPlotR methods: Makeover 1
 
@@ -131,20 +118,18 @@ funnel_plot(
   y_range = c(0, 0.05),   #<< sets the y-axis range to display rate 
   theme = funnel_clean())
 ```
-::: callout-tip
 
+::: callout-tip
 #### Things to learn from the code chunk above:
 
-+ The `data_type` argument is used to change the default setting from `"SR"`(observed/expected, centered around 1) to `"PR"`(observed A/observed B), so the funnel plot displays proportions instead of standardised ratios,that means changing from **relative performance** to **absolute proportion**.
+-   The `data_type` argument is used to change the default setting from `"SR"`(observed/expected, centered around 1) to `"PR"`(observed A/observed B), so the funnel plot displays proportions instead of standardised ratios,that means changing from **relative performance** to **absolute proportion**.
 
-+ The `xrange` and `yrange` arguments are used to control the displayed ranges of the x-axis and y-axis, improving readability when values are tightly clustered.
-
-
+-   The `xrange` and `yrange` arguments are used to control the displayed ranges of the x-axis and y-axis, improving readability when values are tightly clustered.
 :::
 
 ### FunnelPlotR methods: Makeover 2
 
-Here we add chart title, axis labels and disable the labels for sub-district. 
+Here we add chart title, axis labels and disable the labels for sub-district.
 
 ```{r}
 #| code-fold: true
@@ -167,34 +152,28 @@ funnel_plot(
 ```
 
 ::: callout-tip
-
 #### Things to learn from the code chunk above
 
-- `label = NA` turns off point labelling in the funnel plot to improve visual clarity.
+-   `label = NA` turns off point labelling in the funnel plot to improve visual clarity.
 
-- **Backticks** are used to reference column names that contain nonstandard characters, such as hyphens (`Sub-district`), spaces, start with numbers etc which would otherwise be interpreted as operators in R.
+-   **Backticks** are used to reference column names that contain nonstandard characters, such as hyphens (`Sub-district`), spaces, start with numbers etc which would otherwise be interpreted as operators in R.
 
-- Although` funnel_plot()` returns a ggplot object, it is not designed for **plotly** conversion, and interactive behaviour is limited or unreliable when using `ggplotly()`.
+-   Although`funnel_plot()` returns a ggplot object, it is not designed for **plotly** conversion, and interactive behaviour is limited or unreliable when using `ggplotly()`.
 :::
 
 ## Funnel Plot for Fair Visual Comparison: ggplot2 methods
 
-
 In this section, we learn hands on experience in building funnel plots step by step using **ggplot2**. The objective is to strengthen the proficiency with ggplot2 for customising specialised data visualisations such as funnel plots.
 
-
-
-###  Computing the basic derived fields
+### Computing the basic derived fields
 
 First, we manually derive the cumulative death rate and the standard error of the cumulative death rate. The formulas are as followed.
 
 $$
 \hat{p} = \frac{\text{Deaths}}{\text{Positive}}
-$$
-$$
+$$ $$
 SE(\hat{p}) = \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}
 $$
-
 
 ```{r}
 df <- covid19 %>%
@@ -204,11 +183,20 @@ df <- covid19 %>%
 
 ```
 
+
+
+
+
 ```{r}
 kable(head(df, n= 6),"html")
 ```
 
-Next, we use` weighted.mean(x, wt)` function from **base R** to calculate the weighted mean. Weighted mean is based on inverse-variance weights so that more precise rate estimates contribute more strongly to the pooled reference value.
+
+
+
+
+
+Next, we use`weighted.mean(x, wt)` function from **base R** to calculate the weighted mean. Weighted mean is based on inverse-variance weights so that more precise rate estimates contribute more strongly to the pooled reference value.
 
 $$
 \hat{r}_{\text{weighted}}
@@ -228,21 +216,17 @@ The weighted mean = 0.0150 is a single pooled reference value used as the centre
 fit.mean
 ```
 
-
 ::: callout-tip
+-   `df$rate` are the observed death rates for each sub-district
 
-+ `df$rate` are the observed death rates for each sub-district
+-   `df$rate.se` are their standard errors
 
-+ `df$rate.se` are their standard errors
+-   The weights `1 / df$rate.se^2` are inverse variances
 
-+ The weights `1 / df$rate.se^2` are inverse variances
-
-+ Observations with smaller uncertainty (smaller SE) get more weight 
-
+-   Observations with smaller uncertainty (smaller SE) get more weight
 :::
 
 ### Calculate lower and upper limits for 95% and 99.9% CI
-
 
 We use `seq(from, to, by, ...)` to generate regular sequences of numbers from 1 to 6231, as denominator.
 
@@ -250,11 +234,11 @@ We use `seq(from, to, by, ...)` to generate regular sequences of numbers from 1 
 max(df$Positive)
 ```
 
-
 ```{r}
 
 summary(seq(1, max(df$Positive), 1))
 ```
+
 The code chunk below is used to compute the lower and upper limits for 95% and 95% confidence interval and save the results into a table.
 
 ```{r}
@@ -266,7 +250,6 @@ number.ul999 <- fit.mean + 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq))
 dfCI <- data.frame(number.ll95, number.ul95, number.ll999, 
                    number.ul999, number.seq, fit.mean)
 ```
-
 
 ```{r}
 kable(head(dfCI), "html") %>%
@@ -280,11 +263,8 @@ kable(head(dfCI), "html") %>%
 
 In the code chunk below, ggplot2 functions are used to plot a static funnel plot.
 
-
-:::panel-tabset
-
+::: panel-tabset
 #### Plot
-
 
 ```{r}
 #| echo: false
@@ -339,7 +319,6 @@ p <- ggplot(df, aes(x = Positive, y = rate)) +
         legend.key.height = unit(0.3, "cm"))   # reduce legend spacing
 p
 ```
-
 
 #### Code
 
@@ -400,27 +379,28 @@ p
 :::
 
 ::: callout-tip
-
 #### Line-type
 
-- 0 ("blank"): No line.
-- 1 ("solid"):the default
-- 2 ("dashed"): A line made of short, equal-length segments with gaps.
-- 3 ("dotted"): A line composed of dots.
-- 4 ("dotdash"): A pattern of a dot followed by a dash.
-- 5 ("longdash"): A line made of longer dashes.
-- 6 ("twodash"): A pattern of two short dashes followed by a gap. 
+-   0 ("blank"): No line.
 
-- **Legends only appear when we map aesthetics (colour, shape, linetype, etc.) to variables within aes().**
+-   1 ("solid"):the default
 
+-   2 ("dashed"): A line made of short, equal-length segments with gaps.
+
+-   3 ("dotted"): A line composed of dots.
+
+-   4 ("dotdash"): A pattern of a dot followed by a dash.
+
+-   5 ("longdash"): A line made of longer dashes.
+
+-   6 ("twodash"): A pattern of two short dashes followed by a gap.
+
+-   **Legends only appear when we map aesthetics (colour, shape, linetype, etc.) to variables within aes().**
 :::
 
-
-
-###  Interactive Funnel Plot: plotly + ggplot2
+### Interactive Funnel Plot: plotly + ggplot2
 
 The interactive funnel plot could be created by using `ggplotly()` of **plotly** package.
-
 
 ```{r}
 fp_ggplotly <- ggplotly(p,tooltip = "text")
@@ -428,15 +408,25 @@ fp_ggplotly <- ggplotly(p,tooltip = "text")
 fp_ggplotly
 ```
 
-
 ::: callout-caution
+-   `text` is an aesthetic that belongs to **plotly**, so it is ignored when the plot is first rendered using **static ggplot2**.
 
-- `text` is an aesthetic that belongs to **plotly**, so it is ignored when the plot is first rendered using **static ggplot2**.
-
-- **ggrepel** does not work reliably with **plotly**.
+-   **ggrepel** does not work reliably with **plotly**.
 :::
+
+
+::: callout-note
+-  Early in an outbreak or in a small populations, fatality rates look **wide**. As more case accumulated, fatality rats settled down and **converaged** toward a stable average.
+
+- The CI bands were **wide** at low cumulative case counts due to high sampling uncertainty and progressively **narrowed** as case number increase. This implies more stable fatality rate estimates.
+
+:::
+
+
+
+
 
 
 ## Reference
 
-Kam, Tin Seong (2026). [8  Funnel Plots for Fair Comparisons](https://r4va.netlify.app/chap08) R for Visual Analytics.
+Kam, Tin Seong (2026). [8 Funnel Plots for Fair Comparisons](https://r4va.netlify.app/chap08) R for Visual Analytics.
