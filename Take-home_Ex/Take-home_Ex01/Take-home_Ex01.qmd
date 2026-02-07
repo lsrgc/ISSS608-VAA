@@ -1,0 +1,389 @@
+---
+title: "01: What Helps Students Achieve High Academic Performance? A Visual Survey Analysis"
+author: "Yiqiong PAN"
+date: "02 Feb, 2026"
+date-modified: last-modified
+
+execute:
+  echo: true    # display the code
+  eval: true    # run the code
+  message: false
+  warning: false
+  freeze: true  # do not re-render if nothing edited
+
+format: 
+  html:
+    toc: true
+    code-link: true
+
+number-sections: true
+number-depth: 6
+
+editor: visual
+---
+
+## Introduction
+
+Survey analysis is the process of transforming raw survey data into decision-oriented insights by identifying patterns, trends, and relationships in responses using descriptive and inferential methods.
+
+
+
+This study uses a survey dataset collected from students and alumni of Vietnam National University, Hanoi (VNU), originally published in the data article [*Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi*](https://doi.org/10.1016/j.dib.2025.111438).  A brief background: [VNU ](https://en.wikipedia.org/wiki/Vietnam_National_University,_Hanoi) is one of the two national universities in Vietnam and considered as one of the most historic and prestigious institutions in the country. The questionnaire covers demographic characteristics, students’ behaviours and motivations, and external institutional factors that may influence learning outcomes. The survey was distributed to students in Google Form format between March and June 2023 and received **2,170 valid responses**. Personal identifying information was removed to protect privacy.
+
+For the purpose of visual analysis, the variables used in the dataset were regrouped and recoded into factors to improve interpretability. Although the questionnaire inevitably has limitations, it provides a useful starting point for exploring factors associated with university learning outcomes.
+
+Through this study, we aim to apply visually driven survey analysis methods to identify and communicate key patterns related to student academic performance.
+
+
+**Assumption:**
+
+All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
+
+## Workflow Diagram 
+
+The overall data preparation and workflow is summarised in the following diagram.
+
+**PLACE HOLDER**
+
+```{r}
+library(DiagrammeR)
+#| echo: false
+# Render as HTML widget
+
+```
+
+## Getting Started
+
+### Installing and Loading the Required Libraries
+
+There are **???** packages that will be used in this exercise.
+
+| Package | Description |
+|------------------------------------|------------------------------------|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
+| [ggdist](https://mjskay.github.io/ggdist/) | An R package that extends ggplot2 with flexible geoms and stats for visualising distributions and uncertainty. |
+| [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
+| [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
+| [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
+| [crosstalk](https://rstudio.github.io/crosstalk/index.html) | An extension of the **htmlwidgets** package that provides classes, functions, and conventions to enable cross-widget interactions, such as linked brushing and filtering, across multiple interactive widgets. |
+| [colorspace](https://colorspace.r-forge.r-project.org/) | Provides tools for selecting, manipulating and applying colours and colour palettes in data visualisations. |
+| [ggridges](https://cran.r-project.org/web/packages/ggridges/refman/ggridges.html) | A gglot extension that creates ridgeline plots to visualise the changes in distributions over time or space. |
+
+The code below installs and loads the required packages into R environment.
+
+```{r}
+pacman::p_load(tidyverse, ggdist, gganimate, plotly, DT,
+               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot)
+```
+
+### Importing the Data
+
+The *dataset* and *codebook* (published 23 December 2024, version 1) in English were downloaded from the [Mendeley Data](https://data.mendeley.com/datasets/23ppcdbmhc/1) open research repository. 
+
+“We use [`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html) from the **readxl** package to import the dataset *Database paper.xlsx* into the R environment as a tibble named `df`. We then preview the dataset using `kable()`.”
+
+The questionnaire includes 12 items on **intrinsic and behavioural factors**, 9 items on **external learning environment factors**, and 1 measuring students’ **GPA** as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.
+
+
+```{r}
+df <- read_excel("data/Database paper.xlsx")
+kable(head(df), "html")
+```
+
+## Data Wrangling
+
+### Standardise variable names
+
+The variable names are slightly inconsistent due to the English translation of the *codebook*.
+
+Therefore, the names are standardised to **lowercase** with **underscores** following the [**Tidyverse Style Guide**](https://style.tidyverse.org/syntax.html) to improve readability and reproducibility.
+
+The code below uses the `rename()` function to standardise variable names.
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
+df <- df %>% 
+  rename(
+  gpa = GPA,
+  year = Year,
+  gender = Gender,
+  policy_student = Policy_Stu,
+  minority_student = Minority_Stu,
+  poor_household = Poor_Stu,
+  
+  father_education = Father_Edu,
+  mother_education = Mother_Edu,
+  father_occupation = Father_Occupation,
+  mother_occupation = Mother_Occupation,
+  
+  time_friends = Time_Friends,
+  time_social_media = Time_SocicalMedia,
+  time_studying = Time_Studying,
+  
+  adapt_uni = Adapt_Learning_Uni,
+  study_methods = Study_Methods,
+  uni_support = SupportOf_Uni,
+  lecturer_support = SupportOf_Lec,
+  facilities = Facilitie_Uni,
+  lecturer_quality = Quality_Lecturer,
+  curriculum = TrainingCurriculum,
+  class_competition = Competitive_Class,
+  peer_influence = InfuenceF_Friends
+)
+```
+
+
+A summary table is then constructed using the DT package to demonstrate the updated variable names alongside their descriptions and predefined values.
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
+simple_table <- data.frame(
+  old = c("GPA","Year", "Gender", "Policy_Stu", "Minority_Stu", "Poor_Stu",
+          "Father_Edu", "Mother_Edu", "Father_Occupation", "Mother_Occupation",
+          "Time_Friends", "Time_SocicalMedia", "Time_Studying",
+          "Adapt_Learning_Uni", "Study_Methods", "SupportOf_Uni", "SupportOf_Lec",
+          "Facilitie_Uni", "Quality_Lecturer", "TrainingCurriculum",
+          "Competitive_Class", "InfuenceF_Friends"),
+  new = c("gpa", "year", "gender", "policy_student", "minority_student", "poor_household",
+          "father_education", "mother_education", "father_occupation", "mother_occupation",
+          "time_friends", "time_social_media", "time_studying", 
+          "adapt_uni", "study_methods", "uni_support", "lecturer_support",
+          "facilities", "lecturer_quality", "curriculum", "class_competition",
+          "peer_influence"),
+  description = c(
+        "Cumulative Grade Point Average (Poor (<2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (>3.6)",
+    "Academic year (1=First-year, 2=Second-year, 3=Third-year, 4=Fourth-year, 5=Graduated)",
+    "Gender identity (1=Male, 2=Female)",
+    "Student on government policy support (1=Yes, 2=No)",
+    "Minority student status (1=Yes, 2=No)",
+    "Poor household status (1=Yes, 2=No)",
+    "Father's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)",
+    "Mother's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)",
+    "Father's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)",
+    "Mother's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)",
+    "Time spent with friends daily (1=<1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=>4h)",
+    "Time on social media daily (1=<1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=>4h)",
+    "Study time daily (1=<2h, 2=2-4h, 3=4-6h, 4=6-8h, 5=>8h)",
+    "Adaptation to university learning environment (1=Not at all to 5=Very)",
+    "Study methods effectiveness (1=Not at all to 5=Very)",
+    "University support perception (1=Not at all to 5=Very)",
+    "Lecturer support perception (1=Not at all to 5=Very)",
+    "University facilities responsiveness (1=Not at all to 5=Very)",
+    "Lecturer quality (1=Not at all to 5=Very)",
+    "Curriculum suitability (1=Not at all to 5=Very)",
+    "Class competition effect (1=Not at all to 5=Very)",
+    "Peer influence on academic outcomes (1=Not at all to 5=Very)"
+  ),
+  stringsAsFactors = FALSE
+)
+
+# Display 
+datatable(
+  simple_table,
+  rownames = FALSE,
+  colnames = c("Original Name", "New Name", "Description"),
+  options = list(
+    pageLength = 25,
+    dom = "t",
+    columnDefs = list(
+      list(className = "dt-center", targets = c(0, 1)),  # Center: Original and New
+      list(className = "dt-left", targets = 2)  # Left align: Description
+    )
+  ),
+  caption = htmltools::tags$caption(
+    style = "caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;",
+    "Student Variables: Renaming and Description"
+  )
+) 
+```
+
+The names() or colnames() function from Base R allows for a quick review of the column names to ensure they have been updated correctly before proceeding to the next data preparation step.
+```{r}
+names(df)
+```
+
+
+### Recode categorical variables
+
+**ADD likert value**
+
+The summary statistics show that the variables take values ranging from 1 to 6; however, these numeric codes do not provide meaningful interpretation without recoding them into labelled categories.
+
+```{r}
+
+summary(df)
+```
+
+
+
+
+The table shows how the variables will be updated based on their data types. **Ordinal** variables with a natural order, such as study year or time spent studying, are converted using `factor()` with the `order` argument enabled. **Nominal** variables without an inherent order, such as gender or parents’ occupation, are converted into categorical factors. Likert scale perception variables, such as lecturer quality and university support, are retained as numeric values to ensure correct calculations.
+
+For the target variable, the **numeric GPA** is required to compute averages and uncertainty, while a **categorical** GPA is created to support proportion-based visualisations such as the funnel plot.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
+simple_table <- data.frame(
+  new = c("gpa","year", "gender", "policy_student", "minority_student", "poor_household",
+          "father_education", "mother_education", "father_occupation", "mother_occupation",
+          "time_friends", "time_social_media", "time_studying", 
+          "adapt_uni", "study_methods", "uni_support", "lecturer_support",
+          "facilities", "lecturer_quality", "curriculum", "class_competition",
+          "peer_influence"),
+  type = c("Ordinal(Likert Scale)", "Ordinal", "Nominal", "Nominal", "Nominal", "Nominal",
+           "Nominal", "Nominal", "Nominal", "Nominal",
+           "Ordinal", "Ordinal", "Ordinal", 
+           "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)",
+           "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)",
+           "Ordinal(Likert Scale)"),
+  action = c("factor(..., ordered = TRUE)","factor(..., ordered = TRUE)", "factor()", "factor()", "factor()", "factor()",
+             "factor()", "factor())", "factor()", "factor()",
+             "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", 
+             "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)",
+             "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)",
+             "factor(..., ordered = TRUE)"),
+  stringsAsFactors = FALSE
+)
+
+# Display 
+datatable(
+  simple_table,
+  rownames = FALSE,
+  colnames = c("New Name", "Type", "Action"),
+  options = list(
+    pageLength = 25,
+    dom = "t",
+    columnDefs = list(
+      list(className = "dt-center", targets = c(0, 1, 2))
+    )
+  ),
+  caption = htmltools::tags$caption(
+    style = "caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;",
+    "Student Variables: Data Types and Actions"
+  )
+) %>%
+  formatStyle(
+    "type",
+    backgroundColor = DT::styleEqual(
+      c("Nominal", "Ordinal","Ordinal(Likert Scale)"),
+      c("#cce5ff", "#ffe5cc", "#d4edda")
+    )
+  )
+```
+
+:::panel-tabset
+
+#### Group A
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
+df_factored <- df%>%
+    mutate(
+      gpa = factor(gpa,levels = 1:5,
+                labels = c('Poor', 'Average', 'Fair', 'Good', 'Excellent'),ordered = TRUE),
+      year = factor(year,levels = 1:5, labels = c('First-year','Second-year','Third-year', 'Fourth-year','Graduated'),ordered = TRUE),
+      gender = factor(gender, levels = 1:2, labels = c('Male', 'Female')),
+      policy_student = factor(policy_student, levels = 1:2, labels = c('Yes', 'No')),
+      minority_student = factor(minority_student, levels = 1:2, labels = c('Yes', 'No')),
+      poor_household = factor(poor_household, levels = 1:2, labels = c('Yes', 'No')),
+      father_education = factor(father_education,levels = 1:6,
+                              labels = c('Primary', 'Secondary', 'High school', 
+                                       'College', 'University', 'Other')),
+      mother_education = factor(mother_education,levels = 1:6,
+                              labels = c('Primary', 'Secondary', 'High school', 
+                                       'College', 'University', 'Other')),
+      father_occupation = factor(father_occupation, levels = 1:5, labels = c('Government employee', 'Self-employment', 'Freelance', 'Other', 'Not public')),
+      mother_occupation = factor(mother_occupation, levels = 1:5, labels = c('Government employee', 'Self-employment', 'Freelance', 'Other', 'Not public')),
+      time_friends = factor(time_friends,levels = 1:5,
+                      labels = c('<1 hour', '1-2 hours', '2-3 hours', '3-4 hours', '>4 hours'),
+                         ordered = TRUE),
+      time_social_media = factor(time_social_media, levels = 1:5,labels = c('<1 hour', '1-2 hours', '2-3 hours', '3-4 hours', '>4 hours'),ordered = TRUE),
+      time_studying = factor(time_studying,levels = 1:5,labels = c('<2 hours', '2-4 hours', '4-6 hours', '6-8 hours', '>8 hours'),ordered = TRUE)
+    )
+```
+
+
+#### Group B
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+convert_b_vars <- function(df) {
+  likert_labels <- c('Not at all', 'Little', 'Moderate', 'Quite', 'Very')
+  
+  b_vars <- c("adapt_uni","study_methods","uni_support","lecturer_support", "facilities",  
+    "lecturer_quality", "curriculum", "class_competition","peer_influence")
+
+  for(var in b_vars) {
+      df[[var]] <- factor(df[[var]],
+                          levels = 1:5,
+                          labels = likert_labels,
+                          ordered = TRUE)
+      }
+  
+  return(df)
+}
+
+df_factored <- convert_b_vars(df_factored)
+```
+
+:::
+
+end of panel-tabset
+
+brief summary what we did so far.
+
+preview of the data 
+
+
+```{r}
+summary(df_factored)
+```
+
+
+```{r}
+var_summary <- tibble(
+  variable = names(df_factored),
+  class = sapply(df_factored, class)
+)
+datatable(var_summary)
+```
+
+
+### Pivot for likert?
+
+
+
+## Workflow
+
+```{mermaid}
+flowchart LR
+A --> B
+```
+
+
+
+A cleaned copy of the dataset is created and named `vnu`.
+
+## EDA
+
+## Conclusion
+
+## Reference
+
+Kam, Tin Seong (2026). [11 Visualising Uncertainty](https://r4va.netlify.app/chap11) R for Visual Analytics.
+
+Tran, V. D., Nguyen, K. S. T., & Le, D. N. (2025). Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi. *Data in Brief, 59, 111438*. https://doi.org/10.1016/j.dib.2025.111438
+
+Ngoc Le, Diep (2024), “Dataset about VNU students”, Mendeley Data, V1, doi: 10.17632/23ppcdbmhc.1
