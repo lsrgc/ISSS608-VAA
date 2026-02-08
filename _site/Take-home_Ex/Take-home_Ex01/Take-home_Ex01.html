@@ -764,7 +764,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Therefore, the names are standardised to <strong>lowercase</strong> with <strong>underscores</strong> following the <a href="https://style.tidyverse.org/syntax.html"><strong>Tidyverse Style Guide</strong></a> to improve readability and reproducibility.</p>
 <p>The code below uses the <code>rename()</code> function to standardise variable names.</p>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">rename</span><span class="op">(</span></span>
 <span>  gpa <span class="op">=</span> <span class="va">GPA</span>,</span>
 <span>  year <span class="op">=</span> <span class="va">Year</span>,</span>
@@ -849,7 +849,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>className <span class="op">=</span> <span class="st">"dt-left"</span>, targets <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># Left align: Description</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  caption <span class="op">=</span> <span class="fu">htmltools</span><span class="fu">::</span><span class="va"><a href="https://rstudio.github.io/htmltools/reference/builder.html">tags</a></span><span class="op">$</span><span class="fu">caption</span><span class="op">(</span></span>
+<span>  caption <span class="op">=</span> <span class="fu">htmltools</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/htmltools/man/builder.html">tags</a></span><span class="op">$</span><span class="fu">caption</span><span class="op">(</span></span>
 <span>    style <span class="op">=</span> <span class="st">"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;"</span>,</span>
 <span>    <span class="st">"Student Variables: Renaming and Description"</span></span>
 <span>  <span class="op">)</span></span>
@@ -961,11 +961,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>className <span class="op">=</span> <span class="st">"dt-center"</span>, targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  caption <span class="op">=</span> <span class="fu">htmltools</span><span class="fu">::</span><span class="va"><a href="https://rstudio.github.io/htmltools/reference/builder.html">tags</a></span><span class="op">$</span><span class="fu">caption</span><span class="op">(</span></span>
+<span>  caption <span class="op">=</span> <span class="fu">htmltools</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/htmltools/man/builder.html">tags</a></span><span class="op">$</span><span class="fu">caption</span><span class="op">(</span></span>
 <span>    style <span class="op">=</span> <span class="st">"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;"</span>,</span>
 <span>    <span class="st">"Student Variables: Data Types and Actions"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">formatStyle</span><span class="op">(</span></span>
 <span>    <span class="st">"type"</span>,</span>
 <span>    backgroundColor <span class="op">=</span> <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/styleInterval.html">styleEqual</a></span><span class="op">(</span></span>
@@ -986,7 +986,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df_factored</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df_factored</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu">mutate</span><span class="op">(</span></span>
 <span>      gpa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">gpa</span>,levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>                labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Poor'</span>, <span class="st">'Average'</span>, <span class="st">'Fair'</span>, <span class="st">'Good'</span>, <span class="st">'Excellent'</span><span class="op">)</span>,ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
