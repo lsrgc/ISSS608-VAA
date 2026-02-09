@@ -248,7 +248,7 @@ Key arguments of `parallelPlot()`:
 
 
 
-:::panel-tabset
+
 
 ### The basic plot
 
@@ -275,7 +275,7 @@ We enable `rotateTitle` argument to avoid overlapping axis labels.
 
 
 ```{r, fig.width=16, fig.height=14}
-parallelPlot(wh, rotateTitle = TRUE,width = 320, height = 250)
+parallelPlot(wh, rotateTitle = TRUE)
 ```
 
 One useful interactive feature of `parallelPlot` is that when we click on a variable of interest, for example the Happiness score, the default monotonous blue colour changes to a blue colour scale with varying intensity.
@@ -286,7 +286,7 @@ Since the data is on a **continuous scale**, we can change the default blue colo
 
 
 ```{r, fig.width=16, fig.height=14}
-parallelPlot(wh, rotateTitle = TRUE, continuousCS = "YlOrRd",width = 320, height = 250)
+parallelPlot(wh, rotateTitle = TRUE, continuousCS = "YlOrRd")
 ```
 
 If we click on a continuous variable, we observe that the colour scheme changes from the default Viridis to a yellow–orange–red gradient, with the colours scaled by intensity.
@@ -300,21 +300,21 @@ The `histoVisibility` argument can be used to display histograms along the axis 
 ```{r, fig.width=16, fig.height=14}
 histoVisiblity <- rep(TRUE, ncol(wh))
 parallelPlot(wh, rotateTitle = TRUE,
-             histoVisibility = histoVisiblity,width = 320, height = 250)
+             histoVisibility = histoVisiblity)
 ```
 
 ### Enabling reference column dimension and flipped axes
 
-Here we enable the referene dimension as Happiness score adn change the direction of the axis.
+Here we enable the reference dimension as Happiness score adn change the direction of the axis.
 
 
-```{r, fig.width=16, fig.height=14}
+```{r, fig.width=14, fig.height=12}
 
 parallelPlot(
   wh,
   rotateTitle = TRUE,
   refColumnDim = "Happiness score",
-  invertedAxes = c("Freedom", "Corruption"),width = 320, height = 250)
+  invertedAxes = c("Freedom", "Corruption"))
 
 ```
 
@@ -322,18 +322,16 @@ parallelPlot(
 
 Here we filter the observations with happiness score between 4 and 7.
 
-```{r, fig.width=16, fig.height=14}
+```{r, fig.width=14, fig.height=12}
 wh_filtered <- wh[wh$`Happiness score` >= 4 & wh$`Happiness score` <= 7, ]
 
 parallelPlot(
   wh_filtered,
-  rotateTitle = TRUE,
-  width = 320, height = 250
+  rotateTitle = TRUE
 )
 
 ```
 
-:::
 
 
 
