@@ -77,14 +77,14 @@ We want to set **country name** as the row index instead of using row numbers.
 wh_1 <- wh %>%
   remove_rownames() %>%
   column_to_rownames(var = "Country")
-wh_1 # not we wanta
+knitr::kable(head(wh_1), "html") # not we want
 ```
 
 ```{r}
 # or convert to data frame first to use row.names
 wh_2 <- as.data.frame(wh)
 row.names(wh_2) <- wh_2$Country
-wh_2
+knitr::kable(head(wh_2),"html")
 ```
 
 
@@ -109,7 +109,7 @@ Several R packages can be used to draw static heatmaps, ranging from basic to hi
 
 First we plot a heatmap using `heatmap()` of Base Stats.
 
-```{r,fig.height=12, fig.weight = 12}
+```{r,fig.height=6, fig.weight = 8}
 wh_heatmap <- heatmap(wh_matrix,
                       Rowv=NA, Colv=NA, margins = c(14,10))
 ```
@@ -143,7 +143,7 @@ wh_heatmap <- heatmap(wh_matrix, margins = c(14, 10))
 The code below normalises the matrix column-wise.
 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 wh_heatmap <- heatmap(wh_matrix,
                       scale = "column",
                       cexRow = 0.6,
@@ -171,13 +171,13 @@ Next we use **heatmaply** to design an interactive clustered heatmap.
 
 ### Working with heatmaply
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(wh_matrix)
 ```
 
 The code create an interactive heatmap without selecting columns Country, Region, Whisker-low, Whisker-high.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(wh_matrix[, -c(1, 2, 4, 5)])
 ```
 
@@ -210,7 +210,7 @@ When variables are assumed to follow a normal distribution, scaling by subtracti
 
 - Choose **row** scaling when the goal is to compare variable profiles within each observation.(less common) 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(wh_matrix[, -c(1,2,4,5)], scale = "column")
 ```
 
@@ -219,7 +219,7 @@ heatmaply(wh_matrix[, -c(1,2,4,5)], scale = "column")
 
 When variables come from different or non-normal distributions, **normalisation** can be used to rescale values to the 0–1 range by subtracting the minimum and dividing by the range. This preserves the shape of each variable’s distribution while making variables comparable on the same scale. Unlike scaling, normalisation is applied directly to the input dataset (for example, wh_matrix), as shown in the code below.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]))
 ```
 
@@ -230,7 +230,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]))
 
 This approach is similar to ranking variables, but instead of keeping raw ranks, they are divided by the maximum rank using the empirical cumulative distribution function (ECDF). Each value is converted to its empirical percentile, representing the proportion of observations with values at or below it. The **percentise** method provides an intuitive interpretation and, like normalisation, is applied directly to the input dataset, as shown in the code below.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(percentize(wh_matrix[, -c(1, 2, 4, 5)]))
 ```
 
@@ -256,7 +256,7 @@ In practice, the choice of distance and clustering methods can be calibrated eit
 
 The following heatmap is plotted by using hierachical clustering algorithm with “Euclidean distance” and “ward.D” method.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1,2,4,5)]),
           dist_method = "euclidean",
           hclust_method = "ward.D")
@@ -271,7 +271,7 @@ First, `dend_expend()` is applied to identify the recommended clustering method.
 
 Euclidean distance is commonly used as the initial distance metric before further calibration or refinement of the clustering model.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 wh_d <- dist(normalize(wh_matrix[, -c(1,2,4,5)]), method = "euclidean")
 dend_expend(wh_d)[[3]]
 ```
@@ -287,7 +287,7 @@ plot(num_k)
 
 The figure above suggests that **k = 3** is an appropriate choice. Based on these statistical results, we can now prepare the code chunk shown below.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           dist_method = "euclidean",
           hclust_method = "average",
@@ -310,7 +310,7 @@ One commonly used seriation method is **Optimal Leaf Ordering (OLO)**. OLO begin
 
 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           seriate = "OLO")
 ```
@@ -320,7 +320,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
 
 The default seriation option is **OLO** (Optimal Leaf Ordering), which optimises the leaf ordering criterion exactly but has high computational cost ($O(n^4)$). An alternative is **GW** (Gruvaeus and Wainer), which pursues the same objective using a faster heuristic approach.
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           seriate = "GW")
 ```
@@ -330,7 +330,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
 The **“mean”** option produces the same ordering typically used by default heatmap functions in other packages, such as `gplots::heatmap.2`.
 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]), seriate = "mean")
 ```
 
@@ -339,7 +339,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]), seriate = "mean")
 The **“none”** option returns the dendrograms without applying any data-driven rotation, preserving the original ordering implied by the clustering.
 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1,2,4,5)]), seriate = "none")
 ```
 
@@ -350,7 +350,7 @@ heatmaply(normalize(wh_matrix[, -c(1,2,4,5)]), seriate = "none")
 By default, **heatmaply** uses the **viridis** colour palette. However, users can apply alternative colour palettes to improve aesthetics and visual clarity. In the example below, the **Blues** palette from **RColorBrewer** is used.
 
 
-```{r}
+```{r,fig.height=6, fig.weight = 8}
 heatmaply(normalize(wh_matrix[, -c(1,2,4,5)]),
           seriate = "none", colors = Blues
             )
