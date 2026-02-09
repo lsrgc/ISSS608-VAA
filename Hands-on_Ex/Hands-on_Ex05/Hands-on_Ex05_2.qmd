@@ -39,7 +39,7 @@ In this hands on exercise, we learn to visualise correlation matrices in R using
 There are three packages that will be used in this exercise.
 
 | Package | Description |
-|----|----|
+|------------------------------------|------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [corrplot](https://cran.r-project.org/web/packages/corrplot/refman/corrplot.html) | A simple yet powerful tool for visualising correlation matrices, with automatic variable reordering and built in support for statistical significance |
 | [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/index.html) | A gglot extension that creates graphics with statistical details. |
@@ -48,7 +48,7 @@ There are three packages that will be used in this exercise.
 The code below installs and loads the required packages into R environment.
 
 ```{r}
-pacman::p_load(corrplot, ggstatsplot, tidyverse, knitr)
+pacman::p_load(corrplot, ggstatsplot, tidyverse, plotly,knitr)
 ```
 
 ## Data Preparation
