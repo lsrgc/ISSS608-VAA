@@ -26,20 +26,17 @@ editor: visual
 
 Survey analysis is the process of transforming raw survey data into decision-oriented insights by identifying patterns, trends, and relationships in responses using descriptive and inferential methods.
 
-
-
-This study uses a survey dataset collected from students and alumni of Vietnam National University, Hanoi (VNU), originally published in the data article [*Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi*](https://doi.org/10.1016/j.dib.2025.111438).  A brief background: [VNU ](https://en.wikipedia.org/wiki/Vietnam_National_University,_Hanoi) is one of the two national universities in Vietnam and considered as one of the most historic and prestigious institutions in the country. The questionnaire covers demographic characteristics, students’ behaviours and motivations, and external institutional factors that may influence learning outcomes. The survey was distributed to students in Google Form format between March and June 2023 and received **2,170 valid responses**. Personal identifying information was removed to protect privacy.
+This study uses a survey dataset collected from students and alumni of Vietnam National University, Hanoi (VNU), originally published in the data article [*Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi*](https://doi.org/10.1016/j.dib.2025.111438). A brief background: [VNU](https://en.wikipedia.org/wiki/Vietnam_National_University,_Hanoi) is one of the two national universities in Vietnam and considered as one of the most historic and prestigious institutions in the country. The questionnaire covers demographic characteristics, students’ behaviours and motivations, and external institutional factors that may influence learning outcomes. The survey was distributed to students in Google Form format between March and June 2023 and received **2,170 valid responses**. Personal identifying information was removed to protect privacy.
 
 For the purpose of visual analysis, the variables used in the dataset were regrouped and recoded into factors to improve interpretability. Although the questionnaire inevitably has limitations, it provides a useful starting point for exploring factors associated with university learning outcomes.
 
 Through this study, we aim to apply visually driven survey analysis methods to identify and communicate key patterns related to student academic performance.
 
-
 **Assumption:**
 
 All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
 
-## Workflow Diagram 
+## Workflow Diagram
 
 The overall data preparation and workflow is summarised in the following diagram.
 
@@ -73,17 +70,16 @@ The code below installs and loads the required packages into R environment.
 
 ```{r}
 pacman::p_load(tidyverse, ggdist, gganimate, plotly, DT,
-               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot)
+               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot, patchwork, ggpubr)
 ```
 
 ### Importing the Data
 
-The *dataset* and *codebook* (published 23 December 2024, version 1) in English were downloaded from the [Mendeley Data](https://data.mendeley.com/datasets/23ppcdbmhc/1) open research repository. 
+The *dataset* and *codebook* (published 23 December 2024, version 1) in English were downloaded from the [Mendeley Data](https://data.mendeley.com/datasets/23ppcdbmhc/1) open research repository.
 
 “We use [`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html) from the **readxl** package to import the dataset *Database paper.xlsx* into the R environment as a tibble named `df`. We then preview the dataset using `kable()`.”
 
 The questionnaire includes 12 items on **intrinsic and behavioural factors**, 9 items on **external learning environment factors**, and 1 measuring students’ **GPA** as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.
-
 
 ```{r}
 df <- read_excel("data/Database paper.xlsx")
@@ -133,7 +129,6 @@ df <- df %>%
   peer_influence = InfuenceF_Friends
 )
 ```
-
 
 A summary table is then constructed using the DT package to demonstrate the updated variable names alongside their descriptions and predefined values.
 
@@ -202,10 +197,10 @@ datatable(
 ```
 
 The names() or colnames() function from Base R allows for a quick review of the column names to ensure they have been updated correctly before proceeding to the next data preparation step.
+
 ```{r}
 names(df)
 ```
-
 
 ### Recode categorical variables
 
@@ -218,13 +213,9 @@ The summary statistics show that the variables take values ranging from 1 to 6; 
 summary(df)
 ```
 
-
-
-
 The table shows how the variables will be updated based on their data types. **Ordinal** variables with a natural order, such as study year or time spent studying, are converted using `factor()` with the `order` argument enabled. **Nominal** variables without an inherent order, such as gender or parents’ occupation, are converted into categorical factors. Likert scale perception variables, such as lecturer quality and university support, are retained as numeric values to ensure correct calculations.
 
 For the target variable, the **numeric GPA** is required to compute averages and uncertainty, while a **categorical** GPA is created to support proportion-based visualisations such as the funnel plot.
-
 
 ```{r}
 #| code-fold: true
@@ -278,10 +269,8 @@ datatable(
   )
 ```
 
-:::panel-tabset
-
+::: panel-tabset
 #### Group A
-
 
 ```{r}
 #| code-fold: true
@@ -312,9 +301,7 @@ df_factored <- df%>%
     )
 ```
 
-
 #### Group B
-
 
 ```{r}
 #| code-fold: true
@@ -337,20 +324,17 @@ convert_b_vars <- function(df) {
 
 df_factored <- convert_b_vars(df_factored)
 ```
-
 :::
 
 end of panel-tabset
 
 brief summary what we did so far.
 
-preview of the data 
-
+preview of the data
 
 ```{r}
 summary(df_factored)
 ```
-
 
 ```{r}
 var_summary <- tibble(
@@ -360,10 +344,7 @@ var_summary <- tibble(
 datatable(var_summary)
 ```
 
-
 ### Pivot for likert?
-
-
 
 ## Workflow
 
@@ -372,9 +353,67 @@ flowchart LR
 A --> B
 ```
 
-
-
 A cleaned copy of the dataset is created and named `vnu`.
+
+```{r}
+#| eval: false
+write_csv(df_factored, "data/vnu.csv")
+```
+
+```{r}
+vnu <-df_factored
+```
+
+
+```{r}
+names(vnu)
+```
+```{r, fig.weight = 10, fig.height=6}
+count <- ggplot(vnu) +
+  geom_bar(aes(x = gpa), 
+           color = "black", 
+           fill = "lightblue") +
+  geom_text(aes(x = gpa, label = after_stat(count)),
+            stat = "count",
+            vjust = -0.8,
+            size = 3) +
+  scale_x_discrete(limits = levels(vnu$gpa)) +
+  labs(title = "Distribution of GPA Categories",
+       x = "GPA Category",
+       y = "Count") +
+  ylim(0, max(table(vnu$gpa)) * 1.1)
+
+
+count
+
+```
+
+
+
+```{r}
+intrinsic <- names(vnu[1:12])
+extrinsic <- names(vnu[14:22])
+```
+
+
+```{r, fig.width=20, fig.height=20}
+plot_bars <- function(col) {
+  ggplot(vnu, aes(x = .data[[col]])) +
+    geom_bar(color = "black", fill = "lightblue") +
+    ggtitle(paste("Distribution of", col)) +
+    xlab(col) 
+}
+
+plots1 <- lapply(intrinsic, plot_bars)
+ggarrange(plotlist = plots1, ncol = 3, nrow =4)
+```
+
+```{r, fig.width=20, fig.height=20}
+plots2 <- lapply(extrinsic, plot_bars)
+ggarrange(plotlist = plots2, ncol = 3, nrow =3)
+```
+
+
 
 ## EDA
 
