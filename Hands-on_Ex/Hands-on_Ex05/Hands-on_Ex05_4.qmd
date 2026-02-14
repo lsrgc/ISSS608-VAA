@@ -33,7 +33,7 @@ We will learn how to create static parallel coordinates plots using `ggparcoord(
 There are 3 packages that will be used in this exercise.
 
 | Package | Description |
-|------------------------------------|------------------------------------|
+|----|----|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [GGally](https://ggobi.github.io/ggally/index.html) | A ggplot2 extension for tidy and simplified multivariate visualisation |
 | [parallelPlot](https://cran.r-project.org/web/packages/parallelPlot/parallelPlot.pdf) | Creates interactive parallel coordinates plots. |
@@ -100,8 +100,7 @@ knitr::kable(head(wh, n=6),format = "html")
 -   `title` : plot title.
 :::
 
-:::panel-tabset
-
+:::: panel-tabset
 ### Plotting a simple parallel coordinates plot
 
 The code below creates a basic static parrallel coordinators plot based on columns 7 to 12.
@@ -118,7 +117,6 @@ The basic parallel coordinates plot did not provide a meaningful interpretation 
 wh$Region <- as.factor(wh$Region)
 ```
 
-
 ```{r, fig.width=12, fig.height=6}
 ggparcoord(data = wh, columns = c(7:12),
            groupColumn = "Region",  # Use the column name instead of index
@@ -127,6 +125,7 @@ ggparcoord(data = wh, columns = c(7:12),
            boxplot = TRUE,
            title = "Parallel Coordinates Plot of World Happiness Variables")
 ```
+
 ### Parallel coordinates with facet
 
 Since `ggparcoord()` extends **ggplot2**, we can combine it with **ggplot2** functions when creating parallel coordinates plots.
@@ -144,7 +143,7 @@ ggparcoord(data = wh,
   facet_wrap(~ Region)
 ```
 
-###  Rotating x-axis text label
+### Rotating x-axis text label
 
 we use theme() function from ggplot2 to retate the axis text labels by 30 degrees to make it easy to read.
 
@@ -160,19 +159,15 @@ ggparcoord(data = wh,
   theme(axis.text.x = element_text(angle = 30, vjust = 0.8, size = 5))
 ```
 
-
-:::callout-tips
-
+::: callout-tips
 #### Note
 
-- To rotate the x-axis text labels, use the `axis.text.x` argument in the `theme()` function, and specify `element_text(angle = 30)` to rotate the x-axis labels by 30 degrees. we can also contronl the y-axis using `axis.text.y`. 
+-   To rotate the x-axis text labels, use the `axis.text.x` argument in the `theme()` function, and specify `element_text(angle = 30)` to rotate the x-axis labels by 30 degrees. we can also contronl the y-axis using `axis.text.y`.
 
-- `hjust`(left 0, centre 0.5, right 1) and `vjust`(bottom 0, centre 0.5, top 1) control text alignment relative to its position, and they are especially useful after rotating axis labels. 
+-   `hjust`(left 0, centre 0.5, right 1) and `vjust`(bottom 0, centre 0.5, top 1) control text alignment relative to its position, and they are especially useful after rotating axis labels.
 
-- We can also control the axis text `size` using `axis.text.x` and `axis.text.y` in `theme()`.
-
+-   We can also control the axis text `size` using `axis.text.x` and `axis.text.y` in `theme()`.
 :::
-
 
 ### Adjusting the rotated x-axis text label
 
@@ -189,70 +184,59 @@ ggparcoord(data = wh,
   facet_wrap(~ Region)+
   theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 5))
 ```
+::::
 
-:::
-
-
-##  Plotting Interactive Parallel Coordinates Plot: parallelPlot Methods
+## Plotting Interactive Parallel Coordinates Plot: parallelPlot Methods
 
 [`parallelPlot`](https://cran.r-project.org/web/packages/parallelPlot/) is an R package designed specifically for creating parallel coordinates plots using the `htmlwidgets` framework and [d3.js](https://d3js.org/). In this section, we learn how to use the functions in `parallelPlot` to build interactive parallel coordinates plots.
 
-
-:::callout-tips
-
+::: callout-tips
 ### Key Arguments of parallelplot()
 
 Here is the refined version with **arguments and options wrapped in backticks**, using **colons**, and no references.
 
 Key arguments of `parallelPlot()`:
 
-- `data`: a data frame containing the variables to be visualised
+-   `data`: a data frame containing the variables to be visualised
 
-- `categorical`: a named list specifying which columns are categorical and their corresponding levels
+-   `categorical`: a named list specifying which columns are categorical and their corresponding levels
 
-- `refColumnDim`: the column name used to colour the lines, which can be continuous or categorical
+-   `refColumnDim`: the column name used to colour the lines, which can be continuous or categorical
 
-- `continuousCS`: the colour scale applied when `refColumnDim` is continuous
+-   `continuousCS`: the colour scale applied when `refColumnDim` is continuous
 
-- `categoricalCS`: the colour scale applied when `refColumnDim` is categorical
+-   `categoricalCS`: the colour scale applied when `refColumnDim` is categorical
 
-- `categoriesRep`: controls how categorical variables are displayed, such as `EquallySizedBoxes` or `EquallySpacedLines`
+-   `categoriesRep`: controls how categorical variables are displayed, such as `EquallySizedBoxes` or `EquallySpacedLines`
 
-- `arrangeMethod`: determines how lines are arranged within categories to minimise crossings, for example `fromLeft`, `fromRight`, `fromBoth`, or `fromNone`
+-   `arrangeMethod`: determines how lines are arranged within categories to minimise crossings, for example `fromLeft`, `fromRight`, `fromBoth`, or `fromNone`
 
-- `inputColumns`: specifies which columns are treated as input dimensions in the plot
+-   `inputColumns`: specifies which columns are treated as input dimensions in the plot
 
-- `histoVisibility`: controls whether histograms are displayed on each axis
+-   `histoVisibility`: controls whether histograms are displayed on each axis
 
-- `invertedAxes`: specifies which axes should be inverted or flipped
+-   `invertedAxes`: specifies which axes should be inverted or flipped
 
-- `cutoffs`: defines threshold values for variables to filter or highlight observations
+-   `cutoffs`: defines threshold values for variables to filter or highlight observations
 
-- `refRowIndex`: specifies the row index used as a reference baseline line
+-   `refRowIndex`: specifies the row index used as a reference baseline line
 
-- `rotateTitle`: controls whether axis titles are rotated
+-   `rotateTitle`: controls whether axis titles are rotated
 
-- `columnLabels`: allows custom axis labels, including HTML formatting
+-   `columnLabels`: allows custom axis labels, including HTML formatting
 
-- `sliderPosition`: controls which dimensions are initially visible when there are many axes
+-   `sliderPosition`: controls which dimensions are initially visible when there are many axes
 
-- `controlWidgets`: enables interactive control widgets, commonly used with Shiny
+-   `controlWidgets`: enables interactive control widgets, commonly used with Shiny
 
--`cssRules`: allows custom CSS styling of the parallel coordinates plot
+\-`cssRules`: allows custom CSS styling of the parallel coordinates plot
 
-- `width` and `height`: specify the size of the interactive widget in pixels
-
-
-
+-   `width` and `height`: specify the size of the interactive widget in pixels
 :::
-
-
-
-
 
 ### The basic plot
 
-The code below shows how to use `parallelPlot()` to create a simple interactive paprallel coordinates plot. 
+The code below shows how to use `parallelPlot()` to create a simple interactive paprallel coordinates plot.
 
 First we select the required columns.
 
@@ -268,11 +252,9 @@ After executing the code, we notice that some of the axis labels overlap with ea
 parallelPlot(wh, width = 320, height = 250)
 ```
 
-
 ### Rotate axis label
 
 We enable `rotateTitle` argument to avoid overlapping axis labels.
-
 
 ```{r, fig.width=16, fig.height=14}
 parallelPlot(wh, rotateTitle = TRUE)
@@ -284,18 +266,15 @@ One useful interactive feature of `parallelPlot` is that when we click on a vari
 
 Since the data is on a **continuous scale**, we can change the default blue colour by using the `continuousCS` argument to assign a specific colour scheme to the chart. If the data is **discrete (categorical)**, we can instead use the `categoricalCS` argument to apply an appropriate categorical colour scheme.
 
-
 ```{r, fig.width=16, fig.height=14}
 parallelPlot(wh, rotateTitle = TRUE, continuousCS = "YlOrRd")
 ```
 
 If we click on a continuous variable, we observe that the colour scheme changes from the default Viridis to a yellow–orange–red gradient, with the colours scaled by intensity.
 
-
 ### Parallel coordinates plot with histogram
 
-The `histoVisibility` argument can be used to display histograms along the axis of each variable.
-`parallelPlot()` expects histoVisibility to be a vector, not a single logical value. The first line creates a logical vector where every element is `TRUE`, and its length equals the number of columns in `wh`.
+The `histoVisibility` argument can be used to display histograms along the axis of each variable. `parallelPlot()` expects histoVisibility to be a vector, not a single logical value. The first line creates a logical vector where every element is `TRUE`, and its length equals the number of columns in `wh`.
 
 ```{r, fig.width=16, fig.height=14}
 histoVisiblity <- rep(TRUE, ncol(wh))
@@ -306,7 +285,6 @@ parallelPlot(wh, rotateTitle = TRUE,
 ### Enabling reference column dimension and flipped axes
 
 Here we enable the reference dimension as Happiness score adn change the direction of the axis.
-
 
 ```{r, fig.width=14, fig.height=12}
 
@@ -331,9 +309,6 @@ parallelPlot(
 )
 
 ```
-
-
-
 
 ## Reference
 

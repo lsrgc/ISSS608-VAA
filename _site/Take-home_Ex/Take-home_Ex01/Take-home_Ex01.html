@@ -103,13 +103,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><script src="../../site_libs/quarto-diagram/mermaid.min.js"></script><script src="../../site_libs/quarto-diagram/mermaid-init.js"></script><link href="../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
-<link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+}</script><link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="../../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 <script src="../../site_libs/datatables-binding-0.34.0/datatables.js"></script><script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="../../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="../../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
-<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><link rel="stylesheet" href="../../styles.css">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../../styles.css">
 </head>
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
@@ -458,18 +482,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data"><span class="header-section-number">3.2</span> Importing the Data</a></li>
   </ul>
 </li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">4</span> Data Wrangling</a></li>
   <li>
-<a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling"><span class="header-section-number">4</span> Data Wrangling</a>
+<a href="#visualisation" id="toc-visualisation" class="nav-link" data-scroll-target="#visualisation"><span class="header-section-number">5</span> Visualisation</a>
   <ul class="collapse">
-<li><a href="#standardise-variable-names" id="toc-standardise-variable-names" class="nav-link" data-scroll-target="#standardise-variable-names"><span class="header-section-number">4.1</span> Standardise variable names</a></li>
-  <li><a href="#recode-categorical-variables" id="toc-recode-categorical-variables" class="nav-link" data-scroll-target="#recode-categorical-variables"><span class="header-section-number">4.2</span> Recode categorical variables</a></li>
-  <li><a href="#pivot-for-likert" id="toc-pivot-for-likert" class="nav-link" data-scroll-target="#pivot-for-likert"><span class="header-section-number">4.3</span> Pivot for likert?</a></li>
+<li><a href="#univariate-analysis" id="toc-univariate-analysis" class="nav-link" data-scroll-target="#univariate-analysis"><span class="header-section-number">5.1</span> Univariate Analysis</a></li>
+  <li><a href="#multivariate-analysis" id="toc-multivariate-analysis" class="nav-link" data-scroll-target="#multivariate-analysis"><span class="header-section-number">5.2</span> Multivariate Analysis</a></li>
   </ul>
 </li>
-  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow"><span class="header-section-number">5</span> Workflow</a></li>
-  <li><a href="#eda" id="toc-eda" class="nav-link" data-scroll-target="#eda"><span class="header-section-number">6</span> EDA</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">7</span> Conclusion</a></li>
-  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">8</span> Reference</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">6</span> Conclusion</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">7</span> Reference</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -498,7 +520,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 10, 2026</p>
+      <p class="date-modified">February 14, 2026</p>
     </div>
   </div>
     
@@ -571,16 +593,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The code below installs and loads the required packages into R environment.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">ggdist</span>, <span class="va">gganimate</span>, <span class="va">plotly</span>, <span class="va">DT</span>,</span>
-<span>               <span class="va">crosstalk</span>, <span class="va">colorspace</span>, <span class="va">ggridges</span>, <span class="va">readxl</span>, <span class="va">knitr</span>, <span class="va">ggstatsplot</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span>               <span class="va">crosstalk</span>, <span class="va">colorspace</span>, <span class="va">ggridges</span>, <span class="va">readxl</span>, <span class="va">knitr</span>, <span class="va">ggstatsplot</span>, <span class="va">patchwork</span>, <span class="va">ggpubr</span>, <span class="va">plotly</span>, <span class="va">scales</span>, <span class="va">vcd</span>, <span class="va">rlang</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="importing-the-data" class="level3" data-number="3.2"><h3 data-number="3.2" class="anchored" data-anchor-id="importing-the-data">
 <span class="header-section-number">3.2</span> Importing the Data</h3>
 <p>The <em>dataset</em> and <em>codebook</em> (published 23 December 2024, version 1) in English were downloaded from the <a href="https://data.mendeley.com/datasets/23ppcdbmhc/1">Mendeley Data</a> open research repository.</p>
-<p>“We use <a href="https://readxl.tidyverse.org/reference/read_excel.html"><code>read_excel()</code></a> from the <strong>readxl</strong> package to import the dataset <em>Database paper.xlsx</em> into the R environment as a tibble named <code>df</code>. We then preview the dataset using <code>kable()</code>.”</p>
-<p>The questionnaire includes 12 items on <strong>intrinsic and behavioural factors</strong>, 9 items on <strong>external learning environment factors</strong>, and 1 measuring students’ <strong>GPA</strong> as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.</p>
+<p>We use <a href="https://readxl.tidyverse.org/reference/read_excel.html"><code>read_excel()</code></a> from the <strong>readxl</strong> package to import the dataset <em>Database paper.xlsx</em> into the R environment as a tibble named <code>df</code>. We then preview the dataset using <code>kable()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">read_excel</span><span class="op">(</span><span class="st">"data/Database paper.xlsx"</span><span class="op">)</span></span>
-<span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, <span class="st">"html"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">read_excel</span><span class="op">(</span><span class="st">"data/Database paper.xlsx"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The questionnaire includes 12 items on <strong>intrinsic factors</strong>, 9 items on <strong>external learning environment factors</strong>, and 1 measuring students’ <strong>GPA</strong> as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, <span class="st">"html"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead><tr class="header">
@@ -756,17 +780,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<p>The output from <code>glimpse()</code> shows that the raw dataset initially contains numeric values for all variables. Therefore, data wrangling is required in the following section to correctly convert variables into their appropriate data types, such as categorical or ordered factors, before conducting further analysis.</p>
+<div class="cell">
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">glimpse</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,170
+Columns: 22
+$ Year               &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, …
+$ Gender             &lt;dbl&gt; 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, …
+$ Policy_Stu         &lt;dbl&gt; 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, …
+$ Minority_Stu       &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …
+$ Poor_Stu           &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …
+$ Father_Edu         &lt;dbl&gt; 4, 3, 4, 5, 2, 5, 6, 5, 5, 5, 3, 3, 3, 3, 3, 4, 5, …
+$ Mother_Edu         &lt;dbl&gt; 4, 3, 4, 4, 3, 5, 5, 4, 5, 4, 3, 3, 3, 4, 3, 4, 5, …
+$ Father_Occupation  &lt;dbl&gt; 2, 2, 1, 1, 3, 1, 1, 5, 1, 3, 3, 3, 3, 3, 2, 2, 4, …
+$ Mother_Occupation  &lt;dbl&gt; 3, 4, 2, 1, 3, 2, 4, 3, 1, 3, 3, 3, 3, 3, 2, 2, 4, …
+$ Time_Friends       &lt;dbl&gt; 2, 1, 1, 2, 1, 1, 2, 2, 1, 3, 2, 2, 2, 2, 2, 1, 3, …
+$ Time_SocicalMedia  &lt;dbl&gt; 2, 3, 2, 2, 2, 3, 2, 2, 2, 2, 2, 1, 2, 2, 2, 3, 4, …
+$ Time_Studying      &lt;dbl&gt; 5, 5, 5, 5, 1, 2, 5, 5, 5, 5, 5, 5, 5, 1, 5, 5, 5, …
+$ GPA                &lt;dbl&gt; 4, 3, 4, 4, 4, 4, 3, 5, 5, 3, 3, 4, 4, 3, 5, 4, 4, …
+$ Adapt_Learning_Uni &lt;dbl&gt; 4, 3, 4, 4, 5, 4, 4, 4, 4, 3, 4, 4, 4, 5, 4, 4, 5, …
+$ Study_Methods      &lt;dbl&gt; 4, 3, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 3, 5, …
+$ SupportOf_Uni      &lt;dbl&gt; 3, 3, 4, 5, 5, 5, 5, 5, 4, 5, 4, 4, 4, 5, 4, 4, 5, …
+$ SupportOf_Lec      &lt;dbl&gt; 4, 4, 4, 5, 5, 4, 5, 4, 4, 5, 4, 4, 4, 5, 4, 4, 5, …
+$ Facilitie_Uni      &lt;dbl&gt; 4, 4, 3, 5, 5, 5, 5, 4, 4, 5, 4, 4, 4, 5, 4, 3, 5, …
+$ Quality_Lecturer   &lt;dbl&gt; 4, 3, 4, 5, 5, 5, 4, 5, 5, 5, 4, 4, 4, 5, 4, 4, 5, …
+$ TrainingCurriculum &lt;dbl&gt; 4, 3, 4, 4, 5, 4, 5, 4, 4, 5, 4, 4, 4, 5, 4, 3, 5, …
+$ Competitive_Class  &lt;dbl&gt; 3, 3, 4, 4, 4, 3, 4, 3, 4, 4, 4, 4, 4, 5, 4, 4, 5, …
+$ InfuenceF_Friends  &lt;dbl&gt; 3, 4, 4, 4, 5, 3, 5, 4, 4, 4, 4, 4, 4, 5, 4, 5, 4, …</code></pre>
+</div>
+</div>
 </section></section><section id="data-wrangling" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="data-wrangling">
 <span class="header-section-number">4</span> Data Wrangling</h2>
-<section id="standardise-variable-names" class="level3" data-number="4.1"><h3 data-number="4.1" class="anchored" data-anchor-id="standardise-variable-names">
-<span class="header-section-number">4.1</span> Standardise variable names</h3>
+<p>In this section, variable names are first standardised to follow tidyverse naming conventions. The variables are then recoded according to their respective data types. Finally, the cleaned dataset is saved as a separate file for subsequent analysis.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Standardise variable names</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Recode variables</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Rename the dataset</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>The variable names are slightly inconsistent due to the English translation of the <em>codebook</em>.</p>
 <p>Therefore, the names are standardised to <strong>lowercase</strong> with <strong>underscores</strong> following the <a href="https://style.tidyverse.org/syntax.html"><strong>Tidyverse Style Guide</strong></a> to improve readability and reproducibility.</p>
 <p>The code below uses the <code>rename()</code> function to standardise variable names.</p>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">rename</span><span class="op">(</span></span>
-<span>  gpa <span class="op">=</span> <span class="va">GPA</span>,</span>
+<span>  gpa_num <span class="op">=</span> <span class="va">GPA</span>,</span>
 <span>  year <span class="op">=</span> <span class="va">Year</span>,</span>
 <span>  gender <span class="op">=</span> <span class="va">Gender</span>,</span>
 <span>  policy_student <span class="op">=</span> <span class="va">Policy_Stu</span>,</span>
@@ -796,21 +857,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>A summary table is then constructed using the DT package to demonstrate the updated variable names alongside their descriptions and predefined values.</p>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">simple_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
-<span>  old <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GPA"</span>,<span class="st">"Year"</span>, <span class="st">"Gender"</span>, <span class="st">"Policy_Stu"</span>, <span class="st">"Minority_Stu"</span>, <span class="st">"Poor_Stu"</span>,</span>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">simple_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  old <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"GPA"</span>, <span class="st">"[Drived]"</span>, <span class="st">"Year"</span>, <span class="st">"Gender"</span>, <span class="st">"Policy_Stu"</span>, <span class="st">"Minority_Stu"</span>, <span class="st">"Poor_Stu"</span>,</span>
 <span>          <span class="st">"Father_Edu"</span>, <span class="st">"Mother_Edu"</span>, <span class="st">"Father_Occupation"</span>, <span class="st">"Mother_Occupation"</span>,</span>
 <span>          <span class="st">"Time_Friends"</span>, <span class="st">"Time_SocicalMedia"</span>, <span class="st">"Time_Studying"</span>,</span>
 <span>          <span class="st">"Adapt_Learning_Uni"</span>, <span class="st">"Study_Methods"</span>, <span class="st">"SupportOf_Uni"</span>, <span class="st">"SupportOf_Lec"</span>,</span>
 <span>          <span class="st">"Facilitie_Uni"</span>, <span class="st">"Quality_Lecturer"</span>, <span class="st">"TrainingCurriculum"</span>,</span>
 <span>          <span class="st">"Competitive_Class"</span>, <span class="st">"InfuenceF_Friends"</span><span class="op">)</span>,</span>
-<span>  new <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gpa"</span>, <span class="st">"year"</span>, <span class="st">"gender"</span>, <span class="st">"policy_student"</span>, <span class="st">"minority_student"</span>, <span class="st">"poor_household"</span>,</span>
+<span>  new <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gpa_num"</span>,<span class="st">"gpa_ordinal"</span>,<span class="st">"year"</span>, <span class="st">"gender"</span>, <span class="st">"policy_student"</span>, <span class="st">"minority_student"</span>, <span class="st">"poor_household"</span>,</span>
 <span>          <span class="st">"father_education"</span>, <span class="st">"mother_education"</span>, <span class="st">"father_occupation"</span>, <span class="st">"mother_occupation"</span>,</span>
 <span>          <span class="st">"time_friends"</span>, <span class="st">"time_social_media"</span>, <span class="st">"time_studying"</span>, </span>
 <span>          <span class="st">"adapt_uni"</span>, <span class="st">"study_methods"</span>, <span class="st">"uni_support"</span>, <span class="st">"lecturer_support"</span>,</span>
 <span>          <span class="st">"facilities"</span>, <span class="st">"lecturer_quality"</span>, <span class="st">"curriculum"</span>, <span class="st">"class_competition"</span>,</span>
 <span>          <span class="st">"peer_influence"</span><span class="op">)</span>,</span>
 <span>  description <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Cumulative Grade Point Average (Poor (&lt;2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (&gt;3.6)"</span>,</span>
+<span>        <span class="st">"Cumulative Grade Point Average (Poor (&lt;2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (&gt;3.6)"</span>,<span class="st">"Drived from GPA"</span>,</span>
 <span>    <span class="st">"Academic year (1=First-year, 2=Second-year, 3=Third-year, 4=Fourth-year, 5=Graduated)"</span>,</span>
 <span>    <span class="st">"Gender identity (1=Male, 2=Female)"</span>,</span>
 <span>    <span class="st">"Student on government policy support (1=Yes, 2=No)"</span>,</span>
@@ -855,92 +916,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-1f41e1bc4dc9bf959998" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-1f41e1bc4dc9bf959998">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;\">Student Variables: Renaming and Description<\/caption>","data":[["GPA","Year","Gender","Policy_Stu","Minority_Stu","Poor_Stu","Father_Edu","Mother_Edu","Father_Occupation","Mother_Occupation","Time_Friends","Time_SocicalMedia","Time_Studying","Adapt_Learning_Uni","Study_Methods","SupportOf_Uni","SupportOf_Lec","Facilitie_Uni","Quality_Lecturer","TrainingCurriculum","Competitive_Class","InfuenceF_Friends"],["gpa","year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence"],["Cumulative Grade Point Average (Poor (&lt;2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (&gt;3.6)","Academic year (1=First-year, 2=Second-year, 3=Third-year, 4=Fourth-year, 5=Graduated)","Gender identity (1=Male, 2=Female)","Student on government policy support (1=Yes, 2=No)","Minority student status (1=Yes, 2=No)","Poor household status (1=Yes, 2=No)","Father's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)","Mother's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)","Father's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)","Mother's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)","Time spent with friends daily (1=&lt;1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=&gt;4h)","Time on social media daily (1=&lt;1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=&gt;4h)","Study time daily (1=&lt;2h, 2=2-4h, 3=4-6h, 4=6-8h, 5=&gt;8h)","Adaptation to university learning environment (1=Not at all to 5=Very)","Study methods effectiveness (1=Not at all to 5=Very)","University support perception (1=Not at all to 5=Very)","Lecturer support perception (1=Not at all to 5=Very)","University facilities responsiveness (1=Not at all to 5=Very)","Lecturer quality (1=Not at all to 5=Very)","Curriculum suitability (1=Not at all to 5=Very)","Class competition effect (1=Not at all to 5=Very)","Peer influence on academic outcomes (1=Not at all to 5=Very)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Original Name<\/th>\n      <th>New Name<\/th>\n      <th>Description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":25,"dom":"t","columnDefs":[{"className":"dt-center","targets":[0,1]},{"className":"dt-left","targets":2},{"name":"old","targets":0},{"name":"new","targets":1},{"name":"description","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c21565137500119505dc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c21565137500119505dc">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;\">Student Variables: Renaming and Description<\/caption>","data":[["GPA","[Drived]","Year","Gender","Policy_Stu","Minority_Stu","Poor_Stu","Father_Edu","Mother_Edu","Father_Occupation","Mother_Occupation","Time_Friends","Time_SocicalMedia","Time_Studying","Adapt_Learning_Uni","Study_Methods","SupportOf_Uni","SupportOf_Lec","Facilitie_Uni","Quality_Lecturer","TrainingCurriculum","Competitive_Class","InfuenceF_Friends"],["gpa_num","gpa_ordinal","year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence"],["Cumulative Grade Point Average (Poor (&lt;2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (&gt;3.6)","Drived from GPA","Academic year (1=First-year, 2=Second-year, 3=Third-year, 4=Fourth-year, 5=Graduated)","Gender identity (1=Male, 2=Female)","Student on government policy support (1=Yes, 2=No)","Minority student status (1=Yes, 2=No)","Poor household status (1=Yes, 2=No)","Father's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)","Mother's education level (1=Primary, 2=Secondary, 3=High school, 4=College, 5=University, 6=Other)","Father's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)","Mother's occupation (1=Government employee, 2=Self-employment, 3=Freelance, 4=Other, 5=Not public)","Time spent with friends daily (1=&lt;1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=&gt;4h)","Time on social media daily (1=&lt;1h, 2=1-2h, 3=2-3h, 4=3-4h, 5=&gt;4h)","Study time daily (1=&lt;2h, 2=2-4h, 3=4-6h, 4=6-8h, 5=&gt;8h)","Adaptation to university learning environment (1=Not at all to 5=Very)","Study methods effectiveness (1=Not at all to 5=Very)","University support perception (1=Not at all to 5=Very)","Lecturer support perception (1=Not at all to 5=Very)","University facilities responsiveness (1=Not at all to 5=Very)","Lecturer quality (1=Not at all to 5=Very)","Curriculum suitability (1=Not at all to 5=Very)","Class competition effect (1=Not at all to 5=Very)","Peer influence on academic outcomes (1=Not at all to 5=Very)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Original Name<\/th>\n      <th>New Name<\/th>\n      <th>Description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":25,"dom":"t","columnDefs":[{"className":"dt-center","targets":[0,1]},{"className":"dt-left","targets":2},{"name":"old","targets":0},{"name":"new","targets":1},{"name":"description","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-<p>The names() or colnames() function from Base R allows for a quick review of the column names to ensure they have been updated correctly before proceeding to the next data preparation step.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "year"              "gender"            "policy_student"   
- [4] "minority_student"  "poor_household"    "father_education" 
- [7] "mother_education"  "father_occupation" "mother_occupation"
-[10] "time_friends"      "time_social_media" "time_studying"    
-[13] "gpa"               "adapt_uni"         "study_methods"    
-[16] "uni_support"       "lecturer_support"  "facilities"       
-[19] "lecturer_quality"  "curriculum"        "class_competition"
-[22] "peer_influence"   </code></pre>
 </div>
-</div>
-</section><section id="recode-categorical-variables" class="level3" data-number="4.2"><h3 data-number="4.2" class="anchored" data-anchor-id="recode-categorical-variables">
-<span class="header-section-number">4.2</span> Recode categorical variables</h3>
-<p><strong>ADD likert value</strong></p>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <p>The summary statistics show that the variables take values ranging from 1 to 6; however, these numeric codes do not provide meaningful interpretation without recoding them into labelled categories.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      year           gender      policy_student  minority_student
- Min.   :3.000   Min.   :1.000   Min.   :1.000   Min.   :1.000   
- 1st Qu.:4.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:2.000   
- Median :5.000   Median :2.000   Median :2.000   Median :2.000   
- Mean   :4.672   Mean   :1.889   Mean   :1.647   Mean   :1.941   
- 3rd Qu.:5.000   3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:2.000   
- Max.   :5.000   Max.   :2.000   Max.   :2.000   Max.   :2.000   
- poor_household father_education mother_education father_occupation
- Min.   :1.00   Min.   :1.000    Min.   :1.000    Min.   :1.000    
- 1st Qu.:2.00   1st Qu.:3.000    1st Qu.:3.000    1st Qu.:2.000    
- Median :2.00   Median :4.000    Median :4.000    Median :3.000    
- Mean   :1.96   Mean   :3.747    Mean   :3.664    Mean   :2.484    
- 3rd Qu.:2.00   3rd Qu.:5.000    3rd Qu.:5.000    3rd Qu.:3.000    
- Max.   :2.00   Max.   :6.000    Max.   :6.000    Max.   :5.000    
- mother_occupation  time_friends   time_social_media time_studying  
- Min.   :1.000     Min.   :1.000   Min.   :1.000     Min.   :1.000  
- 1st Qu.:2.000     1st Qu.:1.000   1st Qu.:2.000     1st Qu.:5.000  
- Median :3.000     Median :2.000   Median :3.000     Median :5.000  
- Mean   :2.498     Mean   :2.274   Mean   :2.836     Mean   :4.719  
- 3rd Qu.:3.000     3rd Qu.:3.000   3rd Qu.:4.000     3rd Qu.:5.000  
- Max.   :5.000     Max.   :5.000   Max.   :5.000     Max.   :5.000  
-      gpa        adapt_uni     study_methods    uni_support    lecturer_support
- Min.   :1.0   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000   
- 1st Qu.:3.0   1st Qu.:3.000   1st Qu.:3.000   1st Qu.:3.000   1st Qu.:4.000   
- Median :3.0   Median :3.000   Median :4.000   Median :4.000   Median :4.000   
- Mean   :3.3   Mean   :3.502   Mean   :3.662   Mean   :4.001   Mean   :4.186   
- 3rd Qu.:4.0   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:5.000   3rd Qu.:5.000   
- Max.   :5.0   Max.   :5.000   Max.   :5.000   Max.   :5.000   Max.   :5.000   
-   facilities    lecturer_quality   curriculum    class_competition
- Min.   :1.000   Min.   :1.000    Min.   :1.000   Min.   :1.000    
- 1st Qu.:3.000   1st Qu.:4.000    1st Qu.:4.000   1st Qu.:3.000    
- Median :4.000   Median :5.000    Median :4.000   Median :4.000    
- Mean   :4.073   Mean   :4.329    Mean   :4.128   Mean   :3.935    
- 3rd Qu.:5.000   3rd Qu.:5.000    3rd Qu.:5.000   3rd Qu.:5.000    
- Max.   :5.000   Max.   :5.000    Max.   :5.000   Max.   :5.000    
- peer_influence 
- Min.   :1.000  
- 1st Qu.:3.000  
- Median :4.000  
- Mean   :3.831  
- 3rd Qu.:5.000  
- Max.   :5.000  </code></pre>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">year</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  3.000   4.000   5.000   4.672   5.000   5.000 </code></pre>
+</div>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">father_education</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   3.000   4.000   3.747   5.000   6.000 </code></pre>
 </div>
 </div>
-<p>The table shows how the variables will be updated based on their data types. <strong>Ordinal</strong> variables with a natural order, such as study year or time spent studying, are converted using <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> with the <code>order</code> argument enabled. <strong>Nominal</strong> variables without an inherent order, such as gender or parents’ occupation, are converted into categorical factors. Likert scale perception variables, such as lecturer quality and university support, are retained as numeric values to ensure correct calculations.</p>
-<p>For the target variable, the <strong>numeric GPA</strong> is required to compute averages and uncertainty, while a <strong>categorical</strong> GPA is created to support proportion-based visualisations such as the funnel plot.</p>
+<p>The table below outlines how each variable is processed according to its data type. <strong>Ordinal</strong> variables with a natural order, such as study year or time spent studying, are converted using <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> with the order argument enabled. <strong>Nominal</strong> variables without inherent order, such as gender or parents’ occupation, are converted into categorical factors.</p>
+<p><strong>Likert scale variables</strong>, including lecturer quality and university support, are treated as categorical rather than continuous. Although measured on a five point scale, they represent ordered response categories rather than precise numerical distances. In some studies, Likert responses are grouped into negative (1 to 2), neutral (3), and positive (4 to 5) categories. When grouped in this way, the variable is treated as nominal because the focus is on sentiment categories rather than order intensity.</p>
+<p>In this study, the scale ranges directionally from “not at all” to “very.” While the responses have a natural order, they are still treated as categorical variables to avoid assuming equal spacing between scale points.</p>
+<p>The <strong>GPA</strong> variable is derived from grouped categories in the survey codebook rather than exact GPA values. While cumulative GPA is conceptually a continuous measure, it is recorded in five ordered categories: Poor (1), Average (2), Fair (3), Good (4), and Excellent (5). As such, the observed data are ordinal because they represent GPA ranges rather than precise scores, and equal spacing between categories cannot be directly verified.</p>
+<p>However, GPA is also analysed as a numeric variable in parts of this study. This is justified because the categories reflect increasing levels of academic performance and are based on an underlying continuous construct. Treating GPA as numeric allows for the calculation of summary statistics such as the mean and the application of parametric tests. Given the large sample size, this approach is considered acceptable and statistically robust, despite the limitations associated with grouped data.</p>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">simple_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
-<span>  new <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gpa"</span>,<span class="st">"year"</span>, <span class="st">"gender"</span>, <span class="st">"policy_student"</span>, <span class="st">"minority_student"</span>, <span class="st">"poor_household"</span>,</span>
+<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">simple_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  new <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gpa_num"</span>,<span class="st">"gpa_ordinal"</span>,<span class="st">"year"</span>, <span class="st">"gender"</span>, <span class="st">"policy_student"</span>, <span class="st">"minority_student"</span>, <span class="st">"poor_household"</span>,</span>
 <span>          <span class="st">"father_education"</span>, <span class="st">"mother_education"</span>, <span class="st">"father_occupation"</span>, <span class="st">"mother_occupation"</span>,</span>
 <span>          <span class="st">"time_friends"</span>, <span class="st">"time_social_media"</span>, <span class="st">"time_studying"</span>, </span>
 <span>          <span class="st">"adapt_uni"</span>, <span class="st">"study_methods"</span>, <span class="st">"uni_support"</span>, <span class="st">"lecturer_support"</span>,</span>
 <span>          <span class="st">"facilities"</span>, <span class="st">"lecturer_quality"</span>, <span class="st">"curriculum"</span>, <span class="st">"class_competition"</span>,</span>
 <span>          <span class="st">"peer_influence"</span><span class="op">)</span>,</span>
-<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Numeric"</span>, <span class="st">"Ordinal"</span>, <span class="st">"Ordinal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>,</span>
 <span>           <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>, <span class="st">"Nominal"</span>,</span>
 <span>           <span class="st">"Ordinal"</span>, <span class="st">"Ordinal"</span>, <span class="st">"Ordinal"</span>, </span>
 <span>           <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>,</span>
 <span>           <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>, <span class="st">"Ordinal(Likert Scale)"</span>,</span>
 <span>           <span class="st">"Ordinal(Likert Scale)"</span><span class="op">)</span>,</span>
-<span>  action <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"factor(..., ordered = TRUE)"</span>,<span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>,</span>
+<span>  action <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Keep numeric"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>,<span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>,</span>
 <span>             <span class="st">"factor()"</span>, <span class="st">"factor())"</span>, <span class="st">"factor()"</span>, <span class="st">"factor()"</span>,</span>
 <span>             <span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>, </span>
 <span>             <span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>, <span class="st">"factor(..., ordered = TRUE)"</span>,</span>
@@ -969,26 +983,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu">formatStyle</span><span class="op">(</span></span>
 <span>    <span class="st">"type"</span>,</span>
 <span>    backgroundColor <span class="op">=</span> <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/styleInterval.html">styleEqual</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Nominal"</span>, <span class="st">"Ordinal"</span>,<span class="st">"Ordinal(Likert Scale)"</span><span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#cce5ff"</span>, <span class="st">"#ffe5cc"</span>, <span class="st">"#d4edda"</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Numeric"</span>, <span class="st">"Nominal"</span>, <span class="st">"Ordinal"</span>,<span class="st">"Ordinal(Likert Scale)"</span><span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#ccee2f"</span>, <span class="st">"#cce5ff"</span>, <span class="st">"#ffe5cc"</span>, <span class="st">"#d4edda"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-dca98a326d13d42e9382" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-dca98a326d13d42e9382">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;\">Student Variables: Data Types and Actions<\/caption>","data":[["gpa","year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence"],["Ordinal(Likert Scale)","Ordinal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Ordinal","Ordinal","Ordinal","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)"],["factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor()","factor()","factor()","factor()","factor()","factor())","factor()","factor()","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>New Name<\/th>\n      <th>Type<\/th>\n      <th>Action<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":25,"dom":"t","columnDefs":[{"className":"dt-center","targets":[0,1,2]},{"name":"new","targets":0},{"name":"type","targets":1},{"name":"action","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'background-color':value == \"Nominal\" ? \"#cce5ff\" : value == \"Ordinal\" ? \"#ffe5cc\" : value == \"Ordinal(Likert Scale)\" ? \"#d4edda\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ec06c557de7d56dca9b6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ec06c557de7d56dca9b6">{"x":{"filter":"none","vertical":false,"caption":"<caption style=\"caption-side: top; text-align: center; color: black; font-size: 20px; font-weight: bold; padding: 10px;\">Student Variables: Data Types and Actions<\/caption>","data":[["gpa_num","gpa_ordinal","year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence"],["Numeric","Ordinal","Ordinal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Nominal","Ordinal","Ordinal","Ordinal","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)","Ordinal(Likert Scale)"],["Keep numeric","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor()","factor()","factor()","factor()","factor()","factor())","factor()","factor()","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)","factor(..., ordered = TRUE)"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>New Name<\/th>\n      <th>Type<\/th>\n      <th>Action<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":25,"dom":"t","columnDefs":[{"className":"dt-center","targets":[0,1,2]},{"name":"new","targets":0},{"name":"type","targets":1},{"name":"action","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'background-color':value == \"Numeric\" ? \"#ccee2f\" : value == \"Nominal\" ? \"#cce5ff\" : value == \"Ordinal\" ? \"#ffe5cc\" : value == \"Ordinal(Likert Scale)\" ? \"#d4edda\" : null});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
 </div>
 </div>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist">
-<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Group A</a></li>
-<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Group B</a></li>
-</ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>The code below processes the data as described in the previous section.</p>
+<section id="group-a" class="level4" data-number="4.0.1"><h4 data-number="4.0.1" class="anchored" data-anchor-id="group-a">
+<span class="header-section-number">4.0.1</span> Group A</h4>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df_factored</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df_factored</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu">mutate</span><span class="op">(</span></span>
-<span>      gpa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">gpa</span>,levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>      gpa_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">gpa_num</span><span class="op">)</span>,</span>
+<span>      gpa_ordinal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">gpa_num</span>,levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>                labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Poor'</span>, <span class="st">'Average'</span>, <span class="st">'Fair'</span>, <span class="st">'Good'</span>, <span class="st">'Excellent'</span><span class="op">)</span>,ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>      year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">year</span>,levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'First-year'</span>,<span class="st">'Second-year'</span>,<span class="st">'Third-year'</span>, <span class="st">'Fourth-year'</span>,<span class="st">'Graduated'</span><span class="op">)</span>,ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>      gender <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">gender</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Male'</span>, <span class="st">'Female'</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -1009,12 +1020,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>      time_social_media <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">time_social_media</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'&lt;1 hour'</span>, <span class="st">'1-2 hours'</span>, <span class="st">'2-3 hours'</span>, <span class="st">'3-4 hours'</span>, <span class="st">'&gt;4 hours'</span><span class="op">)</span>,ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>      time_studying <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">time_studying</span>,levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'&lt;2 hours'</span>, <span class="st">'2-4 hours'</span>, <span class="st">'4-6 hours'</span>, <span class="st">'6-8 hours'</span>, <span class="st">'&gt;8 hours'</span><span class="op">)</span>,ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+</section><section id="group-b" class="level4" data-number="4.0.2"><h4 data-number="4.0.2" class="anchored" data-anchor-id="group-b">
+<span class="header-section-number">4.0.2</span> Group B</h4>
 <div class="cell">
-<details class="code-fold"><summary>SHOW</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">convert_b_vars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">convert_b_vars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">likert_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Not at all'</span>, <span class="st">'Little'</span>, <span class="st">'Moderate'</span>, <span class="st">'Quite'</span>, <span class="st">'Very'</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="va">b_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adapt_uni"</span>,<span class="st">"study_methods"</span>,<span class="st">"uni_support"</span>,<span class="st">"lecturer_support"</span>, <span class="st">"facilities"</span>,  </span>
@@ -1023,24 +1033,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="kw">for</span><span class="op">(</span><span class="va">var</span> <span class="kw">in</span> <span class="va">b_vars</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">df</span><span class="op">[[</span><span class="va">var</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df</span><span class="op">[[</span><span class="va">var</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                          levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
-<span>                          labels <span class="op">=</span> <span class="va">likert_labels</span>,</span>
-<span>                          ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                          labels <span class="op">=</span> <span class="va">likert_labels</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
 <span>  </span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">df_factored</span> <span class="op">&lt;-</span> <span class="fu">convert_b_vars</span><span class="op">(</span><span class="va">df_factored</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
-</div>
-</div>
-</div>
-<p>end of panel-tabset</p>
-<p>brief summary what we did so far.</p>
-<p>preview of the data</p>
+<p>After the transformation, the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function and <code>dt table</code> are used to verify that variables have been correctly recoded and assigned meaningful labels. This step ensures that the data are properly structured according to their respective types and are ready for subsequent visualisation and statistical inference.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">df_factored</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">df_factored</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          year         gender     policy_student minority_student
  First-year :   0   Male  : 240   Yes: 766       Yes: 129        
@@ -1063,13 +1066,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  Other              :409     Other              :405     3-4 hours:152  
  Not public         : 32     Not public         : 22     &gt;4 hours : 86  
                                                                         
- time_social_media   time_studying         gpa            adapt_uni  
- &lt;1 hour  :229     &lt;2 hours :  17   Poor     :  73   Not at all: 70  
- 1-2 hours:735     2-4 hours:  47   Average  : 109   Little    :152  
- 2-3 hours:634     4-6 hours:  78   Fair     :1189   Moderate  :954  
- 3-4 hours:306     6-8 hours: 245   Good     : 692   Quite     :606  
- &gt;4 hours :266     &gt;8 hours :1783   Excellent: 107   Very      :388  
-                                                                     
+ time_social_media   time_studying     gpa_num         adapt_uni  
+ &lt;1 hour  :229     &lt;2 hours :  17   Min.   :1.0   Not at all: 70  
+ 1-2 hours:735     2-4 hours:  47   1st Qu.:3.0   Little    :152  
+ 2-3 hours:634     4-6 hours:  78   Median :3.0   Moderate  :954  
+ 3-4 hours:306     6-8 hours: 245   Mean   :3.3   Quite     :606  
+ &gt;4 hours :266     &gt;8 hours :1783   3rd Qu.:4.0   Very      :388  
+                                    Max.   :5.0                   
     study_methods     uni_support    lecturer_support      facilities 
  Not at all: 33   Not at all: 51   Not at all: 20     Not at all: 36  
  Little    :120   Little    : 61   Little    : 28     Little    :131  
@@ -1083,46 +1086,709 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  Moderate  : 342    Moderate  :465   Moderate  :629     Moderate  :707   
  Quite     : 636    Quite     :779   Quite     :772     Quite     :797   
  Very      :1152    Very      :869   Very      :680     Very      :564   
-                                                                         </code></pre>
+                                                                         
+    gpa_ordinal  
+ Poor     :  73  
+ Average  : 109  
+ Fair     :1189  
+ Good     : 692  
+ Excellent: 107  
+                 </code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">var_summary</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">var_summary</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
 <span>  variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df_factored</span><span class="op">)</span>,</span>
 <span>  class <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">df_factored</span>, <span class="va">class</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">datatable</span><span class="op">(</span><span class="va">var_summary</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-1bd7873561583e3d231d" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-1bd7873561583e3d231d">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"],["year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","gpa","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence"],[["ordered","factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"]]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>variable<\/th>\n      <th>class<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"variable","targets":1},{"name":"class","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f4b67b01bfea9c88dbab" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f4b67b01bfea9c88dbab">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"],["year","gender","policy_student","minority_student","poor_household","father_education","mother_education","father_occupation","mother_occupation","time_friends","time_social_media","time_studying","gpa_num","adapt_uni","study_methods","uni_support","lecturer_support","facilities","lecturer_quality","curriculum","class_competition","peer_influence","gpa_ordinal"],[["ordered","factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["ordered","factor"],["ordered","factor"],["ordered","factor"],["numeric"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["factor"],["ordered","factor"]]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>variable<\/th>\n      <th>class<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"variable","targets":1},{"name":"class","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-</section><section id="pivot-for-likert" class="level3" data-number="4.3"><h3 data-number="4.3" class="anchored" data-anchor-id="pivot-for-likert">
-<span class="header-section-number">4.3</span> Pivot for likert?</h3>
-</section></section><section id="workflow" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="workflow">
-<span class="header-section-number">5</span> Workflow</h2>
-<div class="cell" data-layout-align="default">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>A --&gt; B</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>A cleaned copy of the dataset is created and named <code>vnu</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vnu</span> <span class="op">&lt;-</span><span class="va">df_factored</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We also review the column names and check for missing values in the final dataset using <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> and <code>sum(is.na())</code>. This step ensures that all variables are correctly labelled and confirms whether any missing data remain before proceeding with further analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">vnu</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "year"              "gender"            "policy_student"   
+ [4] "minority_student"  "poor_household"    "father_education" 
+ [7] "mother_education"  "father_occupation" "mother_occupation"
+[10] "time_friends"      "time_social_media" "time_studying"    
+[13] "gpa_num"           "adapt_uni"         "study_methods"    
+[16] "uni_support"       "lecturer_support"  "facilities"       
+[19] "lecturer_quality"  "curriculum"        "class_competition"
+[22] "peer_influence"    "gpa_ordinal"      </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section id="visualisation" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="visualisation">
+<span class="header-section-number">5</span> Visualisation</h2>
+<section id="univariate-analysis" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="univariate-analysis">
+<span class="header-section-number">5.1</span> Univariate Analysis</h3>
+<p>This section begins with the target variable, GPA, to examine the overall academic performance of the 2,170 students. The distribution and key summary statistics, such as mean, median, frequency, and percentage, are reviewed to provide a clear overview before proceeding to further analysis.</p>
+<section id="gpa" class="level4" data-number="5.1.1"><h4 data-number="5.1.1" class="anchored" data-anchor-id="gpa">
+<span class="header-section-number">5.1.1</span> GPA</h4>
+<p>First, we generate an overview of the GPA distribution and conduct a statistical test using <a href="https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/gghistostats.html"><code>gghistostats()</code></a> from the <strong>ggstatsplot</strong> package. This function allows us to visualise the distribution of GPA while simultaneously displaying key summary statistics and the results of a one sample t test. By combining visualisation and inference in a single plot, it provides a clear understanding of both the overall pattern of GPA and whether the average performance differs significantly from the selected benchmark value.</p>
+<p>The first plot presents the distribution of GPA in both counts and percentages, based on 2,170 valid responses. Fewer than 10 percent of students reported a GPA below 2.5, indicating that most students perform at least at the Fair level. The mean GPA is 3.2 and the median is 3, suggesting overall performance is around the boundary between Fair and Good. Given the large sample size, a formal test of normality is not required. By the <a href="https://en.wikipedia.org/wiki/Central_limit_theorem">Central Limit Theorem</a>, the sampling distribution of the mean is approximately normal, making the one sample t test appropriate and robust. The mean is therefore a reasonable summary of central tendency.</p>
+<p>In the second plot, a one sample t test was conducted to examine whether the average GPA is significantly above 3.2, the boundary between Fair and Good. The results show a p value below 0.05 and a large negative log Bayes Factor <span class="math inline">\(log_e(BF_{01})\)</span>. We can conclude there is strong evidence against the null hypothesis. This indicates that the average student performs significantly above the Fair level. More detailed explanation on how to interpret Bayes Factor can be found in Hands-on Exercise <a href="https://isss608-ypan.netlify.app/hands-on_ex/hands-on_ex04/hands-on_ex04_2">04-2</a>.</p>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="va">vnu</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span></span>
+<span>    mean_gpa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">gpa_num</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    median_gpa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">gpa_num</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    sd_gpa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">gpa_num</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    n <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">gpa_counts</span> <span class="op">&lt;-</span> <span class="va">vnu</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">gpa_num</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    percentage <span class="op">=</span> <span class="va">n</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">n</span>, <span class="st">"\n("</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">percentage</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"%)"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">vnu</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">gpa_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_bar</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"lightblue"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">geom_text</span><span class="op">(</span>data <span class="op">=</span> <span class="va">gpa_counts</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">gpa_num</span>, y <span class="op">=</span> <span class="va">n</span>, label <span class="op">=</span> <span class="va">label</span><span class="op">)</span>,</span>
+<span>            vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>,</span>
+<span>            size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_x_continuous</span><span class="op">(</span>breaks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">expansion</span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  </span>
+<span>  <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">stats</span><span class="op">$</span><span class="va">mean_gpa</span>, </span>
+<span>           color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"text"</span>, </span>
+<span>         x <span class="op">=</span> <span class="va">stats</span><span class="op">$</span><span class="va">mean_gpa</span> <span class="op">+</span> <span class="fl">0.15</span>, </span>
+<span>         y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">gpa_counts</span><span class="op">$</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.9</span>, </span>
+<span>         label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Mean = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">stats</span><span class="op">$</span><span class="va">mean_gpa</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         color <span class="op">=</span> <span class="st">"red"</span>, </span>
+<span>         size <span class="op">=</span> <span class="fl">3.8</span>,</span>
+<span>         fontface <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>         hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span></span>
+<span>  <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">stats</span><span class="op">$</span><span class="va">median_gpa</span>, </span>
+<span>           color <span class="op">=</span> <span class="st">"darkgreen"</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"text"</span>, </span>
+<span>         x <span class="op">=</span> <span class="va">stats</span><span class="op">$</span><span class="va">median_gpa</span> <span class="op">+</span> <span class="fl">0.15</span>, </span>
+<span>         y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">gpa_counts</span><span class="op">$</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.8</span>, </span>
+<span>         label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Median = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">stats</span><span class="op">$</span><span class="va">median_gpa</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         color <span class="op">=</span> <span class="st">"darkgreen"</span>, </span>
+<span>         size <span class="op">=</span> <span class="fl">3.8</span>,</span>
+<span>         fontface <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>         hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  </span>
+<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"text"</span>, </span>
+<span>           x <span class="op">=</span> <span class="fl">5</span>, </span>
+<span>           y <span class="op">=</span> <span class="cn">Inf</span>, </span>
+<span>           label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>             <span class="st">"N = "</span>, <span class="va">stats</span><span class="op">$</span><span class="va">n</span>,</span>
+<span>             <span class="st">" | SD = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">stats</span><span class="op">$</span><span class="va">sd_gpa</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>           <span class="op">)</span>,</span>
+<span>           vjust <span class="op">=</span> <span class="fl">1.5</span>,  </span>
+<span>           hjust <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>           color <span class="op">=</span> <span class="st">"black"</span>, </span>
+<span>           size <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>           fontface <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  </span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"GPA Distribution: Frequency Bar Chart"</span>,</span>
+<span>       subtitle <span class="op">=</span> <span class="st">"Counts and percentages shown; red dashed = mean, green dotted = median"</span>,</span>
+<span>       x <span class="op">=</span> <span class="st">"GPA"</span>,</span>
+<span>       y <span class="op">=</span> <span class="st">"Number of Students"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggthemes</span><span class="fu">::</span><span class="fu"><a href="http://jrnold.github.io/ggthemes/reference/theme_fivethirtyeight.html">theme_fivethirtyeight</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"gray30"</span><span class="op">)</span>,</span>
+<span>    axis.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>,</span>
+<span>    axis.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    plot.margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>  </span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">gghistostats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA Distribution: Statistical Test"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"One-sample t-test against μ = 3.2"</span><span class="op">)</span>,</span>
+<span>  binwidth <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  bar.fill <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>  bar.color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"p"</span>,</span>
+<span>  test.value <span class="op">=</span> <span class="fl">3.2</span>,</span>
+<span>  centrality.line.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span>,</span>
+<span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"GPA"</span>, </span>
+<span>    y_left <span class="op">=</span> <span class="st">"Count"</span>,  </span>
+<span>    y_right <span class="op">=</span> <span class="st">"Percentage"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">ggthemes</span><span class="fu">::</span><span class="fu"><a href="http://jrnold.github.io/ggthemes/reference/theme_fivethirtyeight.html">theme_fivethirtyeight</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span>,</span>
+<span>    plot.subtitle <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"gray30"</span><span class="op">)</span>,</span>
+<span>    axis.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>,</span>
+<span>    axis.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    plot.margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span> </span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">combined_plot</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">p1</span> <span class="op">|</span> <span class="va">p2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">plot_annotation</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Analysis of VNU Student GPA Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Comparison of basic descriptive statistics and inferential testing"</span>,</span>
+<span>    tag_levels <span class="op">=</span> <span class="st">"I"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Data source: Dataset about VNU students (Mendeley Data)"</span>,</span>
+<span>    theme <span class="op">=</span> <span class="fu">theme</span><span class="op">(</span></span>
+<span>      plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">18</span>, face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.subtitle <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span>, color <span class="op">=</span> <span class="st">"gray30"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.caption <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"gray50"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">&amp;</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">combined_plot</span> <span class="op">+</span> <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="independent-variables" class="level4" data-number="5.1.2"><h4 data-number="5.1.2" class="anchored" data-anchor-id="independent-variables">
+<span class="header-section-number">5.1.2</span> Independent Variables</h4>
+<p>Due to the large number of variables, they are divided into two groups to improve visual clarity and prevent overcrowding on the screen.</p>
+<p>The independent variables are grouped into 12 intrinsic factors and 9 extrinsic factors. The intrinsic factors include demographic characteristics and self reported time use, such as time spent studying, socialising, and entertainment. These variables reflect students’ personal characteristics and behaviours.</p>
+<p>The extrinsic factors consist of students’ perceptions of external or environmental influences that may affect academic performance. These include feedback on institutional support, teaching quality, and other contextual factors.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">intrinsic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">vnu</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">extrinsic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">vnu</span><span class="op">[</span><span class="fl">14</span><span class="op">:</span><span class="fl">22</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">intrinsic</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "year"              "gender"            "policy_student"   
+ [4] "minority_student"  "poor_household"    "father_education" 
+ [7] "mother_education"  "father_occupation" "mother_occupation"
+[10] "time_friends"      "time_social_media" "time_studying"    </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">extrinsic</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "adapt_uni"         "study_methods"     "uni_support"      
+[4] "lecturer_support"  "facilities"        "lecturer_quality" 
+[7] "curriculum"        "class_competition" "peer_influence"   </code></pre>
+</div>
+</div>
+<p>The code below defines a function that applies a consistent plotting style across each set of independent variables.</p>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">plot_bars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">col</span>, <span class="va">data</span> <span class="op">=</span> <span class="va">vnu</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># ensure the variable is treated as a factor so levels/order are respected</span></span>
+<span>  <span class="va">data</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">max_n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="va">data</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">.data</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_bar</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_text</span><span class="op">(</span></span>
+<span>      <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>        <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span>, <span class="st">"\n("</span>,</span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>        <span class="st">"%)"</span></span>
+<span>      <span class="op">)</span><span class="op">)</span>,</span>
+<span>      stat <span class="op">=</span> <span class="st">"count"</span>,</span>
+<span>      vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.4</span>,</span>
+<span>      size <span class="op">=</span> <span class="fl">3</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggtitle</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Distribution of"</span>, <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="va">col</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">xlab</span><span class="op">(</span><span class="va">col</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ylab</span><span class="op">(</span><span class="st">"Count"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ylim</span><span class="op">(</span><span class="fl">0</span>, <span class="va">max_n</span> <span class="op">*</span> <span class="fl">1.25</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggthemes</span><span class="fu">::</span><span class="fu"><a href="http://jrnold.github.io/ggthemes/reference/theme_fivethirtyeight.html">theme_fivethirtyeight</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Student profile</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">External influences</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>The student profile analysis shows several patterns.</p>
+<p>Most respondents are graduates (73.5%), with smaller proportions in fourth year (20.3%) and third year (6.2%). The sample is predominantly female (88.9%), with males representing 11.1%. The majority are not policy students (64.7%), do not belong to minority groups (94.1%), and do not come from poor households (96%).</p>
+<p>Parental education levels are generally moderate to high, that over 80% of students’parents have completed high school or university. Freelance work is the most common occupation for both parents, followed by government employment and self employment.</p>
+<p>In terms of time spent, most students spend 1 to 2 hours with friends and a similar amount of time on social media. However, study time is noticeably higher, with 82.2% of students spending more than 8 hours on study.</p>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">intrinsic</span>, <span class="va">plot_bars</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">wrap_plots</span><span class="op">(</span><span class="va">plots1</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">plot_annotation</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Student Profile Analysis"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Data source: VNU students dataset (Mendeley Data)"</span>,</span>
+<span>    tag_levels <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>    theme <span class="op">=</span> <span class="fu">theme</span><span class="op">(</span></span>
+<span>      plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">20</span>, face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.caption <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, colour <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="2400"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>The external influences analysis indicates that students generally perceive environmental study factors as important to their academic performance.</p>
+<p>For adaptation to university and study methods, around 40% of students selected <strong>“moderate”</strong>, suggesting that these factors are viewed as having a noticeable but not strong influence on GPA.</p>
+<p>For university support (38.2%), lecturer support(44.6%%), facilities(42.7%) lecturer quality(53.1%), and curriculum (40%), most of respondents selected <strong>“very”</strong>. Thus these factors are considered highly influential on academic outcomes.</p>
+<p>Class competition and peer influence show about 35% of students rating them as <strong>“quite”</strong> important.</p>
+<p>Overall, the results suggest that students recognise external academic and environmental factors as meaningful contributors to their performance, with lecturer support and Pedagogical quality perceived as particularly influential.</p>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">extrinsic</span>, <span class="va">plot_bars</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">wrap_plots</span><span class="op">(</span><span class="va">plots2</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">plot_annotation</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"External influences Analysis"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Data source: VNU students dataset (Mendeley Data)"</span>,</span>
+<span>    tag_levels <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>    theme <span class="op">=</span> <span class="fu">theme</span><span class="op">(</span></span>
+<span>      plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">20</span>, face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.caption <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, colour <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="1920"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="multivariate-analysis" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="multivariate-analysis">
+<span class="header-section-number">5.2</span> Multivariate Analysis</h3>
+<section id="demographics" class="level4" data-number="5.2.1"><h4 data-number="5.2.1" class="anchored" data-anchor-id="demographics">
+<span class="header-section-number">5.2.1</span> Demographics</h4>
+<p>Here we use <code>ggbetweenstats()</code> to visualise the distribution of GPA across different demographic groups listed above. The function automatically performs the appropriate statistical test to examine whether the average GPA differs between groups. For example, it tests whether the mean GPA is the same for male and female students, or whether GPA varies across different parental occupation categories.</p>
+<p>In addition to visualisation, the function reports key inferential statistics, including the p value and log Bayes Factor, which indicate whether group differences are statistically supported. However, statistical significance alone does not reflect the practical importance of the difference. Therefore, effect sizes such as Cohen’s d (for two groups) or eta squared (for multiple groups) are also examined to assess the magnitude of the difference. This combined approach allows both statistical evidence and practical impact to be evaluated when interpreting demographic differences in GPA.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">demographics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">vnu</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">demographics</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "year"              "gender"            "policy_student"   
+[4] "minority_student"  "poor_household"    "father_education" 
+[7] "mother_education"  "father_occupation" "mother_occupation"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># 1. YEAR (3+ groups ANOVA)</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">year</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"eta"</span>,</span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Year"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Year"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. GENDER (t-test)</span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">gender</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"d"</span>,  <span class="co"># Cohen's d for 2 groups</span></span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Gender"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Gender"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3. POLICY STUDENT (t-test)</span></span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">policy_student</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"d"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Policy Student Status"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Policy Student"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 4. MINORITY STUDENT (t-test)</span></span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">minority_student</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"d"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Minority Status"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Minority Student"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 5. POOR HOUSEHOLD (t-test)</span></span>
+<span><span class="va">p5</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">poor_household</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"d"</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Poor Household Status"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Poor Household"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 6. FATHER EDUCATION (ANOVA)</span></span>
+<span><span class="va">p6</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">father_education</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"eta"</span>,</span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Father's Education"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Father's Education"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># 7. MOTHER EDUCATION (ANOVA)</span></span>
+<span><span class="va">p7</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">mother_education</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"eta"</span>,</span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Mother's Education"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Mother's Education"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 8. FATHER OCCUPATION (ANOVA)</span></span>
+<span><span class="va">p8</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">father_occupation</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"eta"</span>,</span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Father's Occupation"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Father's Occupation"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 9. MOTHER OCCUPATION (ANOVA)</span></span>
+<span><span class="va">p9</span> <span class="op">&lt;-</span> <span class="fu">ggbetweenstats</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">vnu</span>,</span>
+<span>  x <span class="op">=</span> <span class="va">mother_occupation</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">gpa_num</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"parametric"</span>,</span>
+<span>  effsize.type <span class="op">=</span> <span class="st">"eta"</span>,</span>
+<span>  pairwise.comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">"GPA by Mother's Occupation"</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Mother's Occupation"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"GPA"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Effect sizes are interpreted using Cohen’s (1988) conventional benchmarks. For <a href="https://en.wikipedia.org/wiki/Effect_size">Cohen’s d</a>, absolute values of 0.20, 0.50, and 0.80 represent small, medium, and large effects, respectively. For <a href="https://en.wikiversity.org/wiki/Eta-squared">eta squared</a> (<span class="math inline">\(\eta^2\)</span>), values of 0.01, 0.06, and 0.14 indicate small, medium, and large effects.</p>
+<table class="caption-top table">
+<caption>Cohen’s d (for t-tests, 2 groups)</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 21%">
+<col style="width: 63%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>Cohen’s d (abs value)</td>
+<td>Interpretation</td>
+<td>Meaning</td>
+</tr>
+<tr class="even">
+<td>0.20</td>
+<td>Small</td>
+<td>Group means differ by 0.2 standard deviations</td>
+</tr>
+<tr class="odd">
+<td>0.50</td>
+<td>Medium</td>
+<td>Group means differ by 0.5 standard deviations</td>
+</tr>
+<tr class="even">
+<td>0.80</td>
+<td>Large</td>
+<td>Group means differ by 0.8 standard deviations</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top table">
+<caption>Eta-squared (for ANOVA, 3+ groups)</caption>
+<colgroup>
+<col style="width: 8%">
+<col style="width: 23%">
+<col style="width: 68%">
+</colgroup>
+<thead><tr class="header">
+<th><span class="math inline">\(\eta^2\)</span></th>
+<th>Interpretation</th>
+<th>% Variance Explained</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>0.01</td>
+<td>Small</td>
+<td>1% of GPA variance explained by this variable</td>
+</tr>
+<tr class="even">
+<td>0.06</td>
+<td>Medium</td>
+<td>6% of GPA variance explained</td>
+</tr>
+<tr class="odd">
+<td>0.14</td>
+<td>Large</td>
+<td>14% of GPA variance explained</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#| code-fold: true</span></span>
+<span><span class="co">#| code-summary: "CODE"</span></span>
+<span></span>
+<span><span class="va">combined_plot</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">p1</span> <span class="op">|</span> <span class="va">p2</span> <span class="op">|</span> <span class="va">p3</span><span class="op">)</span> <span class="op">/</span> </span>
+<span>                 <span class="op">(</span><span class="va">p4</span> <span class="op">|</span> <span class="va">p5</span> <span class="op">|</span> <span class="va">p6</span><span class="op">)</span> <span class="op">/</span> </span>
+<span>                 <span class="op">(</span><span class="va">p7</span> <span class="op">|</span> <span class="va">p8</span> <span class="op">|</span> <span class="va">p9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">plot_annotation</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Analysis of VNU Student GPA Across Groups"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Comparison of GPA means across demographic and socioeconomic factors"</span>,</span>
+<span>    tag_levels <span class="op">=</span> <span class="st">"1"</span>,  </span>
+<span>    caption <span class="op">=</span> <span class="st">"Data source: Dataset about VNU students (Mendeley Data)"</span>,</span>
+<span>    theme <span class="op">=</span> <span class="fu">theme</span><span class="op">(</span></span>
+<span>      plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">18</span>, face <span class="op">=</span> <span class="st">"bold"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.subtitle <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span>, color <span class="op">=</span> <span class="st">"gray30"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>      plot.caption <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span>, color <span class="op">=</span> <span class="st">"gray50"</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">&amp;</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.margin <span class="op">=</span> <span class="fu">margin</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>    plot.tag <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span>, face <span class="op">=</span> <span class="st">"bold"</span><span class="op">)</span> </span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span></span>
+<span></span>
+<span><span class="va">combined_plot</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
-<p></p><figure class="figure"></figure><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-A --&gt; B
-</pre>
-</div>
-<p></p>
+<figure class="figure"><p><img src="Take-home_Ex01_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="2400"></p>
+</figure>
 </div>
 </div>
 </div>
-<p>A cleaned copy of the dataset is created and named <code>vnu</code>.</p>
-</section><section id="eda" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="eda">
-<span class="header-section-number">6</span> EDA</h2>
-</section><section id="conclusion" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="conclusion">
-<span class="header-section-number">7</span> Conclusion</h2>
-</section><section id="reference" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="reference">
-<span class="header-section-number">8</span> Reference</h2>
+<p>The table below summarises the relationship between demographic variables and GPA using both frequentist and Bayesian statistics. The demograhic factors such as year, father’s education, mother’s education, mother’s occupation, gender, policy student status, and poor household background, show statistically significant results with p values below 0.05. However, statistical significance does not imply strong practical impact. The reported effect sizes are generally small. For ANOVA tests, eta squared values range from 0.04 to 0.14, indicating small to moderate effects. For t tests, Cohen’s d values range from approximately 0.13 to 0.21 in absolute terms, which fall within the small effect range. This suggests that although some demographic differences in GPA exist, their magnitude is limited. The log Bayes Factor values further support evidence against the null hypothesis for some variables, particularly year and mother’s education. Overall, demographic characteristics explain only a small proportion of variation in GPA, indicating that other factors may play a more substantial role in academic performance.</p>
+<div class="cell">
+<details class="code-fold"><summary>CODE</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">results_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
+<span>  Variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Year"</span>,</span>
+<span>               <span class="st">"Father's education"</span>,</span>
+<span>               <span class="st">"Mother's education"</span>,</span>
+<span>               <span class="st">"Father's occupation"</span>,</span>
+<span>               <span class="st">"Mother's occupation"</span>,</span>
+<span>               <span class="st">"Gender"</span>,</span>
+<span>               <span class="st">"Policy student"</span>,</span>
+<span>               <span class="st">"Minority"</span>,</span>
+<span>               <span class="st">"Poor household"</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  Test_Type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ANOVA"</span>,<span class="st">"ANOVA"</span>,<span class="st">"ANOVA"</span>,<span class="st">"ANOVA"</span>,<span class="st">"ANOVA"</span>,</span>
+<span>                <span class="st">"t-test"</span>,<span class="st">"t-test"</span>,<span class="st">"t-test"</span>,<span class="st">"t-test"</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  p_value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4.31e-07</span>,</span>
+<span>              <span class="fl">1.42e-04</span>,</span>
+<span>              <span class="fl">2.72e-09</span>,</span>
+<span>              <span class="fl">0.07</span>,</span>
+<span>              <span class="fl">6.27e-05</span>,</span>
+<span>              <span class="fl">0.01</span>,</span>
+<span>              <span class="fl">2.05e-03</span>,</span>
+<span>              <span class="fl">0.07</span>,</span>
+<span>              <span class="fl">0.04</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  loge_BF01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6.53</span>,</span>
+<span>                <span class="fl">0.25</span>,</span>
+<span>                <span class="op">-</span><span class="fl">11.57</span>,</span>
+<span>                <span class="fl">4.22</span>,</span>
+<span>                <span class="op">-</span><span class="fl">3.91</span>,</span>
+<span>                <span class="op">-</span><span class="fl">0.82</span>,</span>
+<span>                <span class="op">-</span><span class="fl">1.42</span>,</span>
+<span>                <span class="fl">1.56</span>,</span>
+<span>                <span class="fl">0.55</span><span class="op">)</span>,</span>
+<span>    Effect_Type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"eta_2"</span>,<span class="st">"eta_2"</span>,<span class="st">"eta_2"</span>,<span class="st">"eta_2"</span>,<span class="st">"eta_2"</span>,</span>
+<span>                  <span class="st">"d"</span>,<span class="st">"d"</span>,<span class="st">"d"</span>,<span class="st">"d"</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  Effect_Size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.07</span>, <span class="fl">0.04</span>, <span class="fl">0.07</span>, <span class="fl">0.04</span>, <span class="fl">0.14</span>,</span>
+<span>                  <span class="op">-</span><span class="fl">0.18</span>, <span class="op">-</span><span class="fl">0.14</span>, <span class="op">-</span><span class="fl">0.13</span>, <span class="op">-</span><span class="fl">0.21</span><span class="op">)</span></span>
+<span>  </span>
+<span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    Significant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">p_value</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span>,</span>
+<span>    </span>
+<span>    Effect_Magnitude <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"d"</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">Effect_Size</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.2</span> <span class="op">~</span> <span class="st">"Very small"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"d"</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">Effect_Size</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.5</span> <span class="op">~</span> <span class="st">"Small"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"d"</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">Effect_Size</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.8</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"d"</span> <span class="op">~</span> <span class="st">"Large"</span>,</span>
+<span>      </span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"eta_2"</span> <span class="op">&amp;</span> <span class="va">Effect_Size</span> <span class="op">&lt;</span> <span class="fl">0.01</span> <span class="op">~</span> <span class="st">"Very small"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"eta_2"</span> <span class="op">&amp;</span> <span class="va">Effect_Size</span> <span class="op">&lt;</span> <span class="fl">0.06</span> <span class="op">~</span> <span class="st">"Small"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"eta_2"</span> <span class="op">&amp;</span> <span class="va">Effect_Size</span> <span class="op">&lt;</span> <span class="fl">0.14</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      <span class="va">Effect_Type</span> <span class="op">==</span> <span class="st">"eta_2"</span> <span class="op">~</span> <span class="st">"Large"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu">kable</span><span class="op">(</span><span class="va">results_table</span>, digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>      caption <span class="op">=</span> <span class="st">"Summary of Demographic Effects on GPA with Significance and Effect Size Interpretation"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Summary of Demographic Effects on GPA with Significance and Effect Size Interpretation</caption>
+<colgroup>
+<col style="width: 19%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 16%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Test_Type</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">loge_BF01</th>
+<th style="text-align: left;">Effect_Type</th>
+<th style="text-align: right;">Effect_Size</th>
+<th style="text-align: left;">Significant</th>
+<th style="text-align: left;">Effect_Magnitude</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Year</td>
+<td style="text-align: left;">ANOVA</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">-6.53</td>
+<td style="text-align: left;">eta_2</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Medium</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Father’s education</td>
+<td style="text-align: left;">ANOVA</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: left;">eta_2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Small</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mother’s education</td>
+<td style="text-align: left;">ANOVA</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">-11.57</td>
+<td style="text-align: left;">eta_2</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Medium</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Father’s occupation</td>
+<td style="text-align: left;">ANOVA</td>
+<td style="text-align: right;">0.070</td>
+<td style="text-align: right;">4.22</td>
+<td style="text-align: left;">eta_2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Small</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mother’s occupation</td>
+<td style="text-align: left;">ANOVA</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">-3.91</td>
+<td style="text-align: left;">eta_2</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Large</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gender</td>
+<td style="text-align: left;">t-test</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: left;">d</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Very small</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Policy student</td>
+<td style="text-align: left;">t-test</td>
+<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">-1.42</td>
+<td style="text-align: left;">d</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Very small</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Minority</td>
+<td style="text-align: left;">t-test</td>
+<td style="text-align: right;">0.070</td>
+<td style="text-align: right;">1.56</td>
+<td style="text-align: left;">d</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Very small</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Poor household</td>
+<td style="text-align: left;">t-test</td>
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;">0.55</td>
+<td style="text-align: left;">d</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Small</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section></section></section><section id="conclusion" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="conclusion">
+<span class="header-section-number">6</span> Conclusion</h2>
+</section><section id="reference" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">7</span> Reference</h2>
 <p>Kam, Tin Seong (2026). <a href="https://r4va.netlify.app/chap11">11 Visualising Uncertainty</a> R for Visual Analytics.</p>
 <p>Tran, V. D., Nguyen, K. S. T., &amp; Le, D. N. (2025). Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi. <em>Data in Brief, 59, 111438</em>. https://doi.org/10.1016/j.dib.2025.111438</p>
 <p>Ngoc Le, Diep (2024), “Dataset about VNU students”, Mendeley Data, V1, doi: 10.17632/23ppcdbmhc.1</p>

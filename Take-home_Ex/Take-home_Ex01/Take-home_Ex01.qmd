@@ -70,24 +70,38 @@ The code below installs and loads the required packages into R environment.
 
 ```{r}
 pacman::p_load(tidyverse, ggdist, gganimate, plotly, DT,
-               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot, patchwork, ggpubr)
+               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot, patchwork, ggpubr, plotly, scales, vcd, rlang)
 ```
 
 ### Importing the Data
 
 The *dataset* and *codebook* (published 23 December 2024, version 1) in English were downloaded from the [Mendeley Data](https://data.mendeley.com/datasets/23ppcdbmhc/1) open research repository.
 
-“We use [`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html) from the **readxl** package to import the dataset *Database paper.xlsx* into the R environment as a tibble named `df`. We then preview the dataset using `kable()`.”
-
-The questionnaire includes 12 items on **intrinsic and behavioural factors**, 9 items on **external learning environment factors**, and 1 measuring students’ **GPA** as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.
+We use [`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html) from the **readxl** package to import the dataset *Database paper.xlsx* into the R environment as a tibble named `df`. We then preview the dataset using `kable()`.
 
 ```{r}
 df <- read_excel("data/Database paper.xlsx")
+```
+
+The questionnaire includes 12 items on **intrinsic factors**, 9 items on **external learning environment factors**, and 1 measuring students’ **GPA** as the target variable. Responses were collected using closed-ended questions with ordinal scales typically ranging from 1–5, depending on the question.
+
+```{r}
 kable(head(df), "html")
+```
+
+The output from `glimpse()` shows that the raw dataset initially contains numeric values for all variables. Therefore, data wrangling is required in the following section to correctly convert variables into their appropriate data types, such as categorical or ordered factors, before conducting further analysis.
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+glimpse(df)
 ```
 
 ## Data Wrangling
 
+In this section, variable names are first standardised to follow tidyverse naming conventions. The variables are then recoded according to their respective data types. Finally, the cleaned dataset is saved as a separate file for subsequent analysis.
+
+::: panel-tabset
 ### Standardise variable names
 
 The variable names are slightly inconsistent due to the English translation of the *codebook*.
@@ -102,7 +116,7 @@ The code below uses the `rename()` function to standardise variable names.
 
 df <- df %>% 
   rename(
-  gpa = GPA,
+  gpa_num = GPA,
   year = Year,
   gender = Gender,
   policy_student = Policy_Stu,
@@ -137,20 +151,20 @@ A summary table is then constructed using the DT package to demonstrate the upda
 #| code-summary: "SHOW"
 
 simple_table <- data.frame(
-  old = c("GPA","Year", "Gender", "Policy_Stu", "Minority_Stu", "Poor_Stu",
+  old = c("GPA", "[Drived]", "Year", "Gender", "Policy_Stu", "Minority_Stu", "Poor_Stu",
           "Father_Edu", "Mother_Edu", "Father_Occupation", "Mother_Occupation",
           "Time_Friends", "Time_SocicalMedia", "Time_Studying",
           "Adapt_Learning_Uni", "Study_Methods", "SupportOf_Uni", "SupportOf_Lec",
           "Facilitie_Uni", "Quality_Lecturer", "TrainingCurriculum",
           "Competitive_Class", "InfuenceF_Friends"),
-  new = c("gpa", "year", "gender", "policy_student", "minority_student", "poor_household",
+  new = c("gpa_num","gpa_ordinal","year", "gender", "policy_student", "minority_student", "poor_household",
           "father_education", "mother_education", "father_occupation", "mother_occupation",
           "time_friends", "time_social_media", "time_studying", 
           "adapt_uni", "study_methods", "uni_support", "lecturer_support",
           "facilities", "lecturer_quality", "curriculum", "class_competition",
           "peer_influence"),
   description = c(
-        "Cumulative Grade Point Average (Poor (<2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (>3.6)",
+        "Cumulative Grade Point Average (Poor (<2.0), Average (2.0-2.5), Fair (2.5-3.2), Good (3.2-3.6), Excellent (>3.6)","Drived from GPA",
     "Academic year (1=First-year, 2=Second-year, 3=Third-year, 4=Fourth-year, 5=Graduated)",
     "Gender identity (1=Male, 2=Female)",
     "Student on government policy support (1=Yes, 2=No)",
@@ -196,45 +210,45 @@ datatable(
 ) 
 ```
 
-The names() or colnames() function from Base R allows for a quick review of the column names to ensure they have been updated correctly before proceeding to the next data preparation step.
-
-```{r}
-names(df)
-```
-
-### Recode categorical variables
-
-**ADD likert value**
+### Recode variables
 
 The summary statistics show that the variables take values ranging from 1 to 6; however, these numeric codes do not provide meaningful interpretation without recoding them into labelled categories.
 
 ```{r}
-
-summary(df)
+#| code-fold: true
+#| code-summary: "SHOW"
+summary(df$year)
+summary(df$father_education)
 ```
 
-The table shows how the variables will be updated based on their data types. **Ordinal** variables with a natural order, such as study year or time spent studying, are converted using `factor()` with the `order` argument enabled. **Nominal** variables without an inherent order, such as gender or parents’ occupation, are converted into categorical factors. Likert scale perception variables, such as lecturer quality and university support, are retained as numeric values to ensure correct calculations.
+The table below outlines how each variable is processed according to its data type. **Ordinal** variables with a natural order, such as study year or time spent studying, are converted using `factor()` with the order argument enabled. **Nominal** variables without inherent order, such as gender or parents’ occupation, are converted into categorical factors.
 
-For the target variable, the **numeric GPA** is required to compute averages and uncertainty, while a **categorical** GPA is created to support proportion-based visualisations such as the funnel plot.
+**Likert scale variables**, including lecturer quality and university support, are treated as categorical rather than continuous. Although measured on a five point scale, they represent ordered response categories rather than precise numerical distances. In some studies, Likert responses are grouped into negative (1 to 2), neutral (3), and positive (4 to 5) categories. When grouped in this way, the variable is treated as nominal because the focus is on sentiment categories rather than order intensity.
+
+In this study, the scale ranges directionally from “not at all” to “very.” While the responses have a natural order, they are still treated as categorical variables to avoid assuming equal spacing between scale points.
+
+The **GPA** variable is derived from grouped categories in the survey codebook rather than exact GPA values. While cumulative GPA is conceptually a continuous measure, it is recorded in five ordered categories: Poor (1), Average (2), Fair (3), Good (4), and Excellent (5). As such, the observed data are ordinal because they represent GPA ranges rather than precise scores, and equal spacing between categories cannot be directly verified.
+
+However, GPA is also analysed as a numeric variable in parts of this study. This is justified because the categories reflect increasing levels of academic performance and are based on an underlying continuous construct. Treating GPA as numeric allows for the calculation of summary statistics such as the mean and the application of parametric tests. Given the large sample size, this approach is considered acceptable and statistically robust, despite the limitations associated with grouped data.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "SHOW"
 
 simple_table <- data.frame(
-  new = c("gpa","year", "gender", "policy_student", "minority_student", "poor_household",
+  new = c("gpa_num","gpa_ordinal","year", "gender", "policy_student", "minority_student", "poor_household",
           "father_education", "mother_education", "father_occupation", "mother_occupation",
           "time_friends", "time_social_media", "time_studying", 
           "adapt_uni", "study_methods", "uni_support", "lecturer_support",
           "facilities", "lecturer_quality", "curriculum", "class_competition",
           "peer_influence"),
-  type = c("Ordinal(Likert Scale)", "Ordinal", "Nominal", "Nominal", "Nominal", "Nominal",
+  type = c("Numeric", "Ordinal", "Ordinal", "Nominal", "Nominal", "Nominal", "Nominal",
            "Nominal", "Nominal", "Nominal", "Nominal",
            "Ordinal", "Ordinal", "Ordinal", 
            "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)",
            "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)", "Ordinal(Likert Scale)",
            "Ordinal(Likert Scale)"),
-  action = c("factor(..., ordered = TRUE)","factor(..., ordered = TRUE)", "factor()", "factor()", "factor()", "factor()",
+  action = c("Keep numeric", "factor(..., ordered = TRUE)","factor(..., ordered = TRUE)", "factor()", "factor()", "factor()", "factor()",
              "factor()", "factor())", "factor()", "factor()",
              "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", 
              "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)", "factor(..., ordered = TRUE)",
@@ -263,22 +277,22 @@ datatable(
   formatStyle(
     "type",
     backgroundColor = DT::styleEqual(
-      c("Nominal", "Ordinal","Ordinal(Likert Scale)"),
-      c("#cce5ff", "#ffe5cc", "#d4edda")
+      c("Numeric", "Nominal", "Ordinal","Ordinal(Likert Scale)"),
+      c("#ccee2f", "#cce5ff", "#ffe5cc", "#d4edda")
     )
   )
 ```
 
-::: panel-tabset
+The code below processes the data as described in the previous section.
+
 #### Group A
 
 ```{r}
-#| code-fold: true
-#| code-summary: "SHOW"
 
 df_factored <- df%>%
     mutate(
-      gpa = factor(gpa,levels = 1:5,
+      gpa_num = as.numeric(gpa_num),
+      gpa_ordinal = factor(gpa_num,levels = 1:5,
                 labels = c('Poor', 'Average', 'Fair', 'Good', 'Excellent'),ordered = TRUE),
       year = factor(year,levels = 1:5, labels = c('First-year','Second-year','Third-year', 'Fourth-year','Graduated'),ordered = TRUE),
       gender = factor(gender, levels = 1:2, labels = c('Male', 'Female')),
@@ -304,8 +318,7 @@ df_factored <- df%>%
 #### Group B
 
 ```{r}
-#| code-fold: true
-#| code-summary: "SHOW"
+
 convert_b_vars <- function(df) {
   likert_labels <- c('Not at all', 'Little', 'Moderate', 'Quite', 'Very')
   
@@ -315,8 +328,7 @@ convert_b_vars <- function(df) {
   for(var in b_vars) {
       df[[var]] <- factor(df[[var]],
                           levels = 1:5,
-                          labels = likert_labels,
-                          ordered = TRUE)
+                          labels = likert_labels)
       }
   
   return(df)
@@ -324,13 +336,8 @@ convert_b_vars <- function(df) {
 
 df_factored <- convert_b_vars(df_factored)
 ```
-:::
 
-end of panel-tabset
-
-brief summary what we did so far.
-
-preview of the data
+After the transformation, the `summary()` function and `dt table` are used to verify that variables have been correctly recoded and assigned meaningful labels. This step ensures that the data are properly structured according to their respective types and are ready for subsequent visualisation and statistical inference.
 
 ```{r}
 summary(df_factored)
@@ -344,78 +351,522 @@ var_summary <- tibble(
 datatable(var_summary)
 ```
 
-### Pivot for likert?
-
-## Workflow
-
-```{mermaid}
-flowchart LR
-A --> B
-```
+### Rename the dataset
 
 A cleaned copy of the dataset is created and named `vnu`.
-
-```{r}
-#| eval: false
-write_csv(df_factored, "data/vnu.csv")
-```
 
 ```{r}
 vnu <-df_factored
 ```
 
+We also review the column names and check for missing values in the final dataset using `names()` and `sum(is.na())`. This step ensures that all variables are correctly labelled and confirms whether any missing data remain before proceeding with further analysis.
 
 ```{r}
 names(vnu)
 ```
-```{r, fig.weight = 10, fig.height=6}
-count <- ggplot(vnu) +
-  geom_bar(aes(x = gpa), 
+
+```{r}
+sum(is.na(df))
+```
+:::
+
+## Visualisation
+
+### Univariate Analysis
+
+This section begins with the target variable, GPA, to examine the overall academic performance of the 2,170 students. The distribution and key summary statistics, such as mean, median, frequency, and percentage, are reviewed to provide a clear overview before proceeding to further analysis.
+
+#### GPA
+
+First, we generate an overview of the GPA distribution and conduct a statistical test using [`gghistostats()`](https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/gghistostats.html) from the **ggstatsplot** package. This function allows us to visualise the distribution of GPA while simultaneously displaying key summary statistics and the results of a one sample t test. By combining visualisation and inference in a single plot, it provides a clear understanding of both the overall pattern of GPA and whether the average performance differs significantly from the selected benchmark value.
+
+The first plot presents the distribution of GPA in both counts and percentages, based on 2,170 valid responses. Fewer than 10 percent of students reported a GPA below 2.5, indicating that most students perform at least at the Fair level. The mean GPA is 3.2 and the median is 3, suggesting overall performance is around the boundary between Fair and Good. Given the large sample size, a formal test of normality is not required. By the [Central Limit Theorem](https://en.wikipedia.org/wiki/Central_limit_theorem), the sampling distribution of the mean is approximately normal, making the one sample t test appropriate and robust. The mean is therefore a reasonable summary of central tendency.
+
+In the second plot, a one sample t test was conducted to examine whether the average GPA is significantly above 3.2, the boundary between Fair and Good. The results show a p value below 0.05 and a large negative log Bayes Factor $log_e(BF_{01})$. We can conclude there is strong evidence against the null hypothesis. This indicates that the average student performs significantly above the Fair level. More detailed explanation on how to interpret Bayes Factor can be found in Hands-on Exercise [04-2](https://isss608-ypan.netlify.app/hands-on_ex/hands-on_ex04/hands-on_ex04_2).
+
+```{r, fig.height= 9, fig.width=15}
+#| code-fold: true
+#| code-summary: "CODE"
+
+
+stats <- vnu %>%
+  summarise(
+    mean_gpa = mean(gpa_num, na.rm = TRUE),
+    median_gpa = median(gpa_num, na.rm = TRUE),
+    sd_gpa = sd(gpa_num, na.rm = TRUE),
+    n = n()
+  )
+
+gpa_counts <- vnu %>%
+  count(gpa_num) %>%
+  mutate(
+    percentage = n / sum(n) * 100,
+    label = paste0(n, "\n(", round(percentage, 1), "%)")
+  )
+
+p1 <- ggplot(vnu, aes(x = gpa_num)) +
+  geom_bar(fill = "lightblue", color = "black") + 
+  geom_text(data = gpa_counts,
+            aes(x = gpa_num, y = n, label = label),
+            vjust = -0.5,
+            size = 3.5) +
+  scale_x_continuous(breaks = 1:5) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+  
+  geom_vline(xintercept = stats$mean_gpa, 
+           color = "red", linetype = "dashed", size = 0.8) +
+  annotate("text", 
+         x = stats$mean_gpa + 0.15, 
+         y = max(gpa_counts$n) * 0.9, 
+         label = paste0("Mean = ", round(stats$mean_gpa, 2)),
+         color = "red", 
+         size = 3.8,
+         fontface = "bold",
+         hjust = 0) +
+
+  geom_vline(xintercept = stats$median_gpa, 
+           color = "darkgreen", linetype = "dotted", size = 0.8) +
+  annotate("text", 
+         x = stats$median_gpa + 0.15, 
+         y = max(gpa_counts$n) * 0.8, 
+         label = paste0("Median = ", round(stats$median_gpa, 2)),
+         color = "darkgreen", 
+         size = 3.8,
+         fontface = "bold",
+         hjust = 0) +
+  
+  annotate("text", 
+           x = 5, 
+           y = Inf, 
+           label = paste0(
+             "N = ", stats$n,
+             " | SD = ", round(stats$sd_gpa, 2)
+           ),
+           vjust = 1.5,  
+           hjust = 1,
            color = "black", 
-           fill = "lightblue") +
-  geom_text(aes(x = gpa, label = after_stat(count)),
-            stat = "count",
-            vjust = -0.8,
-            size = 3) +
-  scale_x_discrete(limits = levels(vnu$gpa)) +
-  labs(title = "Distribution of GPA Categories",
-       x = "GPA Category",
-       y = "Count") +
-  ylim(0, max(table(vnu$gpa)) * 1.1)
+           size = 4,
+           fontface = "bold") +
+  
+  labs(title = "GPA Distribution: Frequency Bar Chart",
+       subtitle = "Counts and percentages shown; red dashed = mean, green dotted = median",
+       x = "GPA",
+       y = "Number of Students") +
+  ggthemes::theme_fivethirtyeight() + 
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 10, color = "gray30"),
+    axis.title = element_text(size = 11),
+    axis.text = element_text(size = 10),
+    plot.margin = margin(10, 10, 10, 10)  
+  )
 
+p2 <- gghistostats(
+  data = vnu,
+  x = gpa_num,
+  title = "GPA Distribution: Statistical Test",
+  subtitle = paste0("One-sample t-test against μ = 3.2"),
+  binwidth = 1,
+  bar.fill = "lightblue",
+  bar.color = "black",
+  type = "p",
+  test.value = 3.2,
+  centrality.line.args = list(color = "red", linetype = "dashed"),
+) + 
+  labs(
+    x = "GPA", 
+    y_left = "Count",  
+    y_right = "Percentage"
+  ) + 
+  ggthemes::theme_fivethirtyeight() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 10, color = "gray30"),
+    axis.title = element_text(size = 11),
+    axis.text = element_text(size = 10),
+    plot.margin = margin(10, 10, 10, 10) 
+  )
 
-count
+combined_plot <- (p1 | p2) +
+  plot_annotation(
+    title = "Analysis of VNU Student GPA Distribution",
+    subtitle = "Comparison of basic descriptive statistics and inferential testing",
+    tag_levels = "I",
+    caption = "Data source: Dataset about VNU students (Mendeley Data)",
+    theme = theme(
+      plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 12, color = "gray30", hjust = 0.5),
+      plot.caption = element_text(size = 10, color = "gray50")
+    )
+  ) &
+  theme(plot.margin = margin(5, 5, 5, 5)) 
+
+combined_plot + plot_layout(heights = c(1, 1))  
 
 ```
 
+#### Independent Variables
+
+Due to the large number of variables, they are divided into two groups to improve visual clarity and prevent overcrowding on the screen.
+
+The independent variables are grouped into 12 intrinsic factors and 9 extrinsic factors. The intrinsic factors include demographic characteristics and self reported time use, such as time spent studying, socialising, and entertainment. These variables reflect students’ personal characteristics and behaviours.
+
+The extrinsic factors consist of students’ perceptions of external or environmental influences that may affect academic performance. These include feedback on institutional support, teaching quality, and other contextual factors.
+
+```{r}
+
+intrinsic <- names(vnu[1:12])
+extrinsic <- names(vnu[14:22])
+
+intrinsic
+extrinsic
+```
+
+The code below defines a function that applies a consistent plotting style across each set of independent variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "CODE"
+plot_bars <- function(col, data = vnu) {
+  # ensure the variable is treated as a factor so levels/order are respected
+  data[[col]] <- as.factor(data[[col]])
+
+  max_n <- max(table(data[[col]]), na.rm = TRUE)
+
+  ggplot(data, aes(x = .data[[col]])) +
+    geom_bar() +
+    geom_text(
+      aes(label = paste0(
+        after_stat(count), "\n(",
+        round(after_stat(count) / sum(after_stat(count)) * 100, 1),
+        "%)"
+      )),
+      stat = "count",
+      vjust = -0.4,
+      size = 3
+    ) +
+    ggtitle(paste("Distribution of", toupper(col))) +
+    xlab(col) +
+    ylab("Count") +
+    ylim(0, max_n * 1.25) +
+    ggthemes::theme_fivethirtyeight() 
+}
+
+```
+
+::: panel-tabset
+##### Student profile
+
+The student profile analysis shows several patterns.
+
+Most respondents are graduates (73.5%), with smaller proportions in fourth year (20.3%) and third year (6.2%). The sample is predominantly female (88.9%), with males representing 11.1%. The majority are not policy students (64.7%), do not belong to minority groups (94.1%), and do not come from poor households (96%).
+
+Parental education levels are generally moderate to high, that over 80% of students'parents have completed high school or university. Freelance work is the most common occupation for both parents, followed by government employment and self employment.
+
+In terms of time spent, most students spend 1 to 2 hours with friends and a similar amount of time on social media. However, study time is noticeably higher, with 82.2% of students spending more than 8 hours on study.
+
+```{r, fig.height=25, fig.width=25}
+#| code-fold: true
+#| code-summary: "CODE"
+
+plots1 <- lapply(intrinsic, plot_bars)
+
+wrap_plots(plots1, ncol = 3) +
+  plot_annotation(
+    title = "Student Profile Analysis",
+    caption = "Data source: VNU students dataset (Mendeley Data)",
+    tag_levels = "1",
+    theme = theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      plot.caption = element_text(size = 10, colour = "grey50")
+    )
+  )
+```
+
+##### External influences
+
+The external influences analysis indicates that students generally perceive environmental study factors as important to their academic performance.
+
+For adaptation to university and study methods, around 40% of students selected **"moderate"**, suggesting that these factors are viewed as having a noticeable but not strong influence on GPA.
+
+For university support (38.2%), lecturer support(44.6%%), facilities(42.7%) lecturer quality(53.1%), and curriculum (40%), most of respondents selected **"very"**. Thus these factors are considered highly influential on academic outcomes.
+
+Class competition and peer influence show about 35% of students rating them as **"quite"** important.
+
+Overall, the results suggest that students recognise external academic and environmental factors as meaningful contributors to their performance, with lecturer support and Pedagogical quality perceived as particularly influential.
+
+```{r, fig.height=20, fig.width=20}
+#| code-fold: true
+#| code-summary: "CODE"
+
+plots2 <- lapply(extrinsic, plot_bars)
+
+wrap_plots(plots2, ncol = 3) +
+  plot_annotation(
+    title = "External influences Analysis",
+    caption = "Data source: VNU students dataset (Mendeley Data)",
+    tag_levels = "1",
+    theme = theme(
+      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      plot.caption = element_text(size = 10, colour = "grey50")
+    )
+  )
+```
+:::
+
+### Multivariate Analysis
+
+
+#### Demographics
+
+Here we use `ggbetweenstats()` to visualise the distribution of GPA across different demographic groups listed above. The function automatically performs the appropriate statistical test to examine whether the average GPA differs between groups. For example, it tests whether the mean GPA is the same for male and female students, or whether GPA varies across different parental occupation categories.
+
+In addition to visualisation, the function reports key inferential statistics, including the p value and log Bayes Factor, which indicate whether group differences are statistically supported. However, statistical significance alone does not reflect the practical importance of the difference. Therefore, effect sizes such as Cohen’s d (for two groups) or eta squared (for multiple groups) are also examined to assess the magnitude of the difference. This combined approach allows both statistical evidence and practical impact to be evaluated when interpreting demographic differences in GPA.
 
 
 ```{r}
-intrinsic <- names(vnu[1:12])
-extrinsic <- names(vnu[14:22])
+demographics <- names(vnu[1:9])
+demographics
 ```
 
+```{r}
+#| code-fold: true
+#| code-summary: "CODE"
 
-```{r, fig.width=20, fig.height=20}
-plot_bars <- function(col) {
-  ggplot(vnu, aes(x = .data[[col]])) +
-    geom_bar(color = "black", fill = "lightblue") +
-    ggtitle(paste("Distribution of", col)) +
-    xlab(col) 
-}
+# 1. YEAR (3+ groups ANOVA)
+p1 <- ggbetweenstats(
+  data = vnu,
+  x = year,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "eta",
+  pairwise.comparisons = TRUE,
+  title = "GPA by Year",
+  xlab = "Year",
+  ylab = "GPA"
+)
 
-plots1 <- lapply(intrinsic, plot_bars)
-ggarrange(plotlist = plots1, ncol = 3, nrow =4)
+# 2. GENDER (t-test)
+p2 <- ggbetweenstats(
+  data = vnu,
+  x = gender,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "d",  # Cohen's d for 2 groups
+  pairwise.comparisons = TRUE,
+  title = "GPA by Gender",
+  xlab = "Gender",
+  ylab = "GPA"
+)
+
+# 3. POLICY STUDENT (t-test)
+p3 <- ggbetweenstats(
+  data = vnu,
+  x = policy_student,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "d",
+  title = "GPA by Policy Student Status",
+  xlab = "Policy Student",
+  ylab = "GPA"
+)
+
+# 4. MINORITY STUDENT (t-test)
+p4 <- ggbetweenstats(
+  data = vnu,
+  x = minority_student,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "d",
+  title = "GPA by Minority Status",
+  xlab = "Minority Student",
+  ylab = "GPA"
+)
+
+# 5. POOR HOUSEHOLD (t-test)
+p5 <- ggbetweenstats(
+  data = vnu,
+  x = poor_household,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "d",
+  title = "GPA by Poor Household Status",
+  xlab = "Poor Household",
+  ylab = "GPA"
+)
+
+# 6. FATHER EDUCATION (ANOVA)
+p6 <- ggbetweenstats(
+  data = vnu,
+  x = father_education,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "eta",
+  pairwise.comparisons = TRUE,
+  title = "GPA by Father's Education",
+  xlab = "Father's Education",
+  ylab = "GPA"
+) + theme(axis.text.x = element_text(hjust = 1)) 
+
+# 7. MOTHER EDUCATION (ANOVA)
+p7 <- ggbetweenstats(
+  data = vnu,
+  x = mother_education,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "eta",
+  pairwise.comparisons = TRUE,
+  title = "GPA by Mother's Education",
+  xlab = "Mother's Education",
+  ylab = "GPA"
+) + theme(axis.text.x = element_text(hjust = 1))
+
+# 8. FATHER OCCUPATION (ANOVA)
+p8 <- ggbetweenstats(
+  data = vnu,
+  x = father_occupation,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "eta",
+  pairwise.comparisons = TRUE,
+  title = "GPA by Father's Occupation",
+  xlab = "Father's Occupation",
+  ylab = "GPA"
+) + theme(axis.text.x = element_text(hjust = 1))
+
+# 9. MOTHER OCCUPATION (ANOVA)
+p9 <- ggbetweenstats(
+  data = vnu,
+  x = mother_occupation,
+  y = gpa_num,
+  type = "parametric",
+  effsize.type = "eta",
+  pairwise.comparisons = TRUE,
+  title = "GPA by Mother's Occupation",
+  xlab = "Mother's Occupation",
+  ylab = "GPA"
+) + theme(axis.text.x = element_text(hjust = 1))
+
 ```
 
-```{r, fig.width=20, fig.height=20}
-plots2 <- lapply(extrinsic, plot_bars)
-ggarrange(plotlist = plots2, ncol = 3, nrow =3)
+Effect sizes are interpreted using Cohen’s (1988) conventional benchmarks. For [Cohen’s d](https://en.wikipedia.org/wiki/Effect_size), absolute values of 0.20, 0.50, and 0.80 represent small, medium, and large effects, respectively. For [eta squared](https://en.wikiversity.org/wiki/Eta-squared) ($\eta^2$), values of 0.01, 0.06, and 0.14 indicate small, medium, and large effects.
+
+|           |                |                                               |
+|-----------|----------------|-----------------------------------------------|
+| Cohen's d (abs value) | Interpretation | Meaning                                       |
+| 0.20      | Small          | Group means differ by 0.2 standard deviations |
+| 0.50      | Medium         | Group means differ by 0.5 standard deviations |
+| 0.80      | Large          | Group means differ by 0.8 standard deviations |
+
+: Cohen's d (for t-tests, 2 groups)
+
+| $\eta^2$ | Interpretation | \% Variance Explained                         |
+|------|----------------|-----------------------------------------------|
+| 0.01 | Small          | 1% of GPA variance explained by this variable |
+| 0.06 | Medium         | 6% of GPA variance explained                  |
+| 0.14 | Large          | 14% of GPA variance explained                 |
+
+: Eta-squared (for ANOVA, 3+ groups)
+
+
+```{r,fig.width = 25, fig.height=25}
+
+#| code-fold: true
+#| code-summary: "CODE"
+
+combined_plot <- (p1 | p2 | p3) / 
+                 (p4 | p5 | p6) / 
+                 (p7 | p8 | p9) +
+  plot_annotation(
+    title = "Analysis of VNU Student GPA Across Groups",
+    subtitle = "Comparison of GPA means across demographic and socioeconomic factors",
+    tag_levels = "1",  
+    caption = "Data source: Dataset about VNU students (Mendeley Data)",
+    theme = theme(
+      plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 12, color = "gray30", hjust = 0.5),
+      plot.caption = element_text(size = 10, color = "gray50", hjust = 0.5)
+    )
+  ) &
+  theme(
+    plot.margin = margin(5, 5, 5, 5),
+    plot.tag = element_text(size = 12, face = "bold") 
+  )
+
+
+
+combined_plot
+
 ```
 
+The table below summarises the relationship between demographic variables and GPA using both frequentist and Bayesian statistics. The demograhic factors such as year, father’s education, mother’s education, mother’s occupation, gender, policy student status, and poor household background, show statistically significant results with p values below 0.05. However, statistical significance does not imply strong practical impact. The reported effect sizes are generally small. For ANOVA tests, eta squared values range from 0.04 to 0.14, indicating small to moderate effects. For t tests, Cohen’s d values range from approximately 0.13 to 0.21 in absolute terms, which fall within the small effect range. This suggests that although some demographic differences in GPA exist, their magnitude is limited. The log Bayes Factor values further support evidence against the null hypothesis for some variables, particularly year and mother’s education. Overall, demographic characteristics explain only a small proportion of variation in GPA, indicating that other factors may play a more substantial role in academic performance.
 
+```{r}
+#| code-fold: true
+#| code-summary: "CODE"
 
-## EDA
+results_table <- tibble(
+  Variable = c("Year",
+               "Father's education",
+               "Mother's education",
+               "Father's occupation",
+               "Mother's occupation",
+               "Gender",
+               "Policy student",
+               "Minority",
+               "Poor household"),
+  
+  Test_Type = c("ANOVA","ANOVA","ANOVA","ANOVA","ANOVA",
+                "t-test","t-test","t-test","t-test"),
+  
+  p_value = c(4.31e-07,
+              1.42e-04,
+              2.72e-09,
+              0.07,
+              6.27e-05,
+              0.01,
+              2.05e-03,
+              0.07,
+              0.04),
+  
+  loge_BF01 = c(-6.53,
+                0.25,
+                -11.57,
+                4.22,
+                -3.91,
+                -0.82,
+                -1.42,
+                1.56,
+                0.55),
+    Effect_Type = c("eta_2","eta_2","eta_2","eta_2","eta_2",
+                  "d","d","d","d"),
+  
+  Effect_Size = c(0.07, 0.04, 0.07, 0.04, 0.14,
+                  -0.18, -0.14, -0.13, -0.21)
+  
+
+) %>%
+  
+  mutate(
+    Significant = ifelse(p_value < 0.05, "Yes", "No"),
+    
+    Effect_Magnitude = case_when(
+      Effect_Type == "d" & abs(Effect_Size) < 0.2 ~ "Very small",
+      Effect_Type == "d" & abs(Effect_Size) < 0.5 ~ "Small",
+      Effect_Type == "d" & abs(Effect_Size) < 0.8 ~ "Medium",
+      Effect_Type == "d" ~ "Large",
+      
+      Effect_Type == "eta_2" & Effect_Size < 0.01 ~ "Very small",
+      Effect_Type == "eta_2" & Effect_Size < 0.06 ~ "Small",
+      Effect_Type == "eta_2" & Effect_Size < 0.14 ~ "Medium",
+      Effect_Type == "eta_2" ~ "Large"
+    )
+  )
+
+kable(results_table, digits = 3,
+      caption = "Summary of Demographic Effects on GPA with Significance and Effect Size Interpretation")
+
+```
 
 ## Conclusion
 
