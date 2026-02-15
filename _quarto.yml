@@ -55,7 +55,7 @@ website:
             href: "In-class_Ex/In-class_Ex03/In-class_Ex03.html" 
       - text: "Take-home Exercise"
         menu: 
-          - text: "01: "
+          - text: "01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data"
             href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
           - text: "02: "
             href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" 

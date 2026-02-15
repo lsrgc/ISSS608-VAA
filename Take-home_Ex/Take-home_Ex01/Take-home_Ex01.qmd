@@ -1,5 +1,5 @@
 ---
-title: "01: What Helps Students Achieve High Academic Performance? A Visual Survey Analysis"
+title: "01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data"
 author: "Yiqiong PAN"
 date: "02 Feb, 2026"
 date-modified: last-modified
@@ -36,41 +36,33 @@ Through this study, we aim to apply visually driven survey analysis methods to i
 
 All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
 
-## Workflow Diagram
-
-The overall data preparation and workflow is summarised in the following diagram.
-
-**PLACE HOLDER**
-
-```{r}
-library(DiagrammeR)
-#| echo: false
-# Render as HTML widget
-
-```
 
 ## Getting Started
 
 ### Installing and Loading the Required Libraries
 
-There are **???** packages that will be used in this exercise.
+There are **12** packages that will be used in this exercise.
 
 | Package | Description |
 |------------------------------------|------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [ggdist](https://mjskay.github.io/ggdist/) | An R package that extends ggplot2 with flexible geoms and stats for visualising distributions and uncertainty. |
-| [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
-| [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
+| [knitr](https://cran.r-project.org/web/packages/knitr/index.html/) | Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques. |
+| [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) | An extension of **ggplot2** package for creating graphics with enriched details from statistical tests|
 | [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
-| [crosstalk](https://rstudio.github.io/crosstalk/index.html) | An extension of the **htmlwidgets** package that provides classes, functions, and conventions to enable cross-widget interactions, such as linked brushing and filtering, across multiple interactive widgets. |
-| [colorspace](https://colorspace.r-forge.r-project.org/) | Provides tools for selecting, manipulating and applying colours and colour palettes in data visualisations. |
-| [ggridges](https://cran.r-project.org/web/packages/ggridges/refman/ggridges.html) | A gglot extension that creates ridgeline plots to visualise the changes in distributions over time or space. |
+| [patchwork](https://cran.r-project.org/web/packages/patchwork/index.html) | Simpily combine separate ggplots into the same graphic. |
+| [scales](https://cran.r-project.org/web/packages/scales/index.html) | Provides graphical scales map data to aesthetics. |
+| [vcd](https://cran.r-project.org/web/packages/vcd/index.html) | Provides visualisation techniques, data sets, summary and inference procedures aimed particularly at categorical data, such as mosaic plot.  |
+| [rlang](https://cran.r-project.org/web/packages/rlang/index.html) | Tools for working with base types, expressions, environments, and especially "tidy evaluation. |
+| [magick](https://cran.r-project.org/web/packages/magick/index.html) | Offer advanced graphics and image-Processing in R.|
+| [ggthemes](https://cran.r-project.org/web/packages/ggthemes/index.html) | Provides 'ggplot2' themes and scales that replicate some of the famous looks. |
+| [readxl](https://cran.r-project.org/web/packages/readxl/readxl.pdf) | Imports excel files into R. |
 
 The code below installs and loads the required packages into R environment.
 
 ```{r}
-pacman::p_load(tidyverse, ggdist, gganimate, plotly, DT,
-               crosstalk, colorspace, ggridges, readxl, knitr, ggstatsplot, patchwork, ggpubr, plotly, scales, vcd, rlang)
+pacman::p_load(tidyverse, ggdist, DT, readxl,
+             ggridges, knitr, ggstatsplot, patchwork, scales, vcd, rlang, magick, ggthemes)
 ```
 
 ### Importing the Data
@@ -465,7 +457,7 @@ p2 <- gghistostats(
   data = vnu,
   x = gpa_num,
   title = "GPA Distribution: Statistical Test",
-  subtitle = paste0("One-sample t-test against μ = 3.2"),
+  subtitle = paste0("One-sample t-test against mean = 3.2"),
   binwidth = 1,
   bar.fill = "lightblue",
   bar.color = "black",
@@ -616,13 +608,11 @@ wrap_plots(plots2, ncol = 3) +
 
 ### Multivariate Analysis
 
-
 #### Demographics
 
 Here we use `ggbetweenstats()` to visualise the distribution of GPA across different demographic groups listed above. The function automatically performs the appropriate statistical test to examine whether the average GPA differs between groups. For example, it tests whether the mean GPA is the same for male and female students, or whether GPA varies across different parental occupation categories.
 
 In addition to visualisation, the function reports key inferential statistics, including the p value and log Bayes Factor, which indicate whether group differences are statistically supported. However, statistical significance alone does not reflect the practical importance of the difference. Therefore, effect sizes such as Cohen’s d (for two groups) or eta squared (for multiple groups) are also examined to assess the magnitude of the difference. This combined approach allows both statistical evidence and practical impact to be evaluated when interpreting demographic differences in GPA.
-
 
 ```{r}
 demographics <- names(vnu[1:9])
@@ -749,28 +739,26 @@ p9 <- ggbetweenstats(
 
 ```
 
-Effect sizes are interpreted using Cohen’s (1988) conventional benchmarks. For [Cohen’s d](https://en.wikipedia.org/wiki/Effect_size), absolute values of 0.20, 0.50, and 0.80 represent small, medium, and large effects, respectively. For [eta squared](https://en.wikiversity.org/wiki/Eta-squared) ($\eta^2$), values of 0.01, 0.06, and 0.14 indicate small, medium, and large effects.
+Effect sizes are interpreted using Cohen’s (1988) conventional benchmarks. For [Cohen’s d](https://en.wikipedia.org/wiki/Effect_size), absolute values of 0.20, 0.50, and 0.80 represent small, medium, and large effects, respectively. For [partial eta squared](https://en.wikiversity.org/wiki/Eta-squared) ($\eta^2_p$), values of 0.01, 0.06, and 0.14 indicate small, medium, and large effects.
 
-|           |                |                                               |
-|-----------|----------------|-----------------------------------------------|
-| Cohen's d (abs value) | Interpretation | Meaning                                       |
-| 0.20      | Small          | Group means differ by 0.2 standard deviations |
-| 0.50      | Medium         | Group means differ by 0.5 standard deviations |
-| 0.80      | Large          | Group means differ by 0.8 standard deviations |
+|  |  |  |
+|------------------|------------------|------------------------------------|
+| **Cohen's d (abs value)** | **Interpretation** | **Meaning** |
+| 0.20 | Small | Group means differ by 0.2 standard deviations |
+| 0.50 | Medium | Group means differ by 0.5 standard deviations |
+| 0.80 | Large | Group means differ by 0.8 standard deviations |
 
 : Cohen's d (for t-tests, 2 groups)
 
-| $\eta^2$ | Interpretation | \% Variance Explained                         |
-|------|----------------|-----------------------------------------------|
-| 0.01 | Small          | 1% of GPA variance explained by this variable |
-| 0.06 | Medium         | 6% of GPA variance explained                  |
-| 0.14 | Large          | 14% of GPA variance explained                 |
+| $\eta^2_p$ | Interpretation | \% Variance Explained                         |
+|------------------|------------------|-------------------------------------|
+| 0.01       | Small          | 1% of GPA variance explained by this variable |
+| 0.06       | Medium         | 6% of GPA variance explained                  |
+| 0.14       | Large          | 14% of GPA variance explained                 |
 
 : Eta-squared (for ANOVA, 3+ groups)
 
-
 ```{r,fig.width = 25, fig.height=25}
-
 #| code-fold: true
 #| code-summary: "CODE"
 
@@ -799,7 +787,7 @@ combined_plot
 
 ```
 
-The table below summarises the relationship between demographic variables and GPA using both frequentist and Bayesian statistics. The demograhic factors such as year, father’s education, mother’s education, mother’s occupation, gender, policy student status, and poor household background, show statistically significant results with p values below 0.05. However, statistical significance does not imply strong practical impact. The reported effect sizes are generally small. For ANOVA tests, eta squared values range from 0.04 to 0.14, indicating small to moderate effects. For t tests, Cohen’s d values range from approximately 0.13 to 0.21 in absolute terms, which fall within the small effect range. This suggests that although some demographic differences in GPA exist, their magnitude is limited. The log Bayes Factor values further support evidence against the null hypothesis for some variables, particularly year and mother’s education. Overall, demographic characteristics explain only a small proportion of variation in GPA, indicating that other factors may play a more substantial role in academic performance.
+The table below summarises the relationship between demographic variables and GPA using both frequentist and Bayesian statistics. The demograhic factors such as year, father’s education, mother’s education, mother’s occupation, gender, policy student status, and poor household background, show statistically significant results with p values below 0.05. However, statistical significance does not imply strong practical impact. The reported effect sizes are generally small. For ANOVA tests, eta squared values range from 0.04 to 0.14, indicating small to large effects. For t tests, Cohen’s d values range from approximately 0.13 to 0.21 in absolute terms, which fall within the small effect range. This suggests that although some demographic differences in GPA exist, their magnitude is limited. The log Bayes Factor values further support evidence against the null hypothesis for some variables, particularly year and mother’s education. Overall, demographic characteristics explain only a small proportion of variation in GPA, indicating that other factors may play a more substantial role in academic performance.
 
 ```{r}
 #| code-fold: true
@@ -868,11 +856,488 @@ kable(results_table, digits = 3,
 
 ```
 
+::: callout-tip
+##### Interpretation
+
+-   We analyse whether student GPA differs across several background characteristics using ANOVA or t tests and effect sizes (Cohen’s d or eta squared) and visualise the results in box plots and violin plots. Many factors are statistically significant, but the practical impact varies.
+
+-   **Strongest influences on GPA**
+
+-   Mother’s occupation ($\eta^2_p$ = 0.14, large effect): among the demographic variables examined, the mother’s occupation appears to have the strongest association with student GPA. The mean GPA differs noticeably across occupational groups, with students whose mothers work in the government sector achieving the highest average GPA (mean = 3.4, above "good"). This pattern may be related to greater schedule stability, more consistent supervision, and a home environment that supports regular study habits and involvement in the student’s learning.
+
+-   Mother’s education ($\eta^2_p$ = 0.07, medium effect): students whose mothers have university education tend to achieve higher GPAs. This indicates the value of academic guidance, expectations, and study habits developed at home.
+
+-   Year of study ($\eta^2_p$ = 0.07, medium effect): graduated students show the highest GPA.
+
+-   **Smaller but significant relationships**
+
+-   Poor household status: students from low income households perform slightly worse. The effect is small but consistent.
+
+-   Gender: female students have slightly higher GPA on average, but the difference is minor in practice.
+
+-   Father’s education: students whose fathers work in government tend to have higher GPAs, but weaker than mother’s education.
+
+-   Policy student status: Policy students perform only slightly lower.
+
+-   **Not statistically significant**
+
+-   Minority status and father’s occupation: both variables show only very small practical effects and their p values are greater than 0.05 (around 0.07). Therefore, there is no statistical evidence that the average GPA differs across these groups.
+:::
+
+#### Lifestyle
+
+This section analyses the relationship between students’ daily time allocation and GPA performance. We consider three behavioural variables: study time, social media use, and time spent with friends. Ridgeline plots illustrate the GPA distribution across categories, while bar charts with chi-square tests evaluate statistical association. A correlation matrix further examines relationships among the time variables.
+
+```{r}
+time_spent <- c("time_friends", "time_social_media", "time_studying")
+```
+
+The code below creates a dashboard summarising time use categories using ridgeline plots, bar charts and a correlation matrix showing relationships between the time use variables.
+
+```{r, fig.height=33, fig.width=20}
+#| code-fold: true
+#| code-summary: "CODE"
+vnu$gpa_jitter <- jitter(vnu$gpa_num, amount = 0.05)
+
+p1 <- ggplot(vnu, aes(x = gpa_jitter, y = time_studying,
+                fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE,
+    bandwidth = 0.18,         
+    rel_min_height = 0.01,
+    scale = 1.15,
+    linewidth = 0.3
+  ) +
+  scale_fill_viridis_d(
+    name = "Quartiles",
+    direction = -1,
+    breaks = 1:4,     
+    labels = c("Q1", "Q2", "Q3", "Q4")
+  ) +
+  scale_x_continuous(name = "GPA", expand = c(0, 0)) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  labs(title = "GPA by Study Time") +
+  theme_ridges() +
+  theme(legend.position = "right") +
+  ggthemes::theme_fivethirtyeight()
+
+p2 <- ggplot(vnu, aes(x = gpa_jitter, y = time_social_media,
+                fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE,
+    bandwidth = 0.18,         
+    rel_min_height = 0.01,
+    scale = 1.15,
+    linewidth = 0.3
+  ) +
+  scale_fill_viridis_d(
+    name = "Quartiles",
+    direction = -1,
+    breaks = 1:4,     
+    labels = c("Q1", "Q2", "Q3", "Q4")
+  ) +
+  scale_x_continuous(name = "GPA", expand = c(0, 0)) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  labs(title = "GPA by Social Media Time") +
+  theme_ridges() +
+  theme(legend.position = "right") +
+  ggthemes::theme_fivethirtyeight()
+
+
+p3<- ggplot(vnu, aes(x = gpa_jitter, y = time_friends,
+                fill = factor(after_stat(quantile)))) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE,
+    bandwidth = 0.18,         
+    rel_min_height = 0.01,
+    scale = 1.15,
+    linewidth = 0.3
+  ) +
+  scale_fill_viridis_d(
+    name = "Quartiles",
+    direction = -1,
+    breaks = 1:4,     
+    labels = c("Q1", "Q2", "Q3", "Q4")
+  ) +
+  scale_x_continuous(name = "GPA", expand = c(0, 0)) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  labs(title = "GPA by Time with Friends") +
+  theme_ridges() +
+  theme(legend.position = "right") +
+  ggthemes::theme_fivethirtyeight()
+
+p4 <- ggcorrmat(
+  data = vnu,
+  cor.vars = all_of(time_spent),
+  type = "nonparametric",
+  matrix.type = "upper",
+  title = "Correlation Matrix",
+  subtitle = "Spearman correlations between time variables")+
+  ggthemes::theme_fivethirtyeight() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+p5<- ggbarstats(
+  data = vnu,
+  x = time_studying,
+  y = gpa_num,
+  results.subtitle = TRUE)+
+  ggthemes::theme_fivethirtyeight()
+
+p6<- ggbarstats(
+  data = vnu,
+  x = time_social_media,
+  y = gpa_num,
+  results.subtitle = TRUE)+
+  ggthemes::theme_fivethirtyeight()
+
+p7<- ggbarstats(
+  data = vnu,
+  x = time_friends,
+  y = gpa_num,
+  results.subtitle = TRUE)+
+  ggthemes::theme_fivethirtyeight()
+p1 <- p1 +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box = "horizontal"
+  )
+
+p2 <- p2 +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box = "horizontal"
+  )
+
+p3 <- p3 +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    legend.box = "horizontal"
+  )
+p5 <- p5 +
+  theme(
+    legend.position = "right",
+    legend.direction = "vertical"
+  )
+
+p6 <- p6 +
+  theme(
+    legend.position = "right",
+    legend.direction = "vertical"
+  )
+
+p7 <- p7 +
+  theme(
+    legend.position = "right",
+    legend.direction = "vertical"
+  )
+p4 <- p4 +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+    axis.text.y = element_text(size = 7)
+  )
+
+
+final_figure <- ((p1 | p5) / (p2 | p6) / (p3 | p7) / p4) +
+  plot_layout( heights = c(1, 1, 1, 1.5))
+
+# Add annotation without redefining the whole plot
+final_figure <- final_figure +
+  plot_annotation(
+    title = "GPA Distribution by Time Use Categories",
+    subtitle = paste0(
+      "Top panels: GPA distribution across time use levels ",
+      "Bottom: Correlations between time use variables (N = ", nrow(vnu), ")"
+    ),
+    tag_levels = "A",
+    caption = paste0(
+      "Note: GPA quartiles based on sample distribution. ",
+      "Jitter added to GPA values to show density more clearly. ",
+      "Spearman correlations used for ordinal time variables.\n",
+      "Data source: VNU students dataset (Mendeley Data)"
+    ),
+    theme = theme(
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 11, color = "gray30", hjust = 0.5, lineheight = 1.2),
+      plot.caption = element_text(size = 9, color = "gray50", hjust = 0, face = "italic"),
+      plot.margin = margin(15, 15, 15, 15)
+    )
+  )
+
+final_figure
+```
+
+A **chi-square test** of independence was conducted between GPA level and each time-use variable.
+
+-   **Study time**: $\chi^2_{pearson}$=68.24, $p$ \<0.001, $V_{Cramer}$ = 0.08
+
+-   **Social media time**: $\chi^2_{pearson}$=63.86, $p$ \<0.001, $V_{Cramer}$ = 0.07
+
+-   **Time with friends**: $\chi^2_{pearson}$=37.78, $p$ \<0.001, $V_{Cramer}$ = 0.05
+
+| Cramer’s V value | Interpretation   |
+|------------------|------------------|
+| 0            | No association |
+| <0.2            | Weak association |
+| 0.2- 0.4         | Moderate         |
+| 0.4- 1 (exclusive)          | Strong           |
+| 1           | Perfect association |
+
+All three variables are statistically associated with GPA. However, the effect sizes (Cramer’s V) are small, which implies behavioural influence has weak relationships with GPA.
+
+**Spearman correlations** strong negative correlations are observed between adjacent study-time categories because they are mutually exclusive groups. More meaningful behavioural relationships are reflected in the small negative correlations (−0.2) between studying more than 8 hours and heavy social media use (\>4 hours), indicating a time allocation trade off. Students studying 4–6 hours also show a small positive correlation with heavy social media use (\>4 hours) (0.16). Moderate study time does not necessarily exclude high social media engagement.
+
+Additionally, small positive correlations are found between spending more than 4 hours with friends and spending more than 4 hours on social media (0.15), and between spending less than 1 hour with friends and spending less than 1 hour on social media (ρ0.23). This implies that offline and online social activities tend to occur together, with socially active students also being more active on social media.
+
+::: callout-tip
+##### Interpretation
+
+-   **Study Time**: students who study more hours per day tend to achieve higher GPAs. The ridgeline plot shows a rightward shift in GPA distribution as study time increases. High GPA students are more frequently found in the *6–8 hour* and *\>8 hour* study groups, while low GPA students are concentrated in the *\<2 hour* group. The chi-square test confirms this relationship is statistically significant, although the magnitude is small.
+
+-   **Social Media Use** :higher social media usage is associated with lower GPA performance. Students with low GPA have a larger proportion of heavy social media use (\>4 hours), whereas high GPA students are more likely to be moderate users (1–3 hours). The association is statistically significant but small in effect size.
+
+-   **Time with Friends**: time spent with friends also shows a significant association with GPA, but the relationship is weaker than study time and social media use. Moderate social interaction appears common across all GPA levels, while excessive social time is slightly more frequent among lower-performing students. This suggests social activity has a limited but noticeable relationship with academic performance.
+:::
+
+#### External Factors
+
+In this section, we analyse the external factors that students perceive as important for learning outcomes, such as lecturer quality, study methods, and university support. These perceptions are measured using a Likert scale ranging from “not important” to “very important.”
+
+```{r}
+extrinsic
+```
+
+The code below creates half-eye plots to visualise the distribution of students’ GPA across different levels of each extrinsic factor. The shaded density shows how GPA values are distributed within each response group, the red point indicates the mean GPA, and the vertical interval represents the uncertainty around the mean estimate.
+
+```{r, fig.height=25, fig.width=25}
+#| code-fold: true
+#| code-summary: "CODE"
+plot_halfeye <- function(data, x_var, 
+                                   title = NULL,
+                                   fill_color = "lightblue",
+                                   point_color = "red",
+                                   show_mean = TRUE) {
+  
+  p <- data %>%
+    ggplot(aes(x = .data[[x_var]], y = gpa_num)) +
+   stat_halfeye(
+      fill = "lightblue",
+    color = "black",
+    point_interval = mean_qi,
+    .width = c(0.5, 0.95),
+    density = "histogram")+
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    size = 3,
+    color = "red"
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "text",
+    aes(label = round(after_stat(y), 2)),
+    hjust = -0.5,
+    color = "red",
+    size = 3.5
+  )
+  
+  p <- p +
+    labs(
+      title = ifelse(is.null(title), 
+                     paste("GPA by", gsub("_", " ", x_var)), 
+                     title),
+      x = gsub("_", " ", x_var) %>% str_to_title(),
+      y = "GPA"
+    ) +
+    scale_y_continuous(breaks = 1:5, limits = c(0.8, 5.2)) +
+    ggthemes::theme_fivethirtyeight() +
+    theme(
+      plot.title = element_text(size = 12, face = "bold"),
+      axis.text.x = element_text( hjust = 1),
+      axis.title.x = element_text(margin = margin(t = 8)),
+      axis.title.y = element_text(margin = margin(r = 8)),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+  
+  return(p)
+}
+
+halfeye_plots <- map(extrinsic, ~ plot_halfeye(vnu, .x))
+combined_plots <- wrap_plots(halfeye_plots, ncol = 3) +
+  plot_annotation(
+    title = "GPA Distribution by Extrinsic Factors",
+    subtitle = paste0(
+      "Half-eye plots showing GPA distribution across ", length(extrinsic), 
+      " extrinsic factors | Mean shown in red with 50% and 95% CIs (N = ", nrow(vnu), ")"
+    ),
+    tag_levels = "A",
+    caption = paste0(
+      "Note: Each plot shows GPA distribution (1-5 scale) by factor levels. ",
+      "Red dots indicate mean GPA with values labeled. ",
+      "Half-eye plots use histogram density for discrete GPA data.\n",
+      "Data source: VNU students dataset (Mendeley Data)"
+    ),
+    theme = theme(
+      plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 12, color = "gray30", hjust = 0.5, lineheight = 1.2),
+      plot.caption = element_text(size = 10, color = "gray50", hjust = 0, face = "italic"),
+      plot.margin = margin(15, 15, 15, 15)
+    )
+  )
+
+combined_plots
+
+```
+
+
+:::callout-tip
+
+##### Intepretation
+
+The association between perceived importance of external learning factors and GPA is non linear. Students who considered these factors unimportant still showed relatively high GPAs, likely reflecting strong independent learning ability. GPA declines among students reporting low importance but increases again at higher importance levels. This suggests active engagement with support and structured study behaviours might be associated with improved performance. 
+
+:::
+
+
+Next, we further examine the association using mosaic plots. The code below generates mosaic plots for all external factors using the `mosaic()` function from the **vcd** package. First, a contingency table is created with `xtabs()` by cross-tabulating the ordinal GPA categories with each external factor. The mosaic plot then visualises the distribution of students across categories, while the accompanying chi-square test evaluates whether the survey responses are associated with GPA.
+
+
+In the mosaic plot, each rectangle represents a group of students. If GPA were unrelated to the factor, all columns would have similar proportions. The colours come from the chi square test (Pearson residuals), comparing observed students with the number expected under no relationship. Blue means more students than expected in that GPA group. Red means fewer students than expected. Grey means about what would occur by chance.
+
+
+```{r, fig.weight=16, fig.height=16}
+#| code-fold: true
+#| code-summary: "CODE"
+#| eval: false
+
+# Create directory
+dir.create("mosaic_plots", showWarnings = FALSE)
+# Save all plots with smaller labels
+for (i in seq_along(extrinsic)) {
+  v <- extrinsic[i]
+  tab <- xtabs(reformulate(c(v, "gpa_ordinal")), data = vnu)
+  
+  # Save as PNG
+  png_file <- file.path("mosaic_plots", paste0("mosaic_", i, "_", gsub("[^a-zA-Z0-9]", "_", v), ".png"))
+  
+  png(png_file, width = 600, height = 500)
+  mosaic(
+    tab,
+    shade = TRUE,
+    legend = TRUE,
+    labeling_args = list(
+      rot_labels = c(left = 0, top = 0, right = 0, bottom = 0),
+      offset_varnames = c(left = 0, top = 0, right = 0, bottom = 0),
+      gp_labels = gpar(fontsize = 7),  # Make all labels smaller
+      gp_varnames = gpar(fontsize = 8)  # Variable names slightly larger
+    ),
+    main = paste(v, "vs GPA"),
+    gp = shading_hcl,
+    margins = c(3, 3, 3, 3)
+  )
+  dev.off()
+  
+  print(paste("---", i, ":", v, "---"))
+  print(assocstats(tab))
+}
+# Read all images and combine
+image_files <- list.files("mosaic_plots", pattern = "*.png", full.names = TRUE)
+images <- image_read(image_files)
+
+# Create a 3x3 grid
+image_grid <- image_append(c(
+  image_append(images[1:3], stack = FALSE),
+  image_append(images[4:6], stack = FALSE),
+  image_append(images[7:9], stack = FALSE)
+), stack = TRUE)
+
+# Save combined image
+image_write(image_grid, "combined_mosaic_plots_magick.png")
+```
+
+![](combined_mosaic_plots_magick.png)
+
+```{r}
+#| code-fold: true
+#| code-summary: "CODE"
+chi_table <- tribble(
+  ~Factor, ~Chi_sq, ~df, ~p_value, ~Cramers_V,
+  "Adaptation to university", 75.021, 16, "<0.001", 0.093,
+  "Study methods", 77.558, 16, "<0.001", 0.095,
+  "University support", 39.007, 16, "0.001", 0.067,
+  "Lecturer support", 33.888, 16, "0.006", 0.062,
+  "Facilities", 41.341, 16, "<0.001", 0.069,
+  "Lecturer quality", 60.304, 16, "<0.001", 0.083,
+  "Curriculum", 35.786, 16, "0.003", 0.064,
+  "Class competition", 78.223, 16, "<0.001", 0.095,
+  "Peer influence", 71.481, 16, "<0.001", 0.091
+)
+
+chi_table %>% 
+  mutate(
+    Strength = case_when(
+      Cramers_V < 0.2 ~ "weak",
+      TRUE ~ "Strong"
+    )
+  ) %>%
+  kable(digits = 3, caption = "Chi-square association between external factors and GPA")
+```
+
+
+
+:::callout-tip
+
+##### Intepretation
+
+- Across most factors, the Chi square tests are statistically significant ( p< 0.05), indicating that GPA distribution differs across students’ perception levels. However, the effect sizes are small (Cramer’s V = 0.06–0.10), the practical relationship is weak.
+
+- **Relatively small association**
+
+- Adaptation to university: V = 0.093, p < 0.05
+
+- Study methods: V = 0.095, p < 0.05
+
+- Lecturer quality:V = 0.083, p < 0.05
+
+- Class competition: V = 0.095, p < 0.05
+
+- Overall, the pattern is non linear. Both students who rate factors as very important and those who rate them as not important tend to perform relatively well, whereas students reporting only low or moderate importance generally achieve lower GPA. This suggests performance is driven more by learning behaviour and engagement style than by any single external factor.
+
+
+:::
+
+
 ## Conclusion
+
+This study applies multiple visualisation approaches (bar charts, violin plots, ridgeline plots, mosaic plots, and half-eye plots) to analyse survey data on factors influencing learning outcomes at Vietnam National University. We begin with descriptive summaries using averages, percentages, and counts for both independent variables and GPA. The mean GPA falls within the “Good” range, which suggests generally satisfactory academic performance among students. We then conduct statistical analyses including ANOVA, Chi square tests, and correlation analysis to examine the relationships between the variables and GPA.
+
+Demographic analysis suggests that mother's education and mother's occupation are associated with better GPA outcomes. Time use patterns show that most students study more than eight hours per day, and these students tend to report lower to moderate levels of social media use and time spent with friends.
+
+For external learning factors, all variables show a statistically significant association with GPA. Among them, adaptation to university, study methods, lecturer quality, and class competition demonstrate relatively stronger relationships, but the effect sizes remain small. This indicates that each factor on its own has limited practical influence on academic performance.
+
+
+The current analysis considers factors individually. Future work should examine their combined effects to better understand student behaviour. Because no single dominant relationship is observed, a multivariate approach could help develop a more comprehensive student profile to support teaching strategies and improve student engagement, such as creating an ordinal regression model.
+
+
 
 ## Reference
 
-Kam, Tin Seong (2026). [11 Visualising Uncertainty](https://r4va.netlify.app/chap11) R for Visual Analytics.
+Kam, Tin Seong (2026). R for Visual Analytics, https://r4va.netlify.app
 
 Tran, V. D., Nguyen, K. S. T., & Le, D. N. (2025). Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi. *Data in Brief, 59, 111438*. https://doi.org/10.1016/j.dib.2025.111438
 
