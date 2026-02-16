@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.23">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Yiqiong PAN">
+<meta name="dcterms.date" content="2026-02-16">
+<title>06: Visualising and Analysing Time-oriented Data – ISSS608-VAA-yiqiong-pan</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6f6599830d51be977da3b6af758f8eff.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-24772959a0e306aba8d7698078628ce7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><link rel="stylesheet" href="../../styles.css">
+</head>
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608-VAA-yiqiong-pan</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">
+<li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
+ <span class="dropdown-text">01: A Layered Grammar of Graphics: ggplot2 methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">02: Beyond ggplot2 Fundamentals</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_1.html">
+ <span class="dropdown-text">03-1: Programming Interactive Data Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_2.html">
+ <span class="dropdown-text">03-2: Programming Animated Statistical Graphics with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_1.html">
+ <span class="dropdown-text">04-1: Visualising Distribution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_2.html">
+ <span class="dropdown-text">04-2: Visual Statistical Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_3.html">
+ <span class="dropdown-text">04-3: Visualising Uncertainty</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_4.html">
+ <span class="dropdown-text">04-4: Building Funnel Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_1.html">
+ <span class="dropdown-text">05-1: Building Ternary Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_2.html">
+ <span class="dropdown-text">05-2: Visual Correlation Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_3.html">
+ <span class="dropdown-text">05-3: Visual Multivariate Analysis with Heatmap</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_4.html">
+ <span class="dropdown-text">05-4: Visual Multivariate Analysis with Parallel Coordinates Plot</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_5.html">
+ <span class="dropdown-text">05-5: Treemap Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html">
+ <span class="dropdown-text">06:Shiny?</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html">
+ <span class="dropdown-text">07: Visualising and Analysing Time-oriented Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_1.html">
+ <span class="dropdown-text">08-1: Choropleth Mapping in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_2.html">
+ <span class="dropdown-text">08-2: Visualising Geospatial Point Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_3.html">
+ <span class="dropdown-text">08-3: Analytical Mapping</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex10.html">
+ <span class="dropdown-text">10: Information Dashboard Design: R methods</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">
+<li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex01.html">
+ <span class="dropdown-text">01:</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex02/In-class_Ex02.html">
+ <span class="dropdown-text">02:</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex03/In-class_Ex03.html">
+ <span class="dropdown-text">03:</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">
+<li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
+ <span class="dropdown-text">01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
+ <span class="dropdown-text">02:</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html">
+ <span class="dropdown-text">03:</span></a>
+  </li>  
+    </ul>
+</li>
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/lsrgc"> <i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://isss608-ay2025-26jan.netlify.app/"> <i class="bi bi-eyeglasses" role="img" aria-label="Course Textbook">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link active" data-scroll-target="#learning-outcome"><span class="header-section-number">1</span> Learning Outcome</a></li>
+  <li>
+<a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><span class="header-section-number">2</span> Getting Started</a>
+  <ul class="collapse">
+<li><a href="#installing-and-loading-the-required-libraries" id="toc-installing-and-loading-the-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-the-required-libraries"><span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#plotting-calendar-heatmap" id="toc-plotting-calendar-heatmap" class="nav-link" data-scroll-target="#plotting-calendar-heatmap"><span class="header-section-number">3</span> Plotting Calendar Heatmap</a>
+  <ul class="collapse">
+<li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data"><span class="header-section-number">3.1</span> the Data</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data"><span class="header-section-number">3.2</span> Importing the Data</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">3.3</span> Data Preparation</a></li>
+  <li><a href="#building-the-calendar-heatmap" id="toc-building-the-calendar-heatmap" class="nav-link" data-scroll-target="#building-the-calendar-heatmap"><span class="header-section-number">3.4</span> Building the Calendar Heatmap</a></li>
+  <li><a href="#plotting-multiple-calendar-heatmap" id="toc-plotting-multiple-calendar-heatmap" class="nav-link" data-scroll-target="#plotting-multiple-calendar-heatmap"><span class="header-section-number">3.5</span> Plotting Multiple Calendar Heatmap</a></li>
+  </ul>
+</li>
+  <li><a href="#plotting-cycle-plot" id="toc-plotting-cycle-plot" class="nav-link" data-scroll-target="#plotting-cycle-plot"><span class="header-section-number">4</span> Plotting Cycle Plot</a></li>
+  <li>
+<a href="#plotting-slopegraph" id="toc-plotting-slopegraph" class="nav-link" data-scroll-target="#plotting-slopegraph"><span class="header-section-number">5</span> Plotting Slopegraph</a>
+  <ul class="collapse">
+<li><a href="#step-1-data-import-1" id="toc-step-1-data-import-1" class="nav-link" data-scroll-target="#step-1-data-import-1"><span class="header-section-number">5.1</span> Step 1: Data Import</a></li>
+  <li><a href="#step-2-plotting-the-slopegraph" id="toc-step-2-plotting-the-slopegraph" class="nav-link" data-scroll-target="#step-2-plotting-the-slopegraph"><span class="header-section-number">5.2</span> Step 2: Plotting the slopegraph</a></li>
+  </ul>
+</li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">6</span> Reference</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">06: Visualising and Analysing Time-oriented Data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yiqiong PAN </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 16, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">February 16, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header><section id="learning-outcome" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="learning-outcome">
+<span class="header-section-number">1</span> Learning Outcome</h2>
+<p>By the end of this hands-on exercise, we will be able to create the following data visualisations using R packages:</p>
+<ol type="1">
+<li>A calendar heatmap using <strong>ggplot2</strong> functions</li>
+<li>A cycle plot using <strong>ggplot2</strong> functions</li>
+<li>A slopegraph</li>
+<li>A horizon chart</li>
+</ol>
+<p><strong>Assumption:</strong></p>
+<p>All hypothesis tests in this exercise are conducted at the <strong>5% significance level</strong>, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.</p>
+</section><section id="getting-started" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="getting-started">
+<span class="header-section-number">2</span> Getting Started</h2>
+<section id="installing-and-loading-the-required-libraries" class="level3" data-number="2.1"><h3 data-number="2.1" class="anchored" data-anchor-id="installing-and-loading-the-required-libraries">
+<span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</h3>
+<p>There are <strong>12</strong> packages that will be used in this exercise.</p>
+<p>scales, viridis, lubridate, ggthemes, gridExtra, readxl, knitr, data.table and tidyverse</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Package</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.tidyverse.org/">tidyverse</a></td>
+<td>A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., <a href="https://readr.tidyverse.org/">readr</a>, dplyr, tidyr, <a href="https://ggplot2.tidyverse.org/">ggplot2</a>).</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/viridis/index.html">viridis</a></td>
+<td>Use this package’s colour scales to create clearer, more attractive plots. They improve data readability, are colourblind friendly, and print well in greyscale. It extends ggplot2 through scale_color_viridis() and scale_fill_viridis().</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/knitr/index.html/">knitr</a></td>
+<td>Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/data.table/index.html">data.table</a></td>
+<td>Process (such as join, add, delete) large data (e.g.&nbsp;100gb in RAM) efficiently</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/lubridate/index.html">lubridate</a></td>
+<td>A Tidyverse package that handles date-time objects</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/scales/index.html">scales</a></td>
+<td>Provides graphical scales map data to aesthetics.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/gridExtra/index.html">gridExtra</a></td>
+<td>Provides useful tools for arranging multiple grid based plots (especially ggplot2) and tables on one page, e.g.&nbsp;grid.arrange() displaying combined plots together.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/ggthemes/index.html">ggthemes</a></td>
+<td>Provides ‘ggplot2’ themes and scales that replicate some of the famous looks.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/readxl/readxl.pdf">readxl</a></td>
+<td>Imports excel files into R.</td>
+</tr>
+<tr class="even">
+<td><a href="https://ibecav.github.io/CGPfunctions/">CGPfunctions</a></td>
+<td>Provides functions to conduct statistic tests in ggplot2</td>
+</tr>
+<tr class="odd">
+<td><a href="https://rivasiker.github.io/ggHoriPlot/">ggHoriPlot</a></td>
+<td>Extends horizon plots in ggplot2</td>
+</tr>
+</tbody>
+</table>
+<p>The code below installs and loads the required packages into R environment.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"haleyjeppson/ggmosaic"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ibecav/CGPfunctions"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"rivasiker/ggHoriPlot"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>,<span class="va">readxl</span>, <span class="va">knitr</span>, <span class="va">scales</span>, <span class="va">ggthemes</span>, <span class="va">gridExtra</span>, <span class="va">lubridate</span>, <span class="va">data.table</span>, <span class="va">viridis</span>, <span class="va">CGPfunctions</span>,<span class="va">ggHoriPlot</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section></section><section id="plotting-calendar-heatmap" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="plotting-calendar-heatmap">
+<span class="header-section-number">3</span> Plotting Calendar Heatmap</h2>
+<p>In this section, we will learn how to programmatically create a calendar heatmap using the <strong>ggplot2</strong> package.</p>
+<p>By the end of this section, we will be able to:</p>
+<ol type="1">
+<li>Plot a calendar heatmap using <strong>ggplot2</strong> functions and extensions</li>
+<li>Write your own functions using R</li>
+<li>Derive date and time fields using base R and <strong>lubridate</strong>
+</li>
+<li>Prepare data using <strong>tidyr</strong> and <strong>dplyr</strong>
+</li>
+</ol>
+<section id="the-data" class="level3" data-number="3.1"><h3 data-number="3.1" class="anchored" data-anchor-id="the-data">
+<span class="header-section-number">3.1</span> the Data</h3>
+<p>For this hands-on exercise, the <strong>eventlog.csv</strong> file will be used. It contains 199,999 rows of time series records of cyber attacks by country.</p>
+</section><section id="importing-the-data" class="level3" data-number="3.2"><h3 data-number="3.2" class="anchored" data-anchor-id="importing-the-data">
+<span class="header-section-number">3.2</span> Importing the Data</h3>
+<p>We use <code>read_csv()</code> from the <strong>readr</strong> package to import the dataset <em>eventlog.csv</em> into the R environment as a tibble named <code>df</code>. We then preview the dataset using <code>kable()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">attacks</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">"data/eventlog.csv"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The dataset contains three columns: two categorical variables, <strong>source_country</strong> and <strong>tz</strong>, and one timestamp column stored in <strong>dttm</strong> format.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">attacks</span><span class="op">)</span>, <span class="st">"html"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">timestamp</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">source_country</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">tz</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 15:59:16</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:00:48</td>
+<td style="text-align: left;">FR</td>
+<td style="text-align: left;">Europe/Paris</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 16:02:26</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:02:38</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">America/Chicago</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 16:03:22</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:03:45</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>
+<strong>timestamp</strong> stores date and time values in POSIXct format</li>
+<li>
+<strong>source_country</strong> records the origin of the attack using ISO 3166 1 alpha 2 country codes</li>
+<li>
+<strong>tz</strong> records the time zone of the source IP address</li>
+</ul></section><section id="data-preparation" class="level3" data-number="3.3"><h3 data-number="3.3" class="anchored" data-anchor-id="data-preparation">
+<span class="header-section-number">3.3</span> Data Preparation</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Step 1. Derive weekday and hour of day fields</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Step 2. Derive the attacks tibble data frame</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>We build a function to derived two new fields <em>wkday</em> and <em>hour</em> before plotting the calender heatmap. the fucntion <code>ymd_hms()</code> is used to convert the timestamp based on timezone in the dataset then we create a table to store the source_courty from raw dataset, and extract weekdays and hours from converted timestamp and hours</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">make_hr_wkday</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ts</span>, <span class="va">sc</span>, <span class="va">tz</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">real_times</span> <span class="op">&lt;-</span> <span class="fu">ymd_hms</span> <span class="op">(</span><span class="va">ts</span>, tz <span class="op">=</span> <span class="va">tz</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>                         quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="op">(</span>source_country <span class="op">=</span> <span class="va">sc</span>,</span>
+<span>                   wkday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">weekdays</a></span><span class="op">(</span><span class="va">real_times</span><span class="op">)</span>,</span>
+<span>                   hour <span class="op">=</span> <span class="fu">hour</span><span class="op">(</span><span class="va">real_times</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html"><code>ymd_hms()</code></a> and <a href="https://lubridate.tidyverse.org/reference/hour.html"><code>hour()</code></a> are from <a href="https://lubridate.tidyverse.org/"><strong>lubridate</strong></a> package</p></li>
+<li><p><code>ymd_hms()</code> converts dates stored as character or numeric vectors into POSIXct objects. While <code>ymd_hms()</code> recognises most non alphanumeric date formats, if there are many missing values or invalid strings, the lower level parser <code>parse_date_time()</code> can be used instead.</p></li>
+<li><p><code>hour()</code> extracts the hour component from the data-time object.</p></li>
+<li><p><a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/weekdays"><code>weekdays()</code></a> is base R function, that converts a <strong>POSIXt</strong> or <strong>Date</strong> object.</p></li>
+<li><p>The functions <code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">weekdays()</a></code> and <code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months()</a></code> return a character vector of names based on the current locale.</p></li>
+<li><p><code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">quarters()</a></code> returns a character vector from “Q1” to “Q4”.</p></li>
+<li><p><code><a href="https://rdrr.io/r/base/weekday.POSIXt.html">julian()</a></code> returns the number of days (possibly fractional) since the origin.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">wkday_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Saturday'</span>, <span class="st">'Friday'</span>, </span>
+<span>                  <span class="st">'Thursday'</span>, <span class="st">'Wednesday'</span>, </span>
+<span>                  <span class="st">'Tuesday'</span>, <span class="st">'Monday'</span>, </span>
+<span>                  <span class="st">'Sunday'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">attacks</span> <span class="op">&lt;-</span> <span class="va">attacks</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">tz</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">do</span><span class="op">(</span><span class="fu">make_hr_wkday</span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">timestamp</span>,</span>
+<span>                   <span class="va">.</span><span class="op">$</span><span class="va">source_country</span>,</span>
+<span>                   <span class="va">.</span><span class="op">$</span><span class="va">tz</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>wkday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">wkday</span>, levels<span class="op">=</span> <span class="va">wkday_levels</span><span class="op">)</span>,</span>
+<span>         hour <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">hour</span>, levels <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">123</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The function <code>ymd_hms()</code> converts the timestamp using the time zone provided in the dataset. Then the table is rebuilt that keeps the <strong>source_country</strong> from the raw data and extracts the weekday and hour from the converted timestamp.</p>
+<p>Finally, the predefined weekday order and the natural hour order (0 to 23) are applied to the table so the data is properly arranged for plotting.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In addition to extracting the required information into the <strong>attacks</strong> data frame, <code>mutate()</code> from the <strong>dplyr</strong> package converts the <strong>wkday</strong> and <strong>hour</strong> variables into factors so they appear in the correct order when plotting.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">attacks</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">tz</th>
+<th style="text-align: left;">source_country</th>
+<th style="text-align: left;">wkday</th>
+<th style="text-align: left;">hour</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">BG</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">TW</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">TW</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">CA</td>
+<td style="text-align: left;">Monday</td>
+<td style="text-align: left;">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section id="building-the-calendar-heatmap" class="level3" data-number="3.4"><h3 data-number="3.4" class="anchored" data-anchor-id="building-the-calendar-heatmap">
+<span class="header-section-number">3.4</span> Building the Calendar Heatmap</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grouped</span> <span class="op">&lt;-</span> <span class="va">attacks</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">wkday</span>, <span class="va">hour</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span>  <span class="co">#removes rows with missing values</span></span>
+<span></span>
+<span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">grouped</span>, <span class="fl">24</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">wkday</th>
+<th style="text-align: left;">hour</th>
+<th style="text-align: right;">n</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">1081</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">1053</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">1088</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">1130</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">1183</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: right;">1226</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1163</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">1128</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: right;">1083</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">9</td>
+<td style="text-align: right;">1077</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: right;">1218</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: right;">1060</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">12</td>
+<td style="text-align: right;">927</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: right;">965</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: right;">1071</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: right;">927</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: right;">1023</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: right;">1532</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: right;">1349</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: right;">1310</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: right;">1060</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: right;">1209</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">22</td>
+<td style="text-align: right;">1207</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: right;">1122</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">grouped</span>,</span>
+<span>       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">hour</span>, y <span class="op">=</span> <span class="va">wkday</span>, fill <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#maps colour intensity to the number of attacks</span></span>
+<span>  <span class="fu">geom_tile</span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># draws rectangular tiles with white borderline</span></span>
+<span>  <span class="co">#theme_tufte(base_family = "Helvetica") +</span></span>
+<span>  <span class="fu">coord_equal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="co"># forces each tile to be square</span></span>
+<span>  <span class="fu">scale_fill_gradient</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"# of attacks"</span>, <span class="co">#controls the colour scale.</span></span>
+<span>                      low <span class="op">=</span> <span class="st">"skyblue"</span>,</span>
+<span>                      high <span class="op">=</span> <span class="st">"darkblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Attacks by weekday and time of the day"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span>axis.ticks <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>, <span class="co">#removes tick marks</span></span>
+<span>        plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, <span class="co">#centres the title</span></span>
+<span>        legend.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>, <span class="co">#resize </span></span>
+<span>        legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="co">#resize</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>A tibble called <strong>grouped</strong> is created by aggregating the attacks using the <strong>wkday</strong> and <strong>hour</strong> variables. A new variable <strong>n</strong> is produced using <code>count()</code>, which records the number of attacks in each weekday and hour combination. <code><a href="https://rdrr.io/r/stats/na.fail.html">na.omit()</a></code> removes rows with missing values.</p></li>
+<li><p><code>geom_tile()</code> draws the grid cells at each x and y position, where the <code>colour</code> and <code>size</code> arguments control the tile border colour and line width.</p></li>
+<li><p><code>theme_tufte()</code> from the <strong>ggthemes</strong> package removes unnecessary visual clutter to produce a cleaner chart. We comment out this line to compare it with the default ggplot2 appearance. We see dashed outer border and the grey panel background with gridlines), is part of the default ggplot2 theme called <code>theme_gray()</code>. <code>theme_tufte()</code> removes non-informative ink (chart junk) and keep only what helps interpretation.</p></li>
+<li><p><strong>Choose the theme based on the plot purpose:</strong></p></li>
+<li><p>Scatterplots: <code>theme_minimal()</code> or default <code>theme_gray()</code></p></li>
+<li><p>Publication figures: <code>theme_classic()</code></p></li>
+<li><p>Heatmaps, slopegraphs, and calendar plots: <code>theme_tufte()</code> or <code>theme_void()</code></p></li>
+<li><p><code>coord_equal()</code> ensures a 1:1 aspect ratio so the tiles appear square.</p></li>
+<li><p><code>scale_fill_gradient()</code> creates a two colour gradient, mapping lower counts to lighter colours and higher counts to darker colours.</p></li>
+</ul>
+</div>
+</div>
+<p>We can then group and count the data by <strong>hour</strong> and <strong>wkday</strong> and plot it directly. Since values exist for every combination, no additional preprocessing is required.</p>
+</section><section id="plotting-multiple-calendar-heatmap" class="level3" data-number="3.5"><h3 data-number="3.5" class="anchored" data-anchor-id="plotting-multiple-calendar-heatmap">
+<span class="header-section-number">3.5</span> Plotting Multiple Calendar Heatmap</h3>
+<p>Challenge: Create multiple heatmaps showing attack patterns for the four countries with the highest number of attacks.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Step 1: Derive attack by country object</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Step 2: Preparing the tidy data frame</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Step 3. Plotting multiple calendar heatmaps by usiing ggplot2 package</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>To identify the top four countries with the highest number of attacks, we:</p>
+<ol type="1">
+<li>Count the total number of attacks for each country</li>
+<li>Calculate the percentage of attacks contributed by each country</li>
+<li>Store the results in a tibble data frame</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">attacks_by_country</span> <span class="op">&lt;-</span> <span class="fu">count</span><span class="op">(</span><span class="va">attacks</span>, <span class="va">source_country</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>percent <span class="op">=</span> <span class="fu">percent</span><span class="op">(</span><span class="va">n</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">attacks_by_country</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">source_country</th>
+<th style="text-align: right;">n</th>
+<th style="text-align: left;">percent</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: right;">85243</td>
+<td style="text-align: left;">42.62171%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">US</td>
+<td style="text-align: right;">48684</td>
+<td style="text-align: left;">24.34212%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">KR</td>
+<td style="text-align: right;">12648</td>
+<td style="text-align: left;">6.32403%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NL</td>
+<td style="text-align: right;">8572</td>
+<td style="text-align: left;">4.28602%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VN</td>
+<td style="text-align: right;">6340</td>
+<td style="text-align: left;">3.17002%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TW</td>
+<td style="text-align: right;">3469</td>
+<td style="text-align: left;">1.73451%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>In this step, we extract the attack records for the top four countries from the <strong>attacks</strong> data frame and save them in a new tibble called <strong>top4_attacks</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">top4</span> <span class="op">&lt;-</span> <span class="va">attacks_by_country</span><span class="op">$</span><span class="va">source_country</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">top4</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "CN" "US" "KR" "NL"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">top4_attacks</span> <span class="op">&lt;-</span> <span class="va">attacks</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">source_country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">top4</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">source_country</span>, <span class="va">wkday</span>, <span class="va">hour</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>source_country <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">source_country</span>, levels <span class="op">=</span> <span class="va">top4</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">top4_attacks</span>, <span class="fl">24</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">source_country</th>
+<th style="text-align: left;">wkday</th>
+<th style="text-align: left;">hour</th>
+<th style="text-align: right;">n</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">438</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">401</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">358</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">487</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">457</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: right;">429</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">393</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">330</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: right;">421</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">9</td>
+<td style="text-align: right;">361</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: right;">467</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: right;">393</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">12</td>
+<td style="text-align: right;">283</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">13</td>
+<td style="text-align: right;">336</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: right;">284</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">15</td>
+<td style="text-align: right;">240</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: right;">368</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">17</td>
+<td style="text-align: right;">605</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">18</td>
+<td style="text-align: right;">560</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">19</td>
+<td style="text-align: right;">610</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">20</td>
+<td style="text-align: right;">407</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">21</td>
+<td style="text-align: right;">516</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">22</td>
+<td style="text-align: right;">572</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">23</td>
+<td style="text-align: right;">599</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p>The code below creates a 2 × 2 grid of heatmaps for the four countries with the highest number of attacks (CN, US, KR, and NL).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">top4_attacks</span>,</span>
+<span>       <span class="fu">aes</span><span class="op">(</span><span class="va">hour</span>, <span class="va">wkday</span>, fill <span class="op">=</span> <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_tile</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_tufte</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">coord_equal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_fill_gradient</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"# of attacks"</span>,</span>
+<span>                      low <span class="op">=</span> <span class="st">"skyblue"</span>,</span>
+<span>                      high <span class="op">=</span> <span class="st">"darkblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">source_country</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Attacks by weekday and time of the day"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span>axis.ticks <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>, <span class="co">#removes tick marks</span></span>
+<span>        axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>,</span>
+<span>        plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, <span class="co">#centres the title</span></span>
+<span>        legend.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>, <span class="co">#resize </span></span>
+<span>        legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="co">#resize</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="plotting-cycle-plot" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="plotting-cycle-plot">
+<span class="header-section-number">4</span> Plotting Cycle Plot</h2>
+<p>In this section, we use functions from <strong>ggplot2</strong> to programmatically create a cycle plot showing the time series patterns and trends of visitor arrivals from Vietnam.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Step 1: Data Import</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Step 2: Derive month and year fields</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Step 3: Extract the target country</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">Step 4: Computing year average arrivals by month</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-5" role="tab" aria-controls="tabset-3-5" aria-selected="false" href="">Step 5: Plotting the cycle plot</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><strong>arrivals_by_air.xlsx</strong> will be used in this section.</p>
+<p>The code below imports the file using <code>read_excel()</code> from the <strong>readxl</strong> package and saves it as a tibble data frame named <strong>air</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">air</span> <span class="op">&lt;-</span> <span class="fu">read_excel</span><span class="op">(</span><span class="st">"data/arrivals_by_air.xlsx"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The dataset contains 240 rows and 36 columns. The <strong>Month Year</strong> column stores date values in dttm format, and the remaining columns record arrival counts from 35 countries in numeric (dbl) format.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">glimpse</span><span class="op">(</span><span class="va">air</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 240
+Columns: 36
+$ `Month-Year`               &lt;dttm&gt; 2000-01-01, 2000-02-01, 2000-03-01, 2000-0…
+$ `Republic of South Africa` &lt;dbl&gt; 3291, 2357, 4036, 4241, 2841, 2776, 3728, 2…
+$ Canada                     &lt;dbl&gt; 5545, 6120, 6255, 4521, 3914, 3487, 4238, 4…
+$ USA                        &lt;dbl&gt; 25906, 28262, 30439, 25378, 26163, 28179, 2…
+$ Bangladesh                 &lt;dbl&gt; 2883, 2469, 2904, 2843, 2793, 3146, 3489, 3…
+$ Brunei                     &lt;dbl&gt; 3749, 3236, 3342, 5117, 4152, 5018, 5026, 6…
+$ China                      &lt;dbl&gt; 33895, 34344, 27053, 30464, 30775, 26720, 3…
+$ `Hong Kong SAR (China)`    &lt;dbl&gt; 13692, 19870, 17086, 22346, 16357, 18133, 2…
+$ India                      &lt;dbl&gt; 19235, 18975, 21049, 26160, 35869, 31314, 2…
+$ Indonesia                  &lt;dbl&gt; 65151, 37105, 44205, 45480, 38350, 47982, 5…
+$ Japan                      &lt;dbl&gt; 59288, 58188, 74426, 49985, 48937, 53798, 6…
+$ `South Korea`              &lt;dbl&gt; 21457, 19634, 20719, 17489, 19398, 17522, 2…
+$ Kuwait                     &lt;dbl&gt; 507, 199, 386, 221, 164, 440, 1943, 2694, 4…
+$ Malaysia                   &lt;dbl&gt; 27472, 29084, 30504, 34478, 34795, 34660, 2…
+$ Myanmar                    &lt;dbl&gt; 1177, 1161, 1355, 1593, 1397, 1715, 1354, 1…
+$ Pakistan                   &lt;dbl&gt; 2150, 2496, 2429, 2711, 2594, 2924, 4001, 3…
+$ Philippines                &lt;dbl&gt; 8404, 9128, 11691, 14141, 13305, 10555, 968…
+$ `Saudi Arabia`             &lt;dbl&gt; 1312, 623, 1578, 705, 679, 2749, 5748, 4012…
+$ `Sri Lanka`                &lt;dbl&gt; 3922, 3988, 4259, 6579, 4625, 4740, 4764, 5…
+$ Taiwan                     &lt;dbl&gt; 15766, 24861, 18767, 22735, 18399, 21042, 2…
+$ Thailand                   &lt;dbl&gt; 12048, 12745, 16971, 20397, 15769, 17217, 1…
+$ `United Arab Emirates`     &lt;dbl&gt; 1318, 899, 1474, 1284, 1042, 1545, 3641, 33…
+$ Vietnam                    &lt;dbl&gt; 1527, 2269, 2034, 2420, 1833, 2480, 2221, 2…
+$ `Belgium &amp; Luxembourg`     &lt;dbl&gt; 1434, 1596, 1548, 1592, 1167, 1170, 1912, 1…
+$ CIS                        &lt;dbl&gt; 2703, 1182, 1088, 1012, 660, 712, 911, 864,…
+$ Finland                    &lt;dbl&gt; 1634, 1297, 1220, 1208, 743, 982, 680, 1029…
+$ France                     &lt;dbl&gt; 4752, 6391, 5528, 5544, 4225, 4047, 5769, 6…
+$ Germany                    &lt;dbl&gt; 12739, 13093, 13645, 13366, 10878, 9054, 10…
+$ Ireland                    &lt;dbl&gt; 1292, 1200, 1368, 1345, 1067, 1363, 1348, 1…
+$ Italy                      &lt;dbl&gt; 3544, 2897, 2717, 2512, 2205, 2196, 2988, 6…
+$ Netherlands                &lt;dbl&gt; 4962, 5054, 4950, 4149, 3643, 3544, 5969, 5…
+$ Spain                      &lt;dbl&gt; 925, 747, 935, 941, 764, 855, 1163, 1669, 1…
+$ Switzerland                &lt;dbl&gt; 3731, 3980, 3576, 3850, 3025, 2580, 3656, 2…
+$ `United Kingdom`           &lt;dbl&gt; 28986, 35148, 36117, 33792, 23377, 21769, 2…
+$ Australia                  &lt;dbl&gt; 34616, 26030, 31119, 34824, 33139, 35731, 4…
+$ `New Zealand`              &lt;dbl&gt; 5034, 3938, 4668, 6890, 7006, 7634, 9502, 6…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">air</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 6%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 5%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 3%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Month-Year</th>
+<th style="text-align: right;">Republic of South Africa</th>
+<th style="text-align: right;">Canada</th>
+<th style="text-align: right;">USA</th>
+<th style="text-align: right;">Bangladesh</th>
+<th style="text-align: right;">Brunei</th>
+<th style="text-align: right;">China</th>
+<th style="text-align: right;">Hong Kong SAR (China)</th>
+<th style="text-align: right;">India</th>
+<th style="text-align: right;">Indonesia</th>
+<th style="text-align: right;">Japan</th>
+<th style="text-align: right;">South Korea</th>
+<th style="text-align: right;">Kuwait</th>
+<th style="text-align: right;">Malaysia</th>
+<th style="text-align: right;">Myanmar</th>
+<th style="text-align: right;">Pakistan</th>
+<th style="text-align: right;">Philippines</th>
+<th style="text-align: right;">Saudi Arabia</th>
+<th style="text-align: right;">Sri Lanka</th>
+<th style="text-align: right;">Taiwan</th>
+<th style="text-align: right;">Thailand</th>
+<th style="text-align: right;">United Arab Emirates</th>
+<th style="text-align: right;">Vietnam</th>
+<th style="text-align: right;">Belgium &amp; Luxembourg</th>
+<th style="text-align: right;">CIS</th>
+<th style="text-align: right;">Finland</th>
+<th style="text-align: right;">France</th>
+<th style="text-align: right;">Germany</th>
+<th style="text-align: right;">Ireland</th>
+<th style="text-align: right;">Italy</th>
+<th style="text-align: right;">Netherlands</th>
+<th style="text-align: right;">Spain</th>
+<th style="text-align: right;">Switzerland</th>
+<th style="text-align: right;">United Kingdom</th>
+<th style="text-align: right;">Australia</th>
+<th style="text-align: right;">New Zealand</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: right;">3291</td>
+<td style="text-align: right;">5545</td>
+<td style="text-align: right;">25906</td>
+<td style="text-align: right;">2883</td>
+<td style="text-align: right;">3749</td>
+<td style="text-align: right;">33895</td>
+<td style="text-align: right;">13692</td>
+<td style="text-align: right;">19235</td>
+<td style="text-align: right;">65151</td>
+<td style="text-align: right;">59288</td>
+<td style="text-align: right;">21457</td>
+<td style="text-align: right;">507</td>
+<td style="text-align: right;">27472</td>
+<td style="text-align: right;">1177</td>
+<td style="text-align: right;">2150</td>
+<td style="text-align: right;">8404</td>
+<td style="text-align: right;">1312</td>
+<td style="text-align: right;">3922</td>
+<td style="text-align: right;">15766</td>
+<td style="text-align: right;">12048</td>
+<td style="text-align: right;">1318</td>
+<td style="text-align: right;">1527</td>
+<td style="text-align: right;">1434</td>
+<td style="text-align: right;">2703</td>
+<td style="text-align: right;">1634</td>
+<td style="text-align: right;">4752</td>
+<td style="text-align: right;">12739</td>
+<td style="text-align: right;">1292</td>
+<td style="text-align: right;">3544</td>
+<td style="text-align: right;">4962</td>
+<td style="text-align: right;">925</td>
+<td style="text-align: right;">3731</td>
+<td style="text-align: right;">28986</td>
+<td style="text-align: right;">34616</td>
+<td style="text-align: right;">5034</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-02-01</td>
+<td style="text-align: right;">2357</td>
+<td style="text-align: right;">6120</td>
+<td style="text-align: right;">28262</td>
+<td style="text-align: right;">2469</td>
+<td style="text-align: right;">3236</td>
+<td style="text-align: right;">34344</td>
+<td style="text-align: right;">19870</td>
+<td style="text-align: right;">18975</td>
+<td style="text-align: right;">37105</td>
+<td style="text-align: right;">58188</td>
+<td style="text-align: right;">19634</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">29084</td>
+<td style="text-align: right;">1161</td>
+<td style="text-align: right;">2496</td>
+<td style="text-align: right;">9128</td>
+<td style="text-align: right;">623</td>
+<td style="text-align: right;">3988</td>
+<td style="text-align: right;">24861</td>
+<td style="text-align: right;">12745</td>
+<td style="text-align: right;">899</td>
+<td style="text-align: right;">2269</td>
+<td style="text-align: right;">1596</td>
+<td style="text-align: right;">1182</td>
+<td style="text-align: right;">1297</td>
+<td style="text-align: right;">6391</td>
+<td style="text-align: right;">13093</td>
+<td style="text-align: right;">1200</td>
+<td style="text-align: right;">2897</td>
+<td style="text-align: right;">5054</td>
+<td style="text-align: right;">747</td>
+<td style="text-align: right;">3980</td>
+<td style="text-align: right;">35148</td>
+<td style="text-align: right;">26030</td>
+<td style="text-align: right;">3938</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-03-01</td>
+<td style="text-align: right;">4036</td>
+<td style="text-align: right;">6255</td>
+<td style="text-align: right;">30439</td>
+<td style="text-align: right;">2904</td>
+<td style="text-align: right;">3342</td>
+<td style="text-align: right;">27053</td>
+<td style="text-align: right;">17086</td>
+<td style="text-align: right;">21049</td>
+<td style="text-align: right;">44205</td>
+<td style="text-align: right;">74426</td>
+<td style="text-align: right;">20719</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">30504</td>
+<td style="text-align: right;">1355</td>
+<td style="text-align: right;">2429</td>
+<td style="text-align: right;">11691</td>
+<td style="text-align: right;">1578</td>
+<td style="text-align: right;">4259</td>
+<td style="text-align: right;">18767</td>
+<td style="text-align: right;">16971</td>
+<td style="text-align: right;">1474</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">1548</td>
+<td style="text-align: right;">1088</td>
+<td style="text-align: right;">1220</td>
+<td style="text-align: right;">5528</td>
+<td style="text-align: right;">13645</td>
+<td style="text-align: right;">1368</td>
+<td style="text-align: right;">2717</td>
+<td style="text-align: right;">4950</td>
+<td style="text-align: right;">935</td>
+<td style="text-align: right;">3576</td>
+<td style="text-align: right;">36117</td>
+<td style="text-align: right;">31119</td>
+<td style="text-align: right;">4668</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-04-01</td>
+<td style="text-align: right;">4241</td>
+<td style="text-align: right;">4521</td>
+<td style="text-align: right;">25378</td>
+<td style="text-align: right;">2843</td>
+<td style="text-align: right;">5117</td>
+<td style="text-align: right;">30464</td>
+<td style="text-align: right;">22346</td>
+<td style="text-align: right;">26160</td>
+<td style="text-align: right;">45480</td>
+<td style="text-align: right;">49985</td>
+<td style="text-align: right;">17489</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">34478</td>
+<td style="text-align: right;">1593</td>
+<td style="text-align: right;">2711</td>
+<td style="text-align: right;">14141</td>
+<td style="text-align: right;">705</td>
+<td style="text-align: right;">6579</td>
+<td style="text-align: right;">22735</td>
+<td style="text-align: right;">20397</td>
+<td style="text-align: right;">1284</td>
+<td style="text-align: right;">2420</td>
+<td style="text-align: right;">1592</td>
+<td style="text-align: right;">1012</td>
+<td style="text-align: right;">1208</td>
+<td style="text-align: right;">5544</td>
+<td style="text-align: right;">13366</td>
+<td style="text-align: right;">1345</td>
+<td style="text-align: right;">2512</td>
+<td style="text-align: right;">4149</td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">3850</td>
+<td style="text-align: right;">33792</td>
+<td style="text-align: right;">34824</td>
+<td style="text-align: right;">6890</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-05-01</td>
+<td style="text-align: right;">2841</td>
+<td style="text-align: right;">3914</td>
+<td style="text-align: right;">26163</td>
+<td style="text-align: right;">2793</td>
+<td style="text-align: right;">4152</td>
+<td style="text-align: right;">30775</td>
+<td style="text-align: right;">16357</td>
+<td style="text-align: right;">35869</td>
+<td style="text-align: right;">38350</td>
+<td style="text-align: right;">48937</td>
+<td style="text-align: right;">19398</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">34795</td>
+<td style="text-align: right;">1397</td>
+<td style="text-align: right;">2594</td>
+<td style="text-align: right;">13305</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">4625</td>
+<td style="text-align: right;">18399</td>
+<td style="text-align: right;">15769</td>
+<td style="text-align: right;">1042</td>
+<td style="text-align: right;">1833</td>
+<td style="text-align: right;">1167</td>
+<td style="text-align: right;">660</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">4225</td>
+<td style="text-align: right;">10878</td>
+<td style="text-align: right;">1067</td>
+<td style="text-align: right;">2205</td>
+<td style="text-align: right;">3643</td>
+<td style="text-align: right;">764</td>
+<td style="text-align: right;">3025</td>
+<td style="text-align: right;">23377</td>
+<td style="text-align: right;">33139</td>
+<td style="text-align: right;">7006</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-06-01</td>
+<td style="text-align: right;">2776</td>
+<td style="text-align: right;">3487</td>
+<td style="text-align: right;">28179</td>
+<td style="text-align: right;">3146</td>
+<td style="text-align: right;">5018</td>
+<td style="text-align: right;">26720</td>
+<td style="text-align: right;">18133</td>
+<td style="text-align: right;">31314</td>
+<td style="text-align: right;">47982</td>
+<td style="text-align: right;">53798</td>
+<td style="text-align: right;">17522</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">34660</td>
+<td style="text-align: right;">1715</td>
+<td style="text-align: right;">2924</td>
+<td style="text-align: right;">10555</td>
+<td style="text-align: right;">2749</td>
+<td style="text-align: right;">4740</td>
+<td style="text-align: right;">21042</td>
+<td style="text-align: right;">17217</td>
+<td style="text-align: right;">1545</td>
+<td style="text-align: right;">2480</td>
+<td style="text-align: right;">1170</td>
+<td style="text-align: right;">712</td>
+<td style="text-align: right;">982</td>
+<td style="text-align: right;">4047</td>
+<td style="text-align: right;">9054</td>
+<td style="text-align: right;">1363</td>
+<td style="text-align: right;">2196</td>
+<td style="text-align: right;">3544</td>
+<td style="text-align: right;">855</td>
+<td style="text-align: right;">2580</td>
+<td style="text-align: right;">21769</td>
+<td style="text-align: right;">35731</td>
+<td style="text-align: right;">7634</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">air</span><span class="op">$</span><span class="va">month</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu">month</span><span class="op">(</span><span class="va">air</span><span class="op">$</span><span class="va">`Month-Year`</span><span class="op">)</span>,</span>
+<span>                    levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>,</span>
+<span>                    labels <span class="op">=</span> <span class="va">month.abb</span>, <span class="co">#built in constants</span></span>
+<span>                    ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">air</span><span class="op">$</span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu">year</span><span class="op">(</span><span class="fu">ymd</span><span class="op">(</span><span class="va">air</span><span class="op">$</span><span class="va">`Month-Year`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">air</span><span class="op">[</span> , <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">air</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">air</span><span class="op">)</span> <span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">month</th>
+<th style="text-align: right;">year</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Jan</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Feb</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mar</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Apr</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">May</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jun</td>
+<td style="text-align: right;">2000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">air</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">kable</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">month</th>
+<th style="text-align: right;">year</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Jan</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Feb</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mar</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Apr</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">May</td>
+<td style="text-align: right;">2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jun</td>
+<td style="text-align: right;">2000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<p>We select the data for target country (e.g.&nbsp;Vietnam) and visits after 2010.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Vietnam</span> <span class="op">&lt;-</span> <span class="va">air</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">`Vietnam`</span>,</span>
+<span>         <span class="va">month</span>,</span>
+<span>         <span class="va">year</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">&gt;=</span> <span class="fl">2010</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">Vietnam</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">Vietnam</th>
+<th style="text-align: left;">month</th>
+<th style="text-align: right;">year</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">15781</td>
+<td style="text-align: left;">Jan</td>
+<td style="text-align: right;">2010</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16335</td>
+<td style="text-align: left;">Feb</td>
+<td style="text-align: right;">2010</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">18061</td>
+<td style="text-align: left;">Mar</td>
+<td style="text-align: right;">2010</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">22154</td>
+<td style="text-align: left;">Apr</td>
+<td style="text-align: right;">2010</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">21461</td>
+<td style="text-align: left;">May</td>
+<td style="text-align: right;">2010</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">28146</td>
+<td style="text-align: left;">Jun</td>
+<td style="text-align: right;">2010</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<p>We use <code>group_by()</code> and <code>summarise()</code> of <strong>dplyr</strong> package to calculate the average number of arrivals for each month across all years.</p>
+<p>This matches what a cycle plot needs, which is the typical seasonal pattern by month.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hline.data</span> <span class="op">&lt;-</span> <span class="va">Vietnam</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">month</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>avgvalue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">`Vietnam`</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">hline.data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 2
+   month avgvalue
+   &lt;ord&gt;    &lt;dbl&gt;
+ 1 Jan     24113.
+ 2 Feb     26693.
+ 3 Mar     27200.
+ 4 Apr     30391.
+ 5 May     31453.
+ 6 Jun     41325.
+ 7 Jul     47193.
+ 8 Aug     35640.
+ 9 Sep     27919.
+10 Oct     27433 
+11 Nov     26949.
+12 Dec     28481.</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-5-tab">
+<p>The code below creates the cycle plot.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>data<span class="op">=</span><span class="va">Vietnam</span>,</span>
+<span>            <span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">year</span>, </span>
+<span>                y<span class="op">=</span><span class="va">`Vietnam`</span>, </span>
+<span>                group<span class="op">=</span><span class="va">month</span><span class="op">)</span>, </span>
+<span>            colour<span class="op">=</span><span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_hline</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>yintercept<span class="op">=</span><span class="va">avgvalue</span><span class="op">)</span>, </span>
+<span>             data<span class="op">=</span><span class="va">hline.data</span>, </span>
+<span>             linetype<span class="op">=</span><span class="fl">6</span>, </span>
+<span>             colour<span class="op">=</span><span class="st">"red"</span>, </span>
+<span>             size<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">facet_grid</span><span class="op">(</span><span class="op">~</span><span class="va">month</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">xlab</span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ylab</span><span class="op">(</span><span class="st">"No. of Visitors"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_gray</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="1920"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>The table <strong>hline.data</strong> stores the average number of visitor arrivals for each month. The horizontal line is drawn at <code>avgvalue</code>, which represents the monthly average arrival level.</p></li>
+<li><p><code>facet_grid(~ month)</code> creates 12 panels in one row, while <code>facet_wrap(~ month)</code> automatically arranges the panels into a rectangular grid.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section id="plotting-slopegraph" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="plotting-slopegraph">
+<span class="header-section-number">5</span> Plotting Slopegraph</h2>
+<p>In this section, we learn how to create a <a href="https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slopegraph">slopegraph</a> using R.</p>
+<p>A slopegraph is a efficient chart that shows ranking, actual values, change direction over time all in one visual.</p>
+<p>Before starting, make sure <strong>CGPfunctions</strong> is installed and loaded in the R environment. Then review the guide on using <code>newggslopegraph()</code>, and read the <a href="https://www.rdocumentation.org/packages/CGPfunctions/versions/0.6.3/topics/newggslopegraph">documentation</a> to understand its arguments and usage.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Key Arguments
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong>Main arguments of <code>newggslopegraph()</code></strong></p></li>
+<li><p><strong><code>dataframe</code></strong>: dataset used for plotting</p></li>
+<li><p><strong><code>Times</code></strong>:x axis variable (usually time such as year)</p></li>
+<li><p><strong><code>Measurement</code></strong>: numeric values to compare (y axis)</p></li>
+<li><p><strong><code>Grouping</code></strong>: category that forms each slope line (e.g.&nbsp;country, gender)</p></li>
+<li><p><strong>Common optional arguments</strong></p></li>
+<li><p><strong><code>Data.label</code></strong>: labels shown next to points (default: measurement values)</p></li>
+<li><p><strong><code>Title</code>, <code>SubTitle</code>, <code>Caption</code></strong>: add text annotations to the chart</p></li>
+<li><p><strong><code>LineColor</code></strong>: set line colours (single colour or by group)</p></li>
+<li><p><strong><code>LineThickness</code></strong>: adjust thickness of slope lines</p></li>
+<li><p><strong>Appearance and behaviour options</strong></p></li>
+<li><p><strong><code>ReverseYAxis</code></strong>: reverse the y axis (useful for rankings)</p></li>
+<li><p><strong><code>ThemeChoice</code></strong>:visual theme <em>(options: “bw”, “tufte”, “wsj”, “econ”, etc.)</em></p></li>
+<li><p><strong><code>RemoveMissing</code></strong>: remove groups with missing values <em>(default: TRUE)</em></p></li>
+</ul>
+</div>
+</div>
+<section id="step-1-data-import-1" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="step-1-data-import-1">
+<span class="header-section-number">5.1</span> Step 1: Data Import</h3>
+<p>Import the rice data set into R environment by using the code chunk below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rice</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">"data/rice.csv"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The dataset contains 440 rows and 4 columns: <strong>country</strong> (character), and <strong>year</strong>, <strong>yield</strong>, and <strong>production</strong> (numeric/dbl).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">rice</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">Country</th>
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Yield</th>
+<th style="text-align: right;">Production</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">20787</td>
+<td style="text-align: right;">56217601</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">23700</td>
+<td style="text-align: right;">65675288</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1963</td>
+<td style="text-align: right;">26833</td>
+<td style="text-align: right;">76439280</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">28289</td>
+<td style="text-align: right;">85853780</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1965</td>
+<td style="text-align: right;">29667</td>
+<td style="text-align: right;">90705630</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">China</td>
+<td style="text-align: right;">1966</td>
+<td style="text-align: right;">31445</td>
+<td style="text-align: right;">98403990</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="step-2-plotting-the-slopegraph" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="step-2-plotting-the-slopegraph">
+<span class="header-section-number">5.2</span> Step 2: Plotting the slopegraph</h3>
+<p>Next the code below creates a basic slopegraph.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rice</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1961</span>, <span class="fl">1980</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">newggslopegraph</span><span class="op">(</span><span class="va">Year</span>, <span class="va">Yield</span>, <span class="va">Country</span>,</span>
+<span>                  Title <span class="op">=</span> <span class="st">"Rice Yield of Tope 11 Asian Country"</span>,</span>
+<span>                  SubTitle <span class="op">=</span> <span class="st">"1961-1980"</span>,</span>
+<span>                  Caption <span class="op">=</span> <span class="st">"Happy CNY"</span>,</span>
+<span>                  ThemeChoice <span class="op">=</span> <span class="st">"econ"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For effective visualisation, <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> is used to convert the <strong>Year</strong> variable from numeric to a factor so it is treated as a categorical variable in the plot.</p>
+</div>
+</div>
+</section></section><section id="reference" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">6</span> Reference</h2>
+<p>Kam, Tin Seong (2026). 17 Visualising and Analysing Time-oriented Data, R for Visual Analytics, https://r4va.netlify.app/chap17</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+</body></html>
