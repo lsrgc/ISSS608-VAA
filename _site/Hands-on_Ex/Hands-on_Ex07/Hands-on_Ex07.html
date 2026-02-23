@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Yiqiong PAN">
 <meta name="dcterms.date" content="2026-02-16">
-<title>06: Visualising and Analysing Time-oriented Data – ISSS608-VAA-yiqiong-pan</title>
+<title>07: Visualising and Analysing Time-oriented Data – ISSS608-VAA-yiqiong-pan</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -378,8 +378,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">
 <li>
-    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex01/In-class_Ex06.html">
- <span class="dropdown-text">06: Shiny Apps</span></a>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex06/In-class_Ex06.html">
+ <span class="dropdown-text">06: A Basic Shiny App</span></a>
   </li>  
     </ul>
 </li>
@@ -456,12 +456,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#step-2-plotting-the-slopegraph" id="toc-step-2-plotting-the-slopegraph" class="nav-link" data-scroll-target="#step-2-plotting-the-slopegraph"><span class="header-section-number">5.2</span> Step 2: Plotting the slopegraph</a></li>
   </ul>
 </li>
-  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">6</span> Reference</a></li>
+  <li><a href="#creating-horizon-plots" id="toc-creating-horizon-plots" class="nav-link" data-scroll-target="#creating-horizon-plots"><span class="header-section-number">6</span> Creating Horizon Plots</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">7</span> Reference</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">06: Visualising and Analysing Time-oriented Data</h1>
+<h1 class="title">07: Visualising and Analysing Time-oriented Data</h1>
 </div>
 
 
@@ -1915,19 +1916,35 @@ $ `New Zealand`              &lt;dbl&gt; 5034, 3938, 4668, 6890, 7006, 7634, 950
 </div>
 </section><section id="step-2-plotting-the-slopegraph" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="step-2-plotting-the-slopegraph">
 <span class="header-section-number">5.2</span> Step 2: Plotting the slopegraph</h3>
-<p>Next the code below creates a basic slopegraph.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rice</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">country_order</span> <span class="op">&lt;-</span> <span class="va">rice</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1961</span>, <span class="fl">1980</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">distinct</span><span class="op">(</span><span class="va">Country</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">pull</span><span class="op">(</span><span class="va">Country</span><span class="op">)</span>       </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">country_order</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "China"       "India"       "Indonesia"   "Japan"       "Korea"      
+ [6] "Malaysia"    "Myanmar"     "Philippines" "SriLanka"    "Thailand"   
+[11] "VietNam"    </code></pre>
+</div>
+</div>
+<p>Next the code below creates a basic slopegraph with highighted countries (China, Japan and Thailand).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rice</span> <span class="op">%&gt;%</span></span>
+<span><span class="fu">mutate</span><span class="op">(</span>Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">Year</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Year</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1961</span>, <span class="fl">1980</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">newggslopegraph</span><span class="op">(</span><span class="va">Year</span>, <span class="va">Yield</span>, <span class="va">Country</span>,</span>
 <span>                  Title <span class="op">=</span> <span class="st">"Rice Yield of Tope 11 Asian Country"</span>,</span>
 <span>                  SubTitle <span class="op">=</span> <span class="st">"1961-1980"</span>,</span>
 <span>                  Caption <span class="op">=</span> <span class="st">"Happy CNY"</span>,</span>
-<span>                  ThemeChoice <span class="op">=</span> <span class="st">"econ"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span>                  ThemeChoice <span class="op">=</span> <span class="st">"econ"</span>,</span>
+<span>                  LineThickness <span class="op">=</span> <span class="fl">.5</span>,</span>
+<span>                  YTextSize <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>                  LineColor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"red"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="fl">5</span><span class="op">)</span>, <span class="st">"red"</span>, <span class="st">"gray"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="960"></p>
+<figure class="figure"><p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1945,8 +1962,25 @@ $ `New Zealand`              &lt;dbl&gt; 5034, 3938, 4668, 6890, 7006, 7634, 950
 <p>For effective visualisation, <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> is used to convert the <strong>Year</strong> variable from numeric to a factor so it is treated as a categorical variable in the plot.</p>
 </div>
 </div>
-</section></section><section id="reference" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="reference">
-<span class="header-section-number">6</span> Reference</h2>
+</section></section><section id="creating-horizon-plots" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="creating-horizon-plots">
+<span class="header-section-number">6</span> Creating Horizon Plots</h2>
+<p><strong>Horizon plots</strong> compare each country to its own history/pattern while <strong>line plots</strong> with same scales compare countries to each other.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rice</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">Year</span>, y <span class="op">=</span> <span class="va">Yield</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_horizon</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">facet_grid</span><span class="op">(</span><span class="va">Country</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Rice Yield Horizon Plot"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="reference" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">7</span> Reference</h2>
 <p>Kam, Tin Seong (2026). 17 Visualising and Analysing Time-oriented Data, R for Visual Analytics, https://r4va.netlify.app/chap17</p>
 
 

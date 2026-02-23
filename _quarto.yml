@@ -46,7 +46,7 @@ website:
       - text: "In-class Exercise"
         menu: 
           - text: "06: A Basic Shiny App"
-            href: "In-class_Ex/In-class_Ex01/In-class_Ex06.html"
+            href: "In-class_Ex/In-class_Ex06/In-class_Ex06.html"
       - text: "Take-home Exercise"
         menu: 
           - text: "01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data"

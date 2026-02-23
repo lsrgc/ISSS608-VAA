@@ -1,5 +1,5 @@
 ---
-title: "06: Visualising and Analysing Time-oriented Data"
+title: "07: Visualising and Analysing Time-oriented Data"
 author: "Yiqiong PAN"
 date: "16 Feb, 2026"
 date-modified: last-modified
@@ -462,17 +462,30 @@ kable(head(rice))
 
 ### Step 2: Plotting the slopegraph
 
-Next the code below creates a basic slopegraph.
+
+```{r}
+country_order <- rice %>%
+  filter(Year %in% c(1961, 1980)) %>%
+  distinct(Country) %>% 
+  pull(Country)       
+print(country_order)
+```
+
+Next the code below creates a basic slopegraph with highighted countries (China, Japan and Thailand).
 
 ```{r, fig.height=12, fig.width=10}
 rice %>%
-  mutate(Year = factor(Year)) %>%
+mutate(Year = factor(Year)) %>%
   filter(Year %in% c(1961, 1980)) %>%
   newggslopegraph(Year, Yield, Country,
                   Title = "Rice Yield of Tope 11 Asian Country",
                   SubTitle = "1961-1980",
                   Caption = "Happy CNY",
-                  ThemeChoice = "econ")
+                  ThemeChoice = "econ",
+                  LineThickness = .5,
+                  YTextSize = 4,
+                  LineColor = c("red", rep("gray", 2), "red", rep("gray", 5), "red", "gray")
+)
   
 ```
 
@@ -481,6 +494,23 @@ rice %>%
 
 For effective visualisation, `factor()` is used to convert the **Year** variable from numeric to a factor so it is treated as a categorical variable in the plot.
 :::
+
+
+## Creating Horizon Plots
+
+**Horizon plots** compare each country to its own history/pattern while **line plots** with same scales compare countries to each other. 
+
+```{r, fig.height=12, fig.width=10}
+rice %>%
+  ggplot(aes(x = Year, y = Yield)) +
+  geom_horizon() + 
+  facet_grid(Country ~ .) +
+  theme_minimal() +
+  labs(title = "Rice Yield Horizon Plot")
+```
+
+
+
 
 ## Reference
 
