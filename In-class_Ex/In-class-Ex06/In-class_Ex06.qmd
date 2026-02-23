@@ -1,0 +1,214 @@
+---
+title: "06: A Basic Shiny App"
+author: "Yiqiong PAN"
+date: "21 Feb, 2026"
+date-modified: last-modified
+
+execute:
+  echo: true    # display the code
+  eval: true    # run the code
+  message: false
+  warning: false
+  freeze: true  # do not re-render if nothing edited
+
+format: 
+  html:
+    toc: true
+    code-link: true
+
+number-sections: true
+number-depth: 6
+
+editor: visual
+---
+
+## Learning Outcome
+
+By the end of this hands-on exercise, we will be able to create a basic Shiny application using R packages:
+
+
+
+## Getting Started
+
+There are **2** packages that will be used in this exercise.
+
+| Package | Description |
+|------------------------------------|------------------------------------|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
+| [shiny](https://shiny.posit.co/) | Builds interactive web-based applications for data science  |
+
+
+## app.R structure in Shiny
+
+
+
+Shiny apps are commonly organised in a single file called app.R. A basic app has three main parts: packages, UI, and server, then you run the app.
+
+### Packages
+
+Load the packages we need at the top of the file using `library()`.  We should check is whether a package provides certain UI functions (like `plotOutput()`, `DTOutput()`) or server rendering functions (like `renderPlot()`, `renderDT()`), depending on what we want to display.
+
+
+
+### UI
+
+The UI describes the layout and inputs the user can interact with. A common pattern is:
+
+```{r}
+#| eval: false
+ui <- fluidPage(...)
+```
+
+`fluidPage()` adjusts to different screen sizes (desktop, mobile, etc).
+
+
+**Common fluidPage() components** include:
+
+- **titlePanel()** creates the main page title.
+
+
+- **Layout** panels can be created in different ways. 
+
+A classic layout is:
+
+```{r}
+#| eval: false
+sidebarLayout(sidebarPanel(...), 
+                mainPanel(...))
+```
+
+:::callout-tip
+
+#### Notes
+
+- sidebarPanel() holds **inputs** (controls).
+
+- mainPanel() holds **outputs** (plots, tables, text, etc).
+
+:::
+
+
+**Inputs inside sidebarPanel()**
+
+
+Common inputs include:
+
+- **selectInput**(inputId = "...", label, choices, selected = NULL, multiple = FALSE, selectize = TRUE, width = NULL,
+  size = NULL)
+  
+- **sliderInput**(inputId = "...", label, min, max, value, step = NULL, round = FALSE, ticks = TRUE, animate = FALSE, width = NULL, sep = ",", pre = NULL, post = NULL, timeFormat = NULL, timezone = NULL, dragRange = TRUE)
+
+
+:::callout-tip
+
+#### Notes
+
+- In Shiny, each page row is divided into **12** columns total. By default: sidebarPanel is 4-column wide and mainPanel is 8-column wide. We can change the widths,e.g. setting the `width` 3 in `sidbarPanel()` and 9 in `mainPanel()`. 
+
+- Internally, Shiny is doing **fluidRow**(column(width = x, "location"),...), so the width is adjusted automatically for different screen sizes. **Please note**: he sum of width should not exceed 12, if less than 12, Shiny leaves empty space, if greater than 12, the layout looks odd.
+
+- Good practice during storyboarding is to plan **unique** inputId values early (for example inputId = "A", "B", "C" or meaningful names) to avoid duplicates, because duplicated IDs cause **bugs**.
+
+:::
+
+
+
+
+### Server
+
+The server defines the logic and computation. It reacts to user inputs and generates outputs.
+
+Typical structure:
+
+
+```{r}
+#| eval: false
+server <- function(input, output, session) { ... }
+```
+
+
+Inside server, `output$...` is a Shiny server object we create. 
+
+For Example:
+
+```{r}
+#| eval: false
+output$plot1 <- renderPlot({ ... })
+output$table1 <- renderTable({ ... })
+```
+
+
+### Run the app
+
+Finally `shinyApp()` tells Shiny to use the UI and server and launch an interactive web service.
+
+
+```{r}
+#| eval: false
+shinyApp(ui = ui, server = server)
+```
+
+
+### Deleting a deployed Shiny app
+
+On *shinyapps.io* platform, the usual safe approach is to **archive** first, then **delete**.
+
+
+
+### Example - prototype1
+
+[Here](https://ypan608.shinyapps.io/Prototype1/) is the prototype we tried out in the class. 
+
+```{r}
+#| eval: false
+pacman::p_load(shiny, tidyverse)
+
+
+exam <- read_csv("data/Exam_data.csv")
+
+#print(exam)
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+  titlePanel("Pupils Exam Results Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "variable",
+                  label = "Subject:",
+                  choices = c("English" = "ENGLISH",
+                              "Maths" = "MATHS",
+                              "Science" = "SCIENCE"),
+                  selected = "ENGLISH"), # default choice
+      sliderInput(inputId = "bins",
+                  label = "Number of Bins",
+                  min = 5,
+                  max = 20,
+                  value = 10)
+    ),
+    mainPanel(
+      plotOutput("distPlot")
+    )
+  )
+)
+
+  
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    ggplot(data = exam, 
+           aes_string(x = input$variable)) +
+             geom_histogram(bins = input$bins,
+                            color = "black",
+                            fill = "lightblue")
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+
+
+## Reference
+
+Kam, Tin Seong (2026). Designing Web-enabled Visual Analytics Application with Shiny, ISSS608 Visual Analytics and Applications, https://isss608-ay2025-26jan.netlify.app/outline/lesson06_outline

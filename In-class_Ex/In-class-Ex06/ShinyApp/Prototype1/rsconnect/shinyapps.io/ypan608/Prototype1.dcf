@@ -1,0 +1,12 @@
+name: Prototype1
+title: Prototype1
+username: ypan608
+account: ypan608
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16729672
+bundleId: 11610409
+url: https://ypan608.shinyapps.io/Prototype1/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
