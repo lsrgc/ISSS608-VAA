@@ -41,8 +41,10 @@ website:
             href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_2.html"
           - text: "08-3: Analytical Mapping"
             href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_3.html"
+          - text: "09: Modelling, Visualising and Analysing Network Data with R"
+            href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html"
           - text: "10: Information Dashboard Design: R methods"
-            href: "Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex10.html"
+            href: "Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html"
       - text: "In-class Exercise"
         menu: 
           - text: "06: A Basic Shiny App"
@@ -53,8 +55,6 @@ website:
             href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
           - text: "02: "
             href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" 
-          - text: "03: "
-            href: "Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html" 
     right: 
       - href: index.qmd
         text: Home

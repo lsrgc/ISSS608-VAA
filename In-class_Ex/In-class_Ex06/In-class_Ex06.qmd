@@ -31,7 +31,7 @@ By the end of this hands-on exercise, we will be able to create a basic Shiny ap
 There are **2** packages that will be used in this exercise.
 
 | Package | Description |
-|------------------------------------|------------------------------------|
+|----|----|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [shiny](https://shiny.posit.co/) | Builds interactive web-based applications for data science |
 
