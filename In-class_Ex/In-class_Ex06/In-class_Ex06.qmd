@@ -182,4 +182,4 @@ shinyApp(ui = ui, server = server)
 
 ## Reference
 
-Kam, Tin Seong (2026). Designing Web-enabled Visual Analytics Application with Shiny, ISSS608 Visual Analytics and Applications, https://isss608-ay2025-26jan.netlify.app/outline/lesson06_outline
+Kam, Tin Seong (2026). [Designing Web-enabled Visual Analytics Application with Shiny](https://isss608-ay2025-26jan.netlify.app/outline/lesson06_outline), ISSS608 Visual Analytics and Applications

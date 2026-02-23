@@ -887,5 +887,40 @@
     "title": "07: Visualising and Analysing Time-oriented Data",
     "section": "\n6 Creating Horizon Plots",
     "text": "6 Creating Horizon Plots\nHorizon plots compare each country to its own history/pattern while line plots with same scales compare countries to each other.\n\nrice %&gt;%\n  ggplot(aes(x = Year, y = Yield)) +\n  geom_horizon() + \n  facet_grid(Country ~ .) +\n  theme_minimal() +\n  labs(title = \"Rice Yield Horizon Plot\")"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html",
+    "title": "06: A Basic Shiny App",
+    "section": "",
+    "text": "By the end of this hands-on exercise, we will be able to create a basic Shiny application using R packages:"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#learning-outcome",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#learning-outcome",
+    "title": "06: A Basic Shiny App",
+    "section": "",
+    "text": "By the end of this hands-on exercise, we will be able to create a basic Shiny application using R packages:"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#getting-started",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#getting-started",
+    "title": "06: A Basic Shiny App",
+    "section": "\n2 Getting Started",
+    "text": "2 Getting Started\nThere are 2 packages that will be used in this exercise.\n\n\nPackage\nDescription\n\n\n\ntidyverse\nA collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., readr, dplyr, tidyr, ggplot2).\n\n\nshiny\nBuilds interactive web-based applications for data science"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#app.r-structure-in-shiny",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#app.r-structure-in-shiny",
+    "title": "06: A Basic Shiny App",
+    "section": "\n3 app.R structure in Shiny",
+    "text": "3 app.R structure in Shiny\nShiny apps are commonly organised in a single file called app.R. A basic app has three main parts: packages, UI, and server, then you run the app.\n\n3.1 Packages\nLoad the packages we need at the top of the file using library(). We should check is whether a package provides certain UI functions (like plotOutput(), DTOutput()) or server rendering functions (like renderPlot(), renderDT()), depending on what we want to display.\n\n3.2 UI\nThe UI describes the layout and inputs the user can interact with. A common pattern is:\n\nui &lt;- fluidPage(...)\n\nfluidPage() adjusts to different screen sizes (desktop, mobile, etc).\nCommon fluidPage() components include:\n\ntitlePanel() creates the main page title.\nLayout panels can be created in different ways.\n\nA classic layout is:\n\nsidebarLayout(sidebarPanel(...), \n                mainPanel(...))\n\n\n\n\n\n\n\nTipNotes\n\n\n\n\nsidebarPanel() holds inputs (controls).\nmainPanel() holds outputs (plots, tables, text, etc).\n\n\n\nInputs inside sidebarPanel()\nCommon inputs include:\n\nselectInput(inputId = “…”, label, choices, selected = NULL, multiple = FALSE, selectize = TRUE, width = NULL, size = NULL)\nsliderInput(inputId = “…”, label, min, max, value, step = NULL, round = FALSE, ticks = TRUE, animate = FALSE, width = NULL, sep = “,”, pre = NULL, post = NULL, timeFormat = NULL, timezone = NULL, dragRange = TRUE)\n\n\n\n\n\n\n\nTipNotes\n\n\n\n\nIn Shiny, each page row is divided into 12 columns total. By default: sidebarPanel is 4-column wide and mainPanel is 8-column wide. We can change the widths,e.g. setting the width 3 in sidbarPanel() and 9 in mainPanel().\nInternally, Shiny is doing fluidRow(column(width = x, “location”),…), so the width is adjusted automatically for different screen sizes. Please note: he sum of width should not exceed 12, if less than 12, Shiny leaves empty space, if greater than 12, the layout looks odd.\nGood practice during storyboarding is to plan unique inputId values early (for example inputId = “A”, “B”, “C” or meaningful names) to avoid duplicates, because duplicated IDs cause bugs.\n\n\n\n\n3.3 Server\nThe server defines the logic and computation. It reacts to user inputs and generates outputs.\nTypical structure:\n\nserver &lt;- function(input, output, session) { ... }\n\nInside server, output$... is a Shiny server object we create.\nFor Example:\n\noutput$plot1 &lt;- renderPlot({ ... })\noutput$table1 &lt;- renderTable({ ... })\n\n\n3.4 Run the app\nFinally shinyApp() tells Shiny to use the UI and server and launch an interactive web service.\n\nshinyApp(ui = ui, server = server)\n\n\n3.5 Deleting a deployed Shiny app\nOn shinyapps.io platform, the usual safe approach is to archive first, then delete.\n\n3.6 Example - prototype1\nHere is the prototype we tried out in the class.\n\npacman::p_load(shiny, tidyverse)\n\n\nexam &lt;- read_csv(\"data/Exam_data.csv\")\n\n#print(exam)\n\n# Define UI for application that draws a histogram\nui &lt;- fluidPage(\n  titlePanel(\"Pupils Exam Results Dashboard\"),\n  sidebarLayout(\n    sidebarPanel(\n      selectInput(inputId = \"variable\",\n                  label = \"Subject:\",\n                  choices = c(\"English\" = \"ENGLISH\",\n                              \"Maths\" = \"MATHS\",\n                              \"Science\" = \"SCIENCE\"),\n                  selected = \"ENGLISH\"), # default choice\n      sliderInput(inputId = \"bins\",\n                  label = \"Number of Bins\",\n                  min = 5,\n                  max = 20,\n                  value = 10)\n    ),\n    mainPanel(\n      plotOutput(\"distPlot\")\n    )\n  )\n)\n\n  \n# Define server logic required to draw a histogram\nserver &lt;- function(input, output) {\n  output$distPlot &lt;- renderPlot({\n    ggplot(data = exam, \n           aes_string(x = input$variable)) +\n             geom_histogram(bins = input$bins,\n                            color = \"black\",\n                            fill = \"lightblue\")\n  })\n}\n\n# Run the application \nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#reference",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#reference",
+    "title": "06: A Basic Shiny App",
+    "section": "\n4 Reference",
+    "text": "4 Reference\nKam, Tin Seong (2026). Designing Web-enabled Visual Analytics Application with Shiny, ISSS608 Visual Analytics and Applications"
   }
 ]
