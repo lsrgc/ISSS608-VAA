@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.23">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Yiqiong PAN">
+<meta name="dcterms.date" content="2026-02-16">
+<title>Extra_02: Visualising, Analysing and Forecasting Time-series Data: tidyverts methods – ISSS608-VAA-yiqiong-pan</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6f6599830d51be977da3b6af758f8eff.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-24772959a0e306aba8d7698078628ce7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><link rel="stylesheet" href="../../styles.css">
+</head>
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608-VAA-yiqiong-pan</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">
+<li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
+ <span class="dropdown-text">01: A Layered Grammar of Graphics: ggplot2 methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">02: Beyond ggplot2 Fundamentals</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_1.html">
+ <span class="dropdown-text">03-1: Programming Interactive Data Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_2.html">
+ <span class="dropdown-text">03-2: Programming Animated Statistical Graphics with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_1.html">
+ <span class="dropdown-text">04-1: Visualising Distribution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_2.html">
+ <span class="dropdown-text">04-2: Visual Statistical Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_3.html">
+ <span class="dropdown-text">04-3: Visualising Uncertainty</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_4.html">
+ <span class="dropdown-text">04-4: Building Funnel Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_1.html">
+ <span class="dropdown-text">05-1: Building Ternary Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_2.html">
+ <span class="dropdown-text">05-2: Visual Correlation Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_3.html">
+ <span class="dropdown-text">05-3: Visual Multivariate Analysis with Heatmap</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_4.html">
+ <span class="dropdown-text">05-4: Visual Multivariate Analysis with Parallel Coordinates Plot</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_5.html">
+ <span class="dropdown-text">05-5: Treemap Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html">
+ <span class="dropdown-text">07: Visualising and Analysing Time-oriented Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_1.html">
+ <span class="dropdown-text">08-1: Choropleth Mapping in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_2.html">
+ <span class="dropdown-text">08-2: Visualising Geospatial Point Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_3.html">
+ <span class="dropdown-text">08-3: Analytical Mapping</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html">
+ <span class="dropdown-text">09: Modelling, Visualising and Analysing Network Data with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html">
+ <span class="dropdown-text">10: Information Dashboard Design: R methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Extra/Hands-on_Extra_1.html">
+ <span class="dropdown-text">Extra01: Time on the Horizon: ggHoriPlot methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Extra/Hands-on_Extra_2.html">
+ <span class="dropdown-text">Extra02: Visualising, Analysing and Forecasting Time-series Data: tidyverts methods, timetk and modeltime methods</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">
+<li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex06/In-class_Ex06.html">
+ <span class="dropdown-text">06: A Basic Shiny App</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">
+<li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
+ <span class="dropdown-text">01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
+ <span class="dropdown-text">02:</span></a>
+  </li>  
+    </ul>
+</li>
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/lsrgc"> <i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://isss608-ay2025-26jan.netlify.app/"> <i class="bi bi-eyeglasses" role="img" aria-label="Course Textbook">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link active" data-scroll-target="#learning-outcome"><span class="header-section-number">1</span> Learning Outcome</a></li>
+  <li>
+<a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><span class="header-section-number">2</span> Getting Started</a>
+  <ul class="collapse">
+<li><a href="#installing-and-loading-the-required-libraries" id="toc-installing-and-loading-the-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-the-required-libraries"><span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data"><span class="header-section-number">2.2</span> Importing the Data</a></li>
+  <li><a href="#conventional-base-ts-object-versus-tibble-object" id="toc-conventional-base-ts-object-versus-tibble-object" class="nav-link" data-scroll-target="#conventional-base-ts-object-versus-tibble-object"><span class="header-section-number">2.3</span> Conventional Base <code>ts</code> Object versus <code>tibble</code> Object</a></li>
+  <li><a href="#converting-tibble-object-to-tsibble-object" id="toc-converting-tibble-object-to-tsibble-object" class="nav-link" data-scroll-target="#converting-tibble-object-to-tsibble-object"><span class="header-section-number">2.4</span> Converting <code>tibble</code> Object to <code>tsibble</code> Object</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#visualising-time-series-data" id="toc-visualising-time-series-data" class="nav-link" data-scroll-target="#visualising-time-series-data"><span class="header-section-number">3</span> Visualising Time-series Data</a>
+  <ul class="collapse">
+<li><a href="#visualising-single-time-series-ggplot2-methods" id="toc-visualising-single-time-series-ggplot2-methods" class="nav-link" data-scroll-target="#visualising-single-time-series-ggplot2-methods"><span class="header-section-number">3.1</span> Visualising Single Time-series: ggplot2 Methods</a></li>
+  <li><a href="#plotting-multiple-time-series-data-with-ggplot2-methods" id="toc-plotting-multiple-time-series-data-with-ggplot2-methods" class="nav-link" data-scroll-target="#plotting-multiple-time-series-data-with-ggplot2-methods"><span class="header-section-number">3.2</span> Plotting Multiple Time-series Data with ggplot2 Methods</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#visual-analysis-of-time-series-data" id="toc-visual-analysis-of-time-series-data" class="nav-link" data-scroll-target="#visual-analysis-of-time-series-data"><span class="header-section-number">4</span> Visual Analysis of Time-series Data</a>
+  <ul class="collapse">
+<li><a href="#visual-analysis-of-seasonality-with-seasonal-plot" id="toc-visual-analysis-of-seasonality-with-seasonal-plot" class="nav-link" data-scroll-target="#visual-analysis-of-seasonality-with-seasonal-plot"><span class="header-section-number">4.1</span> Visual Analysis of Seasonality with Seasonal Plot</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#time-series-decomposition" id="toc-time-series-decomposition" class="nav-link" data-scroll-target="#time-series-decomposition"><span class="header-section-number">5</span> Time Series Decomposition</a>
+  <ul class="collapse">
+<li><a href="#single-time-series-decomposition" id="toc-single-time-series-decomposition" class="nav-link" data-scroll-target="#single-time-series-decomposition"><span class="header-section-number">5.1</span> Single Time Series Decomposition</a></li>
+  <li><a href="#multiple-time-series-decomposition" id="toc-multiple-time-series-decomposition" class="nav-link" data-scroll-target="#multiple-time-series-decomposition"><span class="header-section-number">5.2</span> Multiple Time-series Decomposition</a></li>
+  <li><a href="#composite-plot-of-time-series-decomposition-very-convenient" id="toc-composite-plot-of-time-series-decomposition-very-convenient" class="nav-link" data-scroll-target="#composite-plot-of-time-series-decomposition-very-convenient"><span class="header-section-number">5.3</span> Composite Plot of Time Series Decomposition (VERY Convenient)</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#visual-stl-diagnostics" id="toc-visual-stl-diagnostics" class="nav-link" data-scroll-target="#visual-stl-diagnostics"><span class="header-section-number">6</span> Visual STL Diagnostics</a>
+  <ul class="collapse">
+<li><a href="#visual-stl-diagnostics-with-feasts" id="toc-visual-stl-diagnostics-with-feasts" class="nav-link" data-scroll-target="#visual-stl-diagnostics-with-feasts"><span class="header-section-number">6.1</span> Visual STL Diagnostics with feasts</a></li>
+  <li><a href="#classical-decomposition-with-feasts" id="toc-classical-decomposition-with-feasts" class="nav-link" data-scroll-target="#classical-decomposition-with-feasts"><span class="header-section-number">6.2</span> Classical Decomposition with feasts</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#visual-forecasting" id="toc-visual-forecasting" class="nav-link" data-scroll-target="#visual-forecasting"><span class="header-section-number">7</span> Visual Forecasting</a>
+  <ul class="collapse">
+<li><a href="#fitting-forecasting-models" id="toc-fitting-forecasting-models" class="nav-link" data-scroll-target="#fitting-forecasting-models"><span class="header-section-number">7.1</span> Fitting Forecasting Models</a></li>
+  </ul>
+</li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">8</span> Reference</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Extra_02: Visualising, Analysing and Forecasting Time-series Data: tidyverts methods</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yiqiong PAN </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 16, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">February 28, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header><section id="learning-outcome" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="learning-outcome">
+<span class="header-section-number">1</span> Learning Outcome</h2>
+<p><a href="https://tidyverts.org/">tidyverts</a> is a collection of R packages built for working with time series data (data recorded over time, such as monthly sales, daily temperature, or yearly population). It follows the same design style as the tidyverse, so if users already know packages like dplyr and ggplot2, it will feel familiar.</p>
+<p>The tidyverts ecosystem was created by Professor <a href="https://tidyverts.org/"><strong>Rob Hyndman</strong></a> from Monash University and his research team. It is meant to replace the previous version and widely used <a href="https://pkg.robjhyndman.com/forecast/"><strong>forecast</strong></a> package, using more modern and consistent tools. The project is still actively being improved.</p>
+<p>The main learning resource is the book Forecasting: <a href="https://otexts.com/fpp3/">Principles and Practice (3rd Edition)</a> by Hyndman and Athanasopoulos.Studying it alongside practical exercises greatly improved my understanding of the concepts during my final project in the Data Analytics Lab course.</p>
+<p>After completing this session, we should learn to:</p>
+<p>• import and clean time series data using tidyverse style tools</p>
+<p>• explore and visualise patterns in time series data</p>
+<p>• build forecasting models using methods such as exponential smoothing and ARIMA</p>
+<p>• compare different models and decide which one predicts best</p>
+<p><strong>Assumption:</strong></p>
+<p>All hypothesis tests in this exercise are conducted at the <strong>5% significance level</strong>, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.</p>
+</section><section id="getting-started" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="getting-started">
+<span class="header-section-number">2</span> Getting Started</h2>
+<section id="installing-and-loading-the-required-libraries" class="level3" data-number="2.1"><h3 data-number="2.1" class="anchored" data-anchor-id="installing-and-loading-the-required-libraries">
+<span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</h3>
+<p>There are <strong>5</strong> packages that will be used in this exercise.</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Package</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.tidyverse.org/">tidyverse</a></td>
+<td>A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., <a href="https://readr.tidyverse.org/">readr</a>, dplyr, tidyr, <a href="https://ggplot2.tidyverse.org/">ggplot2</a>).</td>
+</tr>
+<tr class="even">
+<td><a href="https://tsibble.tidyverts.org/">tsibble</a></td>
+<td>Provides a data structure for tidy time series data together with tools for data wrangling.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/knitr/index.html/">knitr</a></td>
+<td>Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques.</td>
+</tr>
+<tr class="even">
+<td><a href="https://feasts.tidyverts.org/">feasts</a></td>
+<td>The R package for time series analysis. The name stands for Feature Extraction And Statistics for Time Series. It works with <strong>tsibble</strong> data and provides tools for feature extraction, decomposition, statistical summaries, and visualisation, and integrates with the tidy forecasting workflow in the <strong>fable</strong> package.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/lubridate/index.html">lubridate</a></td>
+<td>A Tidyverse package that handles date-time objects</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/seasonal/vignettes/seas.pdf">seasonal</a></td>
+<td>An R interface to X 13 ARIMA SEATS, the seasonal adjustment software developed by the US Census Bureau.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/ggthemes/index.html">ggthemes</a></td>
+<td>Provides ‘ggplot2’ themes and scales that replicate some of the famous looks.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/readxl/readxl.pdf">readxl</a></td>
+<td>Imports excel files into R.</td>
+</tr>
+</tbody>
+</table>
+<p>The code below installs and loads the required packages into R environment.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">tsibble</span>,<span class="va">readxl</span>, <span class="va">feasts</span>, <span class="va">fable</span>, <span class="va">seasonal</span>, <span class="va">ggthemes</span>,<span class="va">knitr</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="importing-the-data" class="level3" data-number="2.2"><h3 data-number="2.2" class="anchored" data-anchor-id="importing-the-data">
+<span class="header-section-number">2.2</span> Importing the Data</h3>
+<p>For this hands-on exercise, the <strong>visitor_arrivals_by_air.csv</strong> file will be used. It contains time series records of visitor arrivals by air across selective countries from 2000 to 2019.</p>
+<p>We use <code>read_excel()</code> from the <strong>readxl</strong> package to import the dataset into the R environment as a tibble named <code>ts_data</code>. We then preview the dataset using <code>kable()</code> and <code><a href="https://rdrr.io/r/utils/str.html">str()</a></code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_data</span> <span class="op">&lt;-</span> <span class="fu">read_excel</span><span class="op">(</span><span class="st">"data/visitor_arrivals_by_air.xlsx"</span><span class="op">)</span></span>
+<span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ts_data</span><span class="op">)</span>, <span class="st">"html"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Month-Year</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Republic of South Africa</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Canada</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">USA</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Bangladesh</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Brunei</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">China</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Hong Kong SAR (China)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">India</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Indonesia</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Japan</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">South Korea</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Kuwait</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Malaysia</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Myanmar</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Pakistan</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Philippines</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Saudi Arabia</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Sri Lanka</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Taiwan</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Thailand</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">United Arab Emirates</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Vietnam</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Belgium &amp; Luxembourg</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">CIS</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Finland</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">France</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Germany</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Ireland</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Italy</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Netherlands</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Spain</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Switzerland</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">United Kingdom</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Australia</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">New Zealand</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2000-01-01</td>
+<td style="text-align: right;">3291</td>
+<td style="text-align: right;">5545</td>
+<td style="text-align: right;">25906</td>
+<td style="text-align: right;">2883</td>
+<td style="text-align: right;">3749</td>
+<td style="text-align: right;">33895</td>
+<td style="text-align: right;">13692</td>
+<td style="text-align: right;">19235</td>
+<td style="text-align: right;">65151</td>
+<td style="text-align: right;">59288</td>
+<td style="text-align: right;">21457</td>
+<td style="text-align: right;">507</td>
+<td style="text-align: right;">27472</td>
+<td style="text-align: right;">1177</td>
+<td style="text-align: right;">2150</td>
+<td style="text-align: right;">8404</td>
+<td style="text-align: right;">1312</td>
+<td style="text-align: right;">3922</td>
+<td style="text-align: right;">15766</td>
+<td style="text-align: right;">12048</td>
+<td style="text-align: right;">1318</td>
+<td style="text-align: right;">1527</td>
+<td style="text-align: right;">1434</td>
+<td style="text-align: right;">2703</td>
+<td style="text-align: right;">1634</td>
+<td style="text-align: right;">4752</td>
+<td style="text-align: right;">12739</td>
+<td style="text-align: right;">1292</td>
+<td style="text-align: right;">3544</td>
+<td style="text-align: right;">4962</td>
+<td style="text-align: right;">925</td>
+<td style="text-align: right;">3731</td>
+<td style="text-align: right;">28986</td>
+<td style="text-align: right;">34616</td>
+<td style="text-align: right;">5034</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-02-01</td>
+<td style="text-align: right;">2357</td>
+<td style="text-align: right;">6120</td>
+<td style="text-align: right;">28262</td>
+<td style="text-align: right;">2469</td>
+<td style="text-align: right;">3236</td>
+<td style="text-align: right;">34344</td>
+<td style="text-align: right;">19870</td>
+<td style="text-align: right;">18975</td>
+<td style="text-align: right;">37105</td>
+<td style="text-align: right;">58188</td>
+<td style="text-align: right;">19634</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">29084</td>
+<td style="text-align: right;">1161</td>
+<td style="text-align: right;">2496</td>
+<td style="text-align: right;">9128</td>
+<td style="text-align: right;">623</td>
+<td style="text-align: right;">3988</td>
+<td style="text-align: right;">24861</td>
+<td style="text-align: right;">12745</td>
+<td style="text-align: right;">899</td>
+<td style="text-align: right;">2269</td>
+<td style="text-align: right;">1596</td>
+<td style="text-align: right;">1182</td>
+<td style="text-align: right;">1297</td>
+<td style="text-align: right;">6391</td>
+<td style="text-align: right;">13093</td>
+<td style="text-align: right;">1200</td>
+<td style="text-align: right;">2897</td>
+<td style="text-align: right;">5054</td>
+<td style="text-align: right;">747</td>
+<td style="text-align: right;">3980</td>
+<td style="text-align: right;">35148</td>
+<td style="text-align: right;">26030</td>
+<td style="text-align: right;">3938</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-03-01</td>
+<td style="text-align: right;">4036</td>
+<td style="text-align: right;">6255</td>
+<td style="text-align: right;">30439</td>
+<td style="text-align: right;">2904</td>
+<td style="text-align: right;">3342</td>
+<td style="text-align: right;">27053</td>
+<td style="text-align: right;">17086</td>
+<td style="text-align: right;">21049</td>
+<td style="text-align: right;">44205</td>
+<td style="text-align: right;">74426</td>
+<td style="text-align: right;">20719</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">30504</td>
+<td style="text-align: right;">1355</td>
+<td style="text-align: right;">2429</td>
+<td style="text-align: right;">11691</td>
+<td style="text-align: right;">1578</td>
+<td style="text-align: right;">4259</td>
+<td style="text-align: right;">18767</td>
+<td style="text-align: right;">16971</td>
+<td style="text-align: right;">1474</td>
+<td style="text-align: right;">2034</td>
+<td style="text-align: right;">1548</td>
+<td style="text-align: right;">1088</td>
+<td style="text-align: right;">1220</td>
+<td style="text-align: right;">5528</td>
+<td style="text-align: right;">13645</td>
+<td style="text-align: right;">1368</td>
+<td style="text-align: right;">2717</td>
+<td style="text-align: right;">4950</td>
+<td style="text-align: right;">935</td>
+<td style="text-align: right;">3576</td>
+<td style="text-align: right;">36117</td>
+<td style="text-align: right;">31119</td>
+<td style="text-align: right;">4668</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-04-01</td>
+<td style="text-align: right;">4241</td>
+<td style="text-align: right;">4521</td>
+<td style="text-align: right;">25378</td>
+<td style="text-align: right;">2843</td>
+<td style="text-align: right;">5117</td>
+<td style="text-align: right;">30464</td>
+<td style="text-align: right;">22346</td>
+<td style="text-align: right;">26160</td>
+<td style="text-align: right;">45480</td>
+<td style="text-align: right;">49985</td>
+<td style="text-align: right;">17489</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">34478</td>
+<td style="text-align: right;">1593</td>
+<td style="text-align: right;">2711</td>
+<td style="text-align: right;">14141</td>
+<td style="text-align: right;">705</td>
+<td style="text-align: right;">6579</td>
+<td style="text-align: right;">22735</td>
+<td style="text-align: right;">20397</td>
+<td style="text-align: right;">1284</td>
+<td style="text-align: right;">2420</td>
+<td style="text-align: right;">1592</td>
+<td style="text-align: right;">1012</td>
+<td style="text-align: right;">1208</td>
+<td style="text-align: right;">5544</td>
+<td style="text-align: right;">13366</td>
+<td style="text-align: right;">1345</td>
+<td style="text-align: right;">2512</td>
+<td style="text-align: right;">4149</td>
+<td style="text-align: right;">941</td>
+<td style="text-align: right;">3850</td>
+<td style="text-align: right;">33792</td>
+<td style="text-align: right;">34824</td>
+<td style="text-align: right;">6890</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2000-05-01</td>
+<td style="text-align: right;">2841</td>
+<td style="text-align: right;">3914</td>
+<td style="text-align: right;">26163</td>
+<td style="text-align: right;">2793</td>
+<td style="text-align: right;">4152</td>
+<td style="text-align: right;">30775</td>
+<td style="text-align: right;">16357</td>
+<td style="text-align: right;">35869</td>
+<td style="text-align: right;">38350</td>
+<td style="text-align: right;">48937</td>
+<td style="text-align: right;">19398</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">34795</td>
+<td style="text-align: right;">1397</td>
+<td style="text-align: right;">2594</td>
+<td style="text-align: right;">13305</td>
+<td style="text-align: right;">679</td>
+<td style="text-align: right;">4625</td>
+<td style="text-align: right;">18399</td>
+<td style="text-align: right;">15769</td>
+<td style="text-align: right;">1042</td>
+<td style="text-align: right;">1833</td>
+<td style="text-align: right;">1167</td>
+<td style="text-align: right;">660</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">4225</td>
+<td style="text-align: right;">10878</td>
+<td style="text-align: right;">1067</td>
+<td style="text-align: right;">2205</td>
+<td style="text-align: right;">3643</td>
+<td style="text-align: right;">764</td>
+<td style="text-align: right;">3025</td>
+<td style="text-align: right;">23377</td>
+<td style="text-align: right;">33139</td>
+<td style="text-align: right;">7006</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2000-06-01</td>
+<td style="text-align: right;">2776</td>
+<td style="text-align: right;">3487</td>
+<td style="text-align: right;">28179</td>
+<td style="text-align: right;">3146</td>
+<td style="text-align: right;">5018</td>
+<td style="text-align: right;">26720</td>
+<td style="text-align: right;">18133</td>
+<td style="text-align: right;">31314</td>
+<td style="text-align: right;">47982</td>
+<td style="text-align: right;">53798</td>
+<td style="text-align: right;">17522</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">34660</td>
+<td style="text-align: right;">1715</td>
+<td style="text-align: right;">2924</td>
+<td style="text-align: right;">10555</td>
+<td style="text-align: right;">2749</td>
+<td style="text-align: right;">4740</td>
+<td style="text-align: right;">21042</td>
+<td style="text-align: right;">17217</td>
+<td style="text-align: right;">1545</td>
+<td style="text-align: right;">2480</td>
+<td style="text-align: right;">1170</td>
+<td style="text-align: right;">712</td>
+<td style="text-align: right;">982</td>
+<td style="text-align: right;">4047</td>
+<td style="text-align: right;">9054</td>
+<td style="text-align: right;">1363</td>
+<td style="text-align: right;">2196</td>
+<td style="text-align: right;">3544</td>
+<td style="text-align: right;">855</td>
+<td style="text-align: right;">2580</td>
+<td style="text-align: right;">21769</td>
+<td style="text-align: right;">35731</td>
+<td style="text-align: right;">7634</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The dataset contains 2 types of data: visit counts across 35 countries, and one “Month-Year” column in <strong>POSIXct</strong> format.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">ts_data</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [240 × 36] (S3: tbl_df/tbl/data.frame)
+ $ Month-Year              : POSIXct[1:240], format: "2000-01-01" "2000-02-01" ...
+ $ Republic of South Africa: num [1:240] 3291 2357 4036 4241 2841 ...
+ $ Canada                  : num [1:240] 5545 6120 6255 4521 3914 ...
+ $ USA                     : num [1:240] 25906 28262 30439 25378 26163 ...
+ $ Bangladesh              : num [1:240] 2883 2469 2904 2843 2793 ...
+ $ Brunei                  : num [1:240] 3749 3236 3342 5117 4152 ...
+ $ China                   : num [1:240] 33895 34344 27053 30464 30775 ...
+ $ Hong Kong SAR (China)   : num [1:240] 13692 19870 17086 22346 16357 ...
+ $ India                   : num [1:240] 19235 18975 21049 26160 35869 ...
+ $ Indonesia               : num [1:240] 65151 37105 44205 45480 38350 ...
+ $ Japan                   : num [1:240] 59288 58188 74426 49985 48937 ...
+ $ South Korea             : num [1:240] 21457 19634 20719 17489 19398 ...
+ $ Kuwait                  : num [1:240] 507 199 386 221 164 ...
+ $ Malaysia                : num [1:240] 27472 29084 30504 34478 34795 ...
+ $ Myanmar                 : num [1:240] 1177 1161 1355 1593 1397 ...
+ $ Pakistan                : num [1:240] 2150 2496 2429 2711 2594 ...
+ $ Philippines             : num [1:240] 8404 9128 11691 14141 13305 ...
+ $ Saudi Arabia            : num [1:240] 1312 623 1578 705 679 ...
+ $ Sri Lanka               : num [1:240] 3922 3988 4259 6579 4625 ...
+ $ Taiwan                  : num [1:240] 15766 24861 18767 22735 18399 ...
+ $ Thailand                : num [1:240] 12048 12745 16971 20397 15769 ...
+ $ United Arab Emirates    : num [1:240] 1318 899 1474 1284 1042 ...
+ $ Vietnam                 : num [1:240] 1527 2269 2034 2420 1833 ...
+ $ Belgium &amp; Luxembourg    : num [1:240] 1434 1596 1548 1592 1167 ...
+ $ CIS                     : num [1:240] 2703 1182 1088 1012 660 ...
+ $ Finland                 : num [1:240] 1634 1297 1220 1208 743 ...
+ $ France                  : num [1:240] 4752 6391 5528 5544 4225 ...
+ $ Germany                 : num [1:240] 12739 13093 13645 13366 10878 ...
+ $ Ireland                 : num [1:240] 1292 1200 1368 1345 1067 ...
+ $ Italy                   : num [1:240] 3544 2897 2717 2512 2205 ...
+ $ Netherlands             : num [1:240] 4962 5054 4950 4149 3643 ...
+ $ Spain                   : num [1:240] 925 747 935 941 764 ...
+ $ Switzerland             : num [1:240] 3731 3980 3576 3850 3025 ...
+ $ United Kingdom          : num [1:240] 28986 35148 36117 33792 23377 ...
+ $ Australia               : num [1:240] 34616 26030 31119 34824 33139 ...
+ $ New Zealand             : num [1:240] 5034 3938 4668 6890 7006 ...</code></pre>
+</div>
+</div>
+<p>We convert the “Month-Year” variable to <em>Date</em> class to ensure consistency, as POSIXct objects internally store date and time values, even when only the date component is displayed.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_data</span><span class="op">$</span><span class="va">`Month-Year`</span> <span class="op">&lt;-</span> <span class="fu">ymd</span><span class="op">(</span><span class="va">ts_data</span><span class="op">$</span><span class="va">`Month-Year`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ts_data</span><span class="op">$</span><span class="va">`Month-Year`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Date"</code></pre>
+</div>
+</div>
+</section><section id="conventional-base-ts-object-versus-tibble-object" class="level3" data-number="2.3"><h3 data-number="2.3" class="anchored" data-anchor-id="conventional-base-ts-object-versus-tibble-object">
+<span class="header-section-number">2.3</span> Conventional Base <code>ts</code> Object versus <code>tibble</code> Object</h3>
+<p>The <code>ts_data</code> table is currently a tibble. We convert it to a <strong>tsibble</strong> to define a proper time index and enable time series analysis using tidyverts functions (for example, modelling in <code>fable</code> and feature extraction in <code>feasts</code>).</p>
+<p>It is important to note that <code><a href="https://rdrr.io/r/stats/ts.html">ts()</a></code> creates a base R time series object and is primarily used with the <strong>forecast</strong> package. It does not integrate with the <strong>tidyverts</strong> workflow, which requires a <code>tsibble</code> object instead.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ts_data</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_data_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="va">ts_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ts_data_ts</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mts"    "ts"     "matrix" "array" </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ts_data_ts</span><span class="op">[</span>,<span class="st">"Canada"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ts"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">glimpse</span><span class="op">(</span><span class="va">ts_data_ts</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Time-Series [1:240, 1:36] from 1 to 240: 10957 10988 11017 11048 11078 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : NULL
+  ..$ : chr [1:36] "Month-Year" "Republic of South Africa" "Canada" "USA" ...</code></pre>
+</div>
+</div>
+<p>In a <code>ts</code> object, dates are not stored directly but inferred from an internal time index. As a result, time points have no row names, and the “Month-Year” information is represented numerically rather than as an actual date column.</p>
+</section><section id="converting-tibble-object-to-tsibble-object" class="level3" data-number="2.4"><h3 data-number="2.4" class="anchored" data-anchor-id="converting-tibble-object-to-tsibble-object">
+<span class="header-section-number">2.4</span> Converting <code>tibble</code> Object to <code>tsibble</code> Object</h3>
+<p>A <strong>tsibble</strong> is an extension of a tibble designed for time series data. Unlike traditional R time series objects such as <code>ts</code>, <code>zoo</code>, and <code>xts</code>, it keeps the time variable as a normal column and allows multiple series to be stored in one table.</p>
+<p>It also uses a <strong>key</strong> (one or more variables) to identify each series across time.</p>
+<p>The code chunk below converts <code>ts_data</code> from a tibble into a <code>tsibble</code> using the <a href="https://tsibble.tidyverts.org/reference/as-tibble.html"><code>as_tsibble()</code></a> function from the <strong>tsibble</strong> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_tsibble</span> <span class="op">&lt;-</span> <span class="va">ts_data</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>`Year-Month` <span class="op">=</span> <span class="fu">yearmonth</span><span class="op">(</span><span class="va">`Month-Year`</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">relocate</span><span class="op">(</span><span class="va">`Year-Month`</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">`Month-Year`</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">as_tsibble</span><span class="op">(</span>index <span class="op">=</span> <span class="va">`Year-Month`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><code>mutate()</code> from the <strong>dplyr</strong> package is used to create a new variable by transforming the values in the “Month-Year” column into a proper month year format. This conversion is done using <a href="https://tsibble.tidyverts.org/reference/year-month.html"><code>yearmonth()</code></a> from the <strong>tsibble</strong> package.</p></li>
+<li><p><code>as_tsibble</code> is then used to convert the <code>tibble</code> <code>data.frame</code> into a <code>tsibble</code> by defining the time index so we can use it for time series analysis.</p></li>
+</ul>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_tsibble</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 240 x 36 [1M]
+   `Year-Month` `Republic of South Africa` Canada   USA Bangladesh Brunei China
+          &lt;mth&gt;                      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+ 1     2000 Jan                       3291   5545 25906       2883   3749 33895
+ 2     2000 Feb                       2357   6120 28262       2469   3236 34344
+ 3     2000 Mar                       4036   6255 30439       2904   3342 27053
+ 4     2000 Apr                       4241   4521 25378       2843   5117 30464
+ 5     2000 May                       2841   3914 26163       2793   4152 30775
+ 6     2000 Jun                       2776   3487 28179       3146   5018 26720
+ 7     2000 Jul                       3728   4238 29193       3489   5026 31108
+ 8     2000 Aug                       2545   4378 27033       3070   6074 32594
+ 9    2000 Sept                       2819   3517 24802       2826   4165 26981
+10     2000 Oct                       3274   4860 28789       3040   3650 26944
+# ℹ 230 more rows
+# ℹ 29 more variables: `Hong Kong SAR (China)` &lt;dbl&gt;, India &lt;dbl&gt;,
+#   Indonesia &lt;dbl&gt;, Japan &lt;dbl&gt;, `South Korea` &lt;dbl&gt;, Kuwait &lt;dbl&gt;,
+#   Malaysia &lt;dbl&gt;, Myanmar &lt;dbl&gt;, Pakistan &lt;dbl&gt;, Philippines &lt;dbl&gt;,
+#   `Saudi Arabia` &lt;dbl&gt;, `Sri Lanka` &lt;dbl&gt;, Taiwan &lt;dbl&gt;, Thailand &lt;dbl&gt;,
+#   `United Arab Emirates` &lt;dbl&gt;, Vietnam &lt;dbl&gt;, `Belgium &amp; Luxembourg` &lt;dbl&gt;,
+#   CIS &lt;dbl&gt;, Finland &lt;dbl&gt;, France &lt;dbl&gt;, Germany &lt;dbl&gt;, Ireland &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ts_tsibble</span><span class="op">$</span><span class="va">`Year-Month`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "yearmonth"  "vctrs_vctr"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">is_yearmonth</span><span class="op">(</span><span class="va">ts_tsibble</span><span class="op">$</span><span class="va">`Year-Month`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>A new <strong>Month-Year</strong> variable is derived from the original <em>Month-Year</em> field and converted into a <code>yearmonth</code> object, allowing it to serve as the time index for the <code>tsibble</code>.</p>
+</section></section><section id="visualising-time-series-data" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="visualising-time-series-data">
+<span class="header-section-number">3</span> Visualising Time-series Data</h2>
+<p>The original dataset is a very wide table containing many columns, each representing a different country. To perform time series analysis, the data is reshaped from wide to long format using a pivot operation. Each row now represents a country, a specific time point, and the corresponding vistor arrival count.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_longer</span> <span class="op">&lt;-</span> <span class="va">ts_data</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">pivot_longer</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">36</span><span class="op">)</span>,</span>
+<span>               names_to <span class="op">=</span> <span class="st">"Country"</span>,</span>
+<span>               values_to <span class="op">=</span> <span class="st">"Arrival"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="visualising-single-time-series-ggplot2-methods" class="level3" data-number="3.1"><h3 data-number="3.1" class="anchored" data-anchor-id="visualising-single-time-series-ggplot2-methods">
+<span class="header-section-number">3.1</span> Visualising Single Time-series: ggplot2 Methods</h3>
+<p>The <a href="https://dplyr.tidyverse.org/reference/filter.html"><code>filter()</code></a> function from <strong>dplyr</strong> is used to extract observations for Vietam from the long format dataset. The resulting data is visualised with <code>ggplot2</code> using a line chart <a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line()</a> to show how visitor arrivals change over time. High arrivals every July every year.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ts_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`Month-Year`</span>, y <span class="op">=</span> <span class="va">`Arrival`</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="plotting-multiple-time-series-data-with-ggplot2-methods" class="level3" data-number="3.2"><h3 data-number="3.2" class="anchored" data-anchor-id="plotting-multiple-time-series-data-with-ggplot2-methods">
+<span class="header-section-number">3.2</span> Plotting Multiple Time-series Data with ggplot2 Methods</h3>
+<p>The code below produces a multiple line chart showing monthly visitor arrivals over time for different countries. Each coloured line represents the trend for one country.</p>
+<p>The legend is enabled and positioned at the bottom of the chart for clearer presentation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ts_longer</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`Month-Year`</span>, y <span class="op">=</span> <span class="va">Arrival</span>, color <span class="op">=</span> <span class="va">Country</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span>, legend.box.spacing <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.5</span>, <span class="st">"cm"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The code creates a set of line charts showing monthly visitor arrivals over time for each country. The <code>facet_wrap()</code> function separates the plot into small panels by country, with five panels per row to present the data neatly. The <code>scales = "free_y"</code> option allows each country to have its own vertical scale so patterns are easier to see. The <code>theme_bw()</code> function applies a clean black and white theme for better readability.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ts_longer</span>, <span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Month-Year`</span>, y <span class="op">=</span> <span class="va">Arrival</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">Country</span>, ncol <span class="op">=</span> <span class="fl">5</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="visual-analysis-of-time-series-data" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="visual-analysis-of-time-series-data">
+<span class="header-section-number">4</span> Visual Analysis of Time-series Data</h2>
+<p>Seasonality refers to a pattern that repeats a regular intervals such as monthly or yearly cycles. These repeating movements can influence a time series, and if not account for, may introduce noise that affects model fitting and forecasting accuracy. In this session we learn how to detect seasonality in time series data using functions from the <strong>feasts</strong> package. Before applying these functions, the data set needs to be organised into suitable structure. Specifically we prepare the data as a <code>tsibble</code> which is required data format for <strong>tidyverts</strong> tools. Because <strong>tidyverts</strong>follows tidyverse style conventions, we can use <strong>tidyr</strong> function such as <code>pivot_longer()</code> to reshape data into long format before converting it into a tsibble for analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">&lt;-</span> <span class="va">ts_tsibble</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="op">-</span><span class="va">`Year-Month`</span>, names_to <span class="op">=</span> <span class="st">"Country"</span>, values_to <span class="op">=</span> <span class="st">"Arrivals"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="visual-analysis-of-seasonality-with-seasonal-plot" class="level3" data-number="4.1"><h3 data-number="4.1" class="anchored" data-anchor-id="visual-analysis-of-seasonality-with-seasonal-plot">
+<span class="header-section-number">4.1</span> Visual Analysis of Seasonality with Seasonal Plot</h3>
+<p>A seasonal plot is similar to a time plot, but the observations are arranged by season (for example, month) rather than chronological order. This helps reveal repeating patterns within each year. The plot is created using the <code>gg_season()</code> function from the feasts package. In this example, the data for Italy, Vietnam, the United Kingdom, and Germany are selected to compare their seasonal visitor arrival patterns. Visitor arrivals from Germany and the United Kingdom tend to peak in March, while Italy peaks in August and Vietnam peaks in July annually.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span><span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Italy"</span> <span class="op">|</span> <span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span> <span class="op">|</span> <span class="va">Country</span> <span class="op">==</span> <span class="st">"United Kingdom"</span><span class="op">|</span> <span class="va">Country</span> <span class="op">==</span> <span class="st">"Germany"</span><span class="op">)</span><span class="op">%&gt;%</span></span>
+<span>  <span class="fu">gg_season</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Here we create time plot chart using <code>autoplot()</code> from tidyverts.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Italy"</span>,<span class="st">"Vietnam"</span>,<span class="st">"United Kingdom"</span>,<span class="st">"Germany"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also achieve the similar charts using ggplot2.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Italy"</span>,<span class="st">"Vietnam"</span>,<span class="st">"United Kingdom"</span>,<span class="st">"Germany"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">`Year-Month`</span>, y <span class="op">=</span> <span class="va">Arrivals</span>, colour <span class="op">=</span> <span class="va">Country</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <a href="https://rdrr.io/cran/ggtime/man/gg_subseries.html"><code>gg_subseries()</code></a> function from the <strong>feasts</strong> package is used to visualise monthly visitor arrivals. The plot groups observations by month and hows how arrivals in each month vary across different years. In this example, data for Vietnam and Italy are selected for comparison.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span> <span class="op">|</span></span>
+<span>         <span class="va">Country</span> <span class="op">==</span> <span class="st">"Italy"</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">gg_subseries</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="time-series-decomposition" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="time-series-decomposition">
+<span class="header-section-number">5</span> Time Series Decomposition</h2>
+<p>Time series decomposition allows us to isolate structural components such as trend and seasonality from the time-series data.</p>
+<ul>
+<li>Trend shows the long term direction (for example, tourism gradually increasing over years)</li>
+<li>Seasonality shows predictable cycles (for example, peaks during holidays or summer months)</li>
+<li>Remainder/noise shows irregular random variation</li>
+</ul>
+<p>If we don’t isolate them seasonal peak might be mistaken for real growth, random noise may destroy distort modern fitting, forecasting models may over or under predict. So isolating these components helps us interpret the behaviour series more clearly and improve forecasting accuracy.</p>
+<p>In ARIMA modelling: - <strong>AR (autoregressive) terms (p)</strong> are identified using the PACF. - <strong>MA (moving average) terms (q)</strong> are identified using the ACF. - <strong>d</strong> represents the number of non seasonal differences required to remove the trend; the first difference measures the change from one month to the next.</p>
+<p>-For seasonal time series, we include both non seasonal <strong>(p, d, q)</strong> and seasonal <strong>(P, D, Q)</strong> components in the model.</p>
+<p><img src="image1.jpg" class="img-fluid"></p>
+<section id="single-time-series-decomposition" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="single-time-series-decomposition">
+<span class="header-section-number">5.1</span> Single Time Series Decomposition</h3>
+<p>In feasts package, time series decomposition is supported by (Partial) Autocorrelation and Cross-Correlation Function Estimation <a href="https://feasts.tidyverts.org/reference/ACF.html">ACF()</a>, PACF(), CCF(), Autocorrelation-based features <a href="https://feasts.tidyverts.org/reference/feat_acf.html">feat_acf()</a>, and Autocorrelation-based features <a href="https://feasts.tidyverts.org/reference/feat_acf.html">feat_pacf()</a>. The output can then be plotted by using <code>autoplot()</code> of feasts package.</p>
+<p>In the code chunk below, <code>ACF()</code> and <code>PACF()</code> of feasts package is used to plot the ACF and PACF curve of visitor arrival from Vietnam.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ACF</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">PACF</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>feat_acf()</code> and <code>feat_pacf()</code> provide summary statistics of autocorrelation and partial autocorrelation.</p>
+<p>The Vietnam visitor arrival series exhibits strong persistence and clear annual seasonality. The high lag 1 autocorrelation indicates non stationarity, while first differencing substantially reduces dependence, suggesting a first order difference is sufficient. The strong seasonal autocorrelation confirms repeating yearly patterns, which should be incorporated into the forecasting model (for example, seasonal ARIMA).</p>
+<p>While <code>feat_acf</code> tells about overall dependence, PACF helps identify the AR (autoregressive) behaviour of the series.The very high PACF5 value indicates strong autoregressive behaviour,that current arrivals depend directly on recent past arrivals.After first differencing, the PACF remains strong but stabilised. This supports ARIMA(p,1,q) rather than a simple random walk.<code>season_pacf</code> measures direct dependence with the same month last year. PACF shows no direct seasonal lag relationship while ACF showed strong seasonality.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">features</span><span class="op">(</span><span class="va">Arrivals</span>, <span class="va">feat_acf</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 8
+  Country  acf1 acf10 diff1_acf1 diff1_acf10 diff2_acf1 diff2_acf10 season_acf1
+  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+1 Vietnam 0.945  6.33      0.161       0.252     -0.261       0.265       0.856</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">features</span><span class="op">(</span><span class="va">Arrivals</span>, <span class="va">feat_pacf</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  Country pacf5 diff1_pacf5 diff2_pacf5 season_pacf
+  &lt;chr&gt;   &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+1 Vietnam 0.986        1.03        1.07    -0.00563</code></pre>
+</div>
+</div>
+<p>Cross-correlation CCF() compares data for Germany with United Kingdom.</p>
+<p><code>autoplot()</code> visualises the <code>CCF()</code> results and we save the summary statistics in a tbl_cf caled <code>ccf_germany_uk</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Germany"</span><span class="op">|</span> <span class="va">Country</span> <span class="op">==</span> <span class="st">"United Kingdom"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">`Year-Month`</span>, <span class="va">Country</span>, <span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">Country</span>, values_from <span class="op">=</span> <span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">CCF</span><span class="op">(</span><span class="va">Germany</span>,<span class="va">`United Kingdom`</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ccf_germany_uk</span> <span class="op">&lt;-</span> <span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Germany"</span><span class="op">|</span> <span class="va">Country</span> <span class="op">==</span> <span class="st">"United Kingdom"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">`Year-Month`</span>, <span class="va">Country</span>, <span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">Country</span>, values_from <span class="op">=</span> <span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">CCF</span><span class="op">(</span><span class="va">Germany</span>,<span class="va">`United Kingdom`</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><p>Lag 0M = 0.64: Germany and United Kingdom visitor arrivals have a strong positive correlation in the same month.</p></li>
+<li><p>Lag 12M = 0.535: Germany this month is positively correlated with UK arrivals 12 months later.</p></li>
+<li><p>Lag −12M = 0.502: UK this month is positively correlated with Germany arrivals 12 months later.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># maximum correlation</span></span>
+<span><span class="va">ccf_germany_uk</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">ccf</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">ccf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 1 x 2 [1M]
+       lag   ccf
+  &lt;cf_lag&gt; &lt;dbl&gt;
+1       0M 0.641</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># correlation at lag 0 (same month)</span></span>
+<span><span class="va">ccf_germany_uk</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">lag</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 1 x 2 [1M]
+       lag   ccf
+  &lt;cf_lag&gt; &lt;dbl&gt;
+1       0M 0.641</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># check yearly seasonality</span></span>
+<span><span class="va">ccf_germany_uk</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">lag</span> <span class="op">==</span> <span class="fl">12</span> <span class="op">|</span> <span class="va">lag</span> <span class="op">==</span> <span class="op">-</span><span class="fl">12</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 2 x 2 [1M]
+       lag   ccf
+  &lt;cf_lag&gt; &lt;dbl&gt;
+1     -12M 0.502
+2      12M 0.535</code></pre>
+</div>
+</div>
+</section><section id="multiple-time-series-decomposition" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="multiple-time-series-decomposition">
+<span class="header-section-number">5.2</span> Multiple Time-series Decomposition</h3>
+<p>The code chunk below are used to prepare a trellis plot of ACFs &amp; PACFs for visitor arrivals from Vietnam, Italy, United Kingdom and China.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Italy"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"United Kingdom"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"China"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ACF</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Italy"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"United Kingdom"</span> <span class="op">|</span></span>
+<span>         <span class="va">`Country`</span> <span class="op">==</span> <span class="st">"China"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">PACF</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="composite-plot-of-time-series-decomposition-very-convenient" class="level3" data-number="5.3"><h3 data-number="5.3" class="anchored" data-anchor-id="composite-plot-of-time-series-decomposition-very-convenient">
+<span class="header-section-number">5.3</span> Composite Plot of Time Series Decomposition (VERY Convenient)</h3>
+<p>One useful function in the <strong>feasts</strong> package for time series analysis is <a href="https://feasts.tidyverts.org/reference/reexports.html"><code>gg_tsdisplay()</code></a>. It produces a composite display with the original time series plot in the top panel, the ACF plot in the bottom left panel, and a seasonal plot in the bottom right panel.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">gg_tsdisplay</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="visual-stl-diagnostics" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="visual-stl-diagnostics">
+<span class="header-section-number">6</span> Visual STL Diagnostics</h2>
+<p><strong>STL (Seasonal and Trend decomposition using Loess)</strong> is a time series decomposition method developed by Cleveland et al.&nbsp;(1990). It uses LOESS smoothing (locally weighted regression) to separate a time series into three components: <strong>trend</strong>, <strong>seasonal</strong>, and <strong>remainder (irregular noise)</strong>.</p>
+<p>The algorithm works iteratively. In the inner loop, it estimates the seasonal component and then the trend component. In the outer loop, it reduces the influence of outliers. The remainder is obtained after removing both the trend and seasonal parts from the original series.</p>
+<p><strong>Advantages of STL:</strong></p>
+<ul>
+<li><p>Works with any seasonal frequency, not only monthly or quarterly data</p></li>
+<li><p>Seasonal patterns can change over time</p></li>
+<li><p>Trend smoothness can be controlled by the user</p></li>
+<li><p>Robust to outliers, which mainly affect only the remainder component</p></li>
+</ul>
+<section id="visual-stl-diagnostics-with-feasts" class="level3" data-number="6.1"><h3 data-number="6.1" class="anchored" data-anchor-id="visual-stl-diagnostics-with-feasts">
+<span class="header-section-number">6.1</span> Visual STL Diagnostics with feasts</h3>
+<p>In the code chunk below, <a href="https://feasts.tidyverts.org/reference/STL.html"><code>STL(</code>)</a> of feasts package is used to decomposite visitor arrivals from Vietnam data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>stl <span class="op">=</span> <span class="fu">STL</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">components</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The grey bars on the left of each panel help compare how much variation each component has. The bars are drawn with the same length, but they appear different sizes because each panel uses a different scale. The large grey bar in the bottom panel indicates that the remainder component varies much less than the original data. If all panels were shown on the same scale, the bottom three panels would appear much smaller than the data panel. It means most of the movement in the time series comes from the trend and seasonal patterns, not from random noise.</p>
+</section><section id="classical-decomposition-with-feasts" class="level3" data-number="6.2"><h3 data-number="6.2" class="anchored" data-anchor-id="classical-decomposition-with-feasts">
+<span class="header-section-number">6.2</span> Classical Decomposition with feasts</h3>
+<p>In the code chunk below, <code>classical_decomposition()</code> from the <strong>feasts</strong> package is used to decompose the time series into seasonal, trend, and irregular components using moving averages. The method supports both additive and multiplicative seasonality. In an additive model, the seasonal effect is constant over time, while in a multiplicative model the seasonal effect changes in proportion to the level of the series.</p>
+<p>Classical decomposition assumes the seasonal pattern is fixed (for example, January behaves similarly every year) and works best when the seasonal cycle is stable. However, it is sensitive to outliers and missing values. For instance, the warning “Removed 24 rows containing missing values or values outside the scale range (<code>geom_line()</code>)” occurs because the moving average calculation cannot be computed at the beginning and end of the series, resulting in missing observations in the decomposition plot.</p>
+<p>STL is more accurate and robust and compatible with ARIMA/ETS modelling workflows.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Country`</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span></span>
+<span>    <span class="fu">classical_decomposition</span><span class="op">(</span></span>
+<span>      <span class="va">Arrivals</span>, type <span class="op">=</span> <span class="st">"additive"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">components</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="visual-forecasting" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="visual-forecasting">
+<span class="header-section-number">7</span> Visual Forecasting</h2>
+<section id="fitting-forecasting-models" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="fitting-forecasting-models">
+<span class="header-section-number">7.1</span> Fitting Forecasting Models</h3>
+<section id="fitting-exponential-smoothing-state-space-ets-models-fable-methods" class="level4" data-number="7.1.1"><h4 data-number="7.1.1" class="anchored" data-anchor-id="fitting-exponential-smoothing-state-space-ets-models-fable-methods">
+<span class="header-section-number">7.1.1</span> Fitting Exponential Smoothing State Space (ETS) Models: fable methods</h4>
+</section></section></section><section id="reference" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">8</span> Reference</h2>
+<p>Kam, Tin Seong (2026), 19 Visualising, Analysing and Forecasting Time-series Data: tidyverts methods, https://r4va.netlify.app/chap19</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+</body></html>

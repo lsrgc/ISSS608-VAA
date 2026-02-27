@@ -111,4 +111,4 @@ facet_grid(`Consumer Items`~.) +
 
 ## Reference
 
-Kam, Tin Seong (2026). 17 Visualising and Analysing Time-oriented Data, R for Visual Analytics, https://r4va.netlify.app/chap17
+Kam, Tin Seong (2026). 18 Time on the Horizon: ggHoriPlot methods, R for Visual Analytics, https://r4va.netlify.app/chap18
