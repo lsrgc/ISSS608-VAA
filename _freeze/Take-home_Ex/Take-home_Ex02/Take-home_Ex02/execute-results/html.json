@@ -1,0 +1,15 @@
+{
+  "hash": "f6e0522b9aad399aa5be5774300ba82e",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"02: Take Home Ex\"\nauthor: \"Yiqiong PAN\"\ndate: \"24 Feb, 2026\"\ndate-modified: last-modified\n\nexecute:\n  echo: true    # display the code\n  eval: true    # run the code\n  message: false\n  warning: false\n  freeze: true  # do not re-render if nothing edited\n\nformat: \n  html:\n    toc: true\n    code-link: true\n\nnumber-sections: true\nnumber-depth: 6\n\neditor: visual\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\ninstall.packages(\"xml2\")\ninstall.packages(\"R6\")\ninstall.packages(\"zoo\")\ninstall.packages(\"httr\")\ninstall.packages(\"getPass\")\ninstall.packages(\"ceic\", repos =\n\"https://downloads.ceicdata.com/R/\", type = \"source\")\n```\n:::\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(ceic)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\nEnvironment set to: PROD \n[1] \"Previous session closed.\"\nUsing base url: https://api.ceicdata.com/v2\n```\n\n\n:::\n\n```{.r .cell-code}\n# 1. Log in once per session\n```\n:::\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

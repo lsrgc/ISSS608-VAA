@@ -810,5 +810,47 @@
     "title": "ISSS608 Visual Analytics and Applications",
     "section": "",
     "text": "Welcome to ISSS608 Visual Analytics and Applications. In this website, you will find my coursework prepared for this course."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html",
+    "href": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html",
+    "title": "Extra01: Time on the Horizon: ggHoriPlot methods",
+    "section": "",
+    "text": "A horizon graph is a multi-panel area chart that visualises a numeric data over a continuous interval such as a time period. It is useful for understanding the overall trend, patterns and outliers in the data."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#learning-outcome",
+    "href": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#learning-outcome",
+    "title": "Extra01: Time on the Horizon: ggHoriPlot methods",
+    "section": "",
+    "text": "A horizon graph is a multi-panel area chart that visualises a numeric data over a continuous interval such as a time period. It is useful for understanding the overall trend, patterns and outliers in the data."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#getting-started",
+    "href": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#getting-started",
+    "title": "Extra01: Time on the Horizon: ggHoriPlot methods",
+    "section": "\n2 Getting Started",
+    "text": "2 Getting Started\n\n2.1 Installing and Loading the Required Libraries\nThere are 4 packages that will be used in this exercise.\n\n\nPackage\nDescription\n\n\n\ntidyverse\nA collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., readr, dplyr, tidyr, ggplot2).\n\n\nlubridate\nA Tidyverse package that handles date-time objects\n\n\nggthemes\nProvides ‘ggplot2’ themes and scales that replicate some of the famous looks.\n\n\nggHoriPlot\nExtends horizon plots in ggplot2\n\n\n\nThe code below installs and loads the required packages into R environment.\n\npacman::p_load(tidyverse, ggthemes,lubridate, ggHoriPlot)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#step-1-data-import",
+    "href": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#step-1-data-import",
+    "title": "Extra01: Time on the Horizon: ggHoriPlot methods",
+    "section": "\n3 Step 1: Data Import",
+    "text": "3 Step 1: Data Import\nFor this hands-on exercise, the Average Retail Prices of Selected Consumer Items file will be used. It contains 7,452 rows of time series records of average retail prices for selected consumer items.\n\n3.1 Importing the Data\nWe use read_csv() from the readr package to import the dataset AVERP.csv into the R environment as a tibble named df. We then preview the dataset using kable().\n\naverp &lt;- read_csv(\"data/AVERP.csv\")\n\nThe dataset contains three columns: two categorical variables, Date and Consumer Items, and one numeric column Values. Since we want to perform time series plotting, it is essential to convert the Date to proper date data type. Here we use dmy() from lubridate pacakge to convert the column into date format.\n\naverp &lt;- averp %&gt;%\n  mutate(`Date` = dmy(`Date`))\n\n\nclass(averp$`Consumer Items`)\n\n[1] \"character\"\n\nclass(averp$Date)\n\n[1] \"Date\"\n\n\n\nknitr::kable(head(averp), \"html\")\n\n\n\nDate\nConsumer Items\nValues\n\n\n\n2014-01-01\nWholemeal Bread (Per 400 Gram)\n2.05\n\n\n2014-02-01\nWholemeal Bread (Per 400 Gram)\n2.05\n\n\n2014-03-01\nWholemeal Bread (Per 400 Gram)\n2.04\n\n\n2014-04-01\nWholemeal Bread (Per 400 Gram)\n2.04\n\n\n2014-05-01\nWholemeal Bread (Per 400 Gram)\n2.05\n\n\n2014-06-01\nWholemeal Bread (Per 400 Gram)\n2.05\n\n\n\n\n\n\n3.2 Step 2. Plotting the horizon graph\nHorizon plots compare each consumer item to its own history/pattern of average retail prices while line plots with same scales compare the average prices to each other. The code below creates a horizon plot by using geom_horizon() from ggHoriPlot package. “%b%y” in date_labels controls the format of date that displays under the x-axis. “3-month” of date_breaksset the labels only shows every 3 months.\n\naverp %&gt;%\n  filter(Date &gt;= \"2018-01-01\") %&gt;%\n  ggplot() +\n  geom_horizon(aes(x = Date, y = Values),\n               origin = \"midpoint\",\n               horizonscale = 6) +\nfacet_grid(`Consumer Items`~.) +\n  theme_few() +\n  scale_fill_hcl(palette = 'RdBu') +\n  theme(panel.spacing.y = unit(0, \"lines\"),\n        strip.text.y = element_text(\n          size = 5, angle = 0, hjust = 0\n        ),\n        legend.position = 'none',\n        axis.text.y = element_blank(),\n        axis.text.x = element_text(size = 7),\n        axis.title.y = element_blank(),\n        axis.title.x = element_blank(),\n        axis.ticks.y = element_blank(),\n        axis.ticks.x = element_blank()) +\n  scale_x_date(expand = c(0,0), date_breaks = \"3 month\", date_labels = \"%b%y\") +\n  ggtitle('Average Retail Prices of Selected Consumer Items(Jan 2018 to Dec 2022)')"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#reference",
+    "href": "Hands-on_Ex/Hands-on_Extra/Hands-on_Extra01.html#reference",
+    "title": "Extra01: Time on the Horizon: ggHoriPlot methods",
+    "section": "\n4 Reference",
+    "text": "4 Reference\nKam, Tin Seong (2026). 17 Visualising and Analysing Time-oriented Data, R for Visual Analytics, https://r4va.netlify.app/chap17"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html",
+    "title": "02: Take Home Ex",
+    "section": "",
+    "text": "install.packages(\"xml2\")\ninstall.packages(\"R6\")\ninstall.packages(\"zoo\")\ninstall.packages(\"httr\")\ninstall.packages(\"getPass\")\ninstall.packages(\"ceic\", repos =\n\"https://downloads.ceicdata.com/R/\", type = \"source\")\n\n\nlibrary(ceic)\n\nEnvironment set to: PROD \n[1] \"Previous session closed.\"\nUsing base url: https://api.ceicdata.com/v2\n\n# 1. Log in once per session"
   }
 ]

@@ -462,7 +462,6 @@ kable(head(rice))
 
 ### Step 2: Plotting the slopegraph
 
-
 ```{r}
 country_order <- rice %>%
   filter(Year %in% c(1961, 1980)) %>%
@@ -495,10 +494,9 @@ mutate(Year = factor(Year)) %>%
 For effective visualisation, `factor()` is used to convert the **Year** variable from numeric to a factor so it is treated as a categorical variable in the plot.
 :::
 
-
 ## Creating Horizon Plots
 
-**Horizon plots** compare each country to its own history/pattern while **line plots** with same scales compare countries to each other. 
+**Horizon plots** compare each country to its own history/pattern while **line plots** with same scales compare countries to each other.
 
 ```{r, fig.height=12, fig.width=10}
 rice %>%
@@ -509,9 +507,6 @@ rice %>%
   labs(title = "Rice Yield Horizon Plot")
 ```
 
-
-
-
 ## Reference
 
-Kam, Tin Seong (2026). 17 Visualising and Analysing Time-oriented Data, R for Visual Analytics, https://r4va.netlify.app/chap17
+Kam, Tin Seong (2026). 18 Time on the Horizon: ggHoriPlot methodss, https://r4va.netlify.app/chap18

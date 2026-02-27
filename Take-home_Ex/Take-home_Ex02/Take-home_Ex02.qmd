@@ -1,0 +1,43 @@
+---
+title: "02: Take Home Ex"
+author: "Yiqiong PAN"
+date: "24 Feb, 2026"
+date-modified: last-modified
+
+execute:
+  echo: true    # display the code
+  eval: true    # run the code
+  message: false
+  warning: false
+  freeze: true  # do not re-render if nothing edited
+
+format: 
+  html:
+    toc: true
+    code-link: true
+
+number-sections: true
+number-depth: 6
+
+editor: visual
+---
+
+```{r}
+#| eval: false
+install.packages("xml2")
+install.packages("R6")
+install.packages("zoo")
+install.packages("httr")
+install.packages("getPass")
+install.packages("ceic", repos =
+"https://downloads.ceicdata.com/R/", type = "source")
+```
+
+```{r}
+library(ceic)
+
+# 1. Log in once per session
+
+
+
+```
