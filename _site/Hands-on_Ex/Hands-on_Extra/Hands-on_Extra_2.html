@@ -480,10 +480,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li>
 <a href="#visual-forecasting" id="toc-visual-forecasting" class="nav-link" data-scroll-target="#visual-forecasting"><span class="header-section-number">7</span> Visual Forecasting</a>
   <ul class="collapse">
-<li><a href="#fitting-forecasting-models" id="toc-fitting-forecasting-models" class="nav-link" data-scroll-target="#fitting-forecasting-models"><span class="header-section-number">7.1</span> Fitting Forecasting Models</a></li>
+<li><a href="#time-series-data-sampling" id="toc-time-series-data-sampling" class="nav-link" data-scroll-target="#time-series-data-sampling"><span class="header-section-number">7.1</span> Time Series Data Sampling</a></li>
+  <li><a href="#exploratory-data-analysis-eda-time-series-data" id="toc-exploratory-data-analysis-eda-time-series-data" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-time-series-data"><span class="header-section-number">7.2</span> Exploratory Data Analysis (EDA): Time Series Data</a></li>
+  <li><a href="#fitting-forecasting-models" id="toc-fitting-forecasting-models" class="nav-link" data-scroll-target="#fitting-forecasting-models"><span class="header-section-number">7.3</span> Fitting Forecasting Models</a></li>
+  <li><a href="#fitting-ets-methods-with-trend-holts-linear" id="toc-fitting-ets-methods-with-trend-holts-linear" class="nav-link" data-scroll-target="#fitting-ets-methods-with-trend-holts-linear"><span class="header-section-number">7.4</span> Fitting ETS Methods with Trend: Holt’s Linear</a></li>
+  <li><a href="#fitting-ets-methods-with-season-holt-winters" id="toc-fitting-ets-methods-with-season-holt-winters" class="nav-link" data-scroll-target="#fitting-ets-methods-with-season-holt-winters"><span class="header-section-number">7.5</span> Fitting ETS Methods with Season: Holt-Winters</a></li>
+  <li><a href="#fitting-multiple-ets-models" id="toc-fitting-multiple-ets-models" class="nav-link" data-scroll-target="#fitting-multiple-ets-models"><span class="header-section-number">7.6</span> Fitting multiple ETS Models</a></li>
+  <li><a href="#the-model-coefficient" id="toc-the-model-coefficient" class="nav-link" data-scroll-target="#the-model-coefficient"><span class="header-section-number">7.7</span> The model Coefficient</a></li>
+  <li><a href="#step-4-model-comparison" id="toc-step-4-model-comparison" class="nav-link" data-scroll-target="#step-4-model-comparison"><span class="header-section-number">7.8</span> Step 4: Model Comparison</a></li>
+  <li><a href="#step-5-forecasting-future-values" id="toc-step-5-forecasting-future-values" class="nav-link" data-scroll-target="#step-5-forecasting-future-values"><span class="header-section-number">7.9</span> Step 5: Forecasting Future Values</a></li>
+  <li><a href="#fitting-ets-automatically" id="toc-fitting-ets-automatically" class="nav-link" data-scroll-target="#fitting-ets-automatically"><span class="header-section-number">7.10</span> Fitting ETS Automatically</a></li>
+  <li><a href="#fitting-fitting-ets-automatically" id="toc-fitting-fitting-ets-automatically" class="nav-link" data-scroll-target="#fitting-fitting-ets-automatically"><span class="header-section-number">7.11</span> Fitting Fitting ETS Automatically</a></li>
+  <li><a href="#forecast-the-future-values" id="toc-forecast-the-future-values" class="nav-link" data-scroll-target="#forecast-the-future-values"><span class="header-section-number">7.12</span> Forecast the Future Values</a></li>
+  <li><a href="#visualising-autoets-model-with-ggplot2" id="toc-visualising-autoets-model-with-ggplot2" class="nav-link" data-scroll-target="#visualising-autoets-model-with-ggplot2"><span class="header-section-number">7.13</span> Visualising AutoETS model with ggplot2</a></li>
   </ul>
 </li>
-  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">8</span> Reference</a></li>
+  <li>
+<a href="#autoregressive-integrated-moving-averagearima-methods-for-time-series-forecasting-fable-tidyverts-methods" id="toc-autoregressive-integrated-moving-averagearima-methods-for-time-series-forecasting-fable-tidyverts-methods" class="nav-link" data-scroll-target="#autoregressive-integrated-moving-averagearima-methods-for-time-series-forecasting-fable-tidyverts-methods"><span class="header-section-number">8</span> AutoRegressive Integrated Moving Average(ARIMA) Methods for Time Series Forecasting: fable (tidyverts) methods</a>
+  <ul class="collapse">
+<li><a href="#visualising-autocorrelations-feasts-methods" id="toc-visualising-autocorrelations-feasts-methods" class="nav-link" data-scroll-target="#visualising-autocorrelations-feasts-methods"><span class="header-section-number">8.1</span> Visualising Autocorrelations: feasts methods</a></li>
+  </ul>
+</li>
+  <li><a href="#note" id="toc-note" class="nav-link" data-scroll-target="#note"><span class="header-section-number">9</span> NOTE</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">10</span> Reference</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -572,6 +591,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Provides ‘ggplot2’ themes and scales that replicate some of the famous looks.</td>
 </tr>
 <tr class="even">
+<td><a href="https://fable.tidyverts.org/">fable</a></td>
+<td>Provides a collection of commonly used univariate and multivariate time series forecasting models (e.g exponential smoothing and automatic ARIMA), equivalent to <strong>forecast</strong> package</td>
+</tr>
+<tr class="odd">
+<td><a href="https://fabletools.tidyverts.org/">fabletools</a></td>
+<td>Extends fable package that allows users to create ingeratable additonal time series models</td>
+</tr>
+<tr class="even">
 <td><a href="https://cran.r-project.org/web/packages/readxl/readxl.pdf">readxl</a></td>
 <td>Imports excel files into R.</td>
 </tr>
@@ -579,7 +606,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>The code below installs and loads the required packages into R environment.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">tsibble</span>,<span class="va">readxl</span>, <span class="va">feasts</span>, <span class="va">fable</span>, <span class="va">seasonal</span>, <span class="va">ggthemes</span>,<span class="va">knitr</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">tsibble</span>,<span class="va">readxl</span>, <span class="va">feasts</span>, <span class="va">fable</span>, <span class="va">seasonal</span>, <span class="va">ggthemes</span>,<span class="va">knitr</span>, <span class="va">fabletools</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="importing-the-data" class="level3" data-number="2.2"><h3 data-number="2.2" class="anchored" data-anchor-id="importing-the-data">
 <span class="header-section-number">2.2</span> Importing the Data</h3>
@@ -1336,12 +1363,404 @@ Tip
 </div>
 </section></section><section id="visual-forecasting" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="visual-forecasting">
 <span class="header-section-number">7</span> Visual Forecasting</h2>
-<section id="fitting-forecasting-models" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="fitting-forecasting-models">
-<span class="header-section-number">7.1</span> Fitting Forecasting Models</h3>
-<section id="fitting-exponential-smoothing-state-space-ets-models-fable-methods" class="level4" data-number="7.1.1"><h4 data-number="7.1.1" class="anchored" data-anchor-id="fitting-exponential-smoothing-state-space-ets-models-fable-methods">
-<span class="header-section-number">7.1.1</span> Fitting Exponential Smoothing State Space (ETS) Models: fable methods</h4>
-</section></section></section><section id="reference" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="reference">
-<span class="header-section-number">8</span> Reference</h2>
+<p>In this section, we learn how to use <strong>fable</strong> and <strong>fabletools</strong> from <a href="https://tidyverts.org/"><strong>tidyverts</strong></a> family to build the forecasting models.</p>
+<p>Here is the workflow: <img src="image5.jpg" class="img-fluid"></p>
+<section id="time-series-data-sampling" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="time-series-data-sampling">
+<span class="header-section-number">7.1</span> Time Series Data Sampling</h3>
+<p>In forecasting, it is standard practice to divide the dataset into a training set and a hold out set. The training set (estimation sample) is used to fit the model and estimate its parameters, and usually includes about 75 to 80 percent of the observations, although a smaller share may be used for longer series.</p>
+<p>The remaining observations form the hold out set, which is reserved for evaluating forecast performance. After the model is fitted on the training data, its forecasts are compared with these unseen observations to assess how well it predicts new values.</p>
+<p><img src="image6.jpg" class="img-fluid"></p>
+<p>In this example, the last 12 months of observations are reserved as the hold out sample, while the remaining data are used for training.</p>
+<p>First, an additional column named <code>Type</code> is created using the <code>mutate()</code> function from the <strong>dplyr</strong> package to label each observation as either training or hold out. This will be useful for subsequent data visualisation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_ts</span> <span class="op">&lt;-</span> <span class="va">tsibble_longer</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Country</span> <span class="op">==</span> <span class="st">"Vietnam"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>Type <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">`Year-Month`</span><span class="op">&gt;=</span> <span class="fu">yearmonth</span><span class="op">(</span><span class="st">"2019 Jan"</span><span class="op">)</span>, <span class="st">"Hold-out"</span>, <span class="st">"Training"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, a training data set is extracted from the original data set by using <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> of <strong>dplyr</strong> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_train</span> <span class="op">&lt;-</span> <span class="va">vietnam_ts</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">`Year-Month`</span> <span class="op">&lt;</span> <span class="fu">yearmonth</span><span class="op">(</span><span class="st">"2019 Jan"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="exploratory-data-analysis-eda-time-series-data" class="level3" data-number="7.2"><h3 data-number="7.2" class="anchored" data-anchor-id="exploratory-data-analysis-eda-time-series-data">
+<span class="header-section-number">7.2</span> Exploratory Data Analysis (EDA): Time Series Data</h3>
+<p>Before fitting forecasting models, it is a good practice to analysis the time series data by using EDA methods. The <code>season_year</code> plot reveals a seasonal pattern that repeats every 12 months with consistent peaks and troughs occurring at the same months each year. This indicates strong annual seasonality in visitor arrivals. Arrivals looks messy because trend and seasonality mixed together. Trend shows long term growth in tourism. Remainder part is small.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>stl <span class="op">=</span> <span class="fu">STL</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">components</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="fitting-forecasting-models" class="level3" data-number="7.3"><h3 data-number="7.3" class="anchored" data-anchor-id="fitting-forecasting-models">
+<span class="header-section-number">7.3</span> Fitting Forecasting Models</h3>
+<section id="fitting-exponential-smoothing-state-space-ets-models-fable-methods" class="level4" data-number="7.3.1"><h4 data-number="7.3.1" class="anchored" data-anchor-id="fitting-exponential-smoothing-state-space-ets-models-fable-methods">
+<span class="header-section-number">7.3.1</span> Fitting Exponential Smoothing State Space (ETS) Models: fable methods</h4>
+<p>In fable, <a href="https://fable.tidyverts.org/reference/ETS.html"><code>ETS()</code></a> is used to build Exponential Smoothing State Space Models. The sample formula is below:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ETS</span>(y <span class="sc">~</span> <span class="fu">error</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"M"</span>))  </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>    <span class="sc">+</span> <span class="fu">trend</span>(<span class="fu">c</span>(<span class="st">"N"</span>, <span class="st">"A"</span>, <span class="st">"Ad"</span>)) </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">+</span> <span class="fu">season</span>(<span class="fu">c</span>(<span class="st">"N"</span>, <span class="st">"A"</span>, <span class="st">"M"</span>)) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="fitting-a-simple-exponential-smoothing-ses" class="level4" data-number="7.3.2"><h4 data-number="7.3.2" class="anchored" data-anchor-id="fitting-a-simple-exponential-smoothing-ses">
+<span class="header-section-number">7.3.2</span> Fitting a simple exponential smoothing (SES)</h4>
+<p>SES assumes upward trend and strong yearly seasonality neither exists. This model is intentionally a very simple baseline model as naive/simple benchmark for comparison.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ses</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span><span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="co"># error("A") Additive errors</span></span>
+<span>            <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span>  <span class="co">#trend("N") No trend</span></span>
+<span>            <span class="op">+</span> <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># season("N") No seasonality</span></span>
+<span><span class="va">fit_ses</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A mable: 1 x 2
+# Key:     Country [1]
+  Country `ETS(Arrivals ~ error("A") + trend("N") + season("N"))`
+  &lt;chr&gt;                                                   &lt;model&gt;
+1 Vietnam                                            &lt;ETS(A,N,N)&gt;</code></pre>
+</div>
+</div>
+</section><section id="examine-model-assumptions" class="level4" data-number="7.3.3"><h4 data-number="7.3.3" class="anchored" data-anchor-id="examine-model-assumptions">
+<span class="header-section-number">7.3.3</span> Examine Model Assumptions</h4>
+<p><code>gg_tsresiduals()</code> from feasts package is used to check the model assumptions with residuals plots.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">gg_tsresiduals</span><span class="op">(</span><span class="va">fit_ses</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="the-model-details" class="level4" data-number="7.3.4"><h4 data-number="7.3.4" class="anchored" data-anchor-id="the-model-details">
+<span class="header-section-number">7.3.4</span> The model Details</h4>
+<p>We use <a href="https://fabletools.tidyverts.org/reference/report.html"><code>report()</code></a> of <strong>fabletools</strong> reveal the model details.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ses</span><span class="op">%&gt;%</span> <span class="fu">report</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Arrivals 
+Model: ETS(A,N,N) 
+  Smoothing parameters:
+    alpha = 0.9998999 
+
+  Initial states:
+     l[0]
+ 2142.237
+
+  sigma^2:  17184236
+
+     AIC     AICc      BIC 
+5040.249 5040.356 5050.537 </code></pre>
+</div>
+</div>
+</section></section><section id="fitting-ets-methods-with-trend-holts-linear" class="level3" data-number="7.4"><h3 data-number="7.4" class="anchored" data-anchor-id="fitting-ets-methods-with-trend-holts-linear">
+<span class="header-section-number">7.4</span> Fitting ETS Methods with Trend: Holt’s Linear</h3>
+<section id="trend-methods" class="level5" data-number="7.4.0.1"><h5 data-number="7.4.0.1" class="anchored" data-anchor-id="trend-methods">
+<span class="header-section-number">7.4.0.1</span> Trend methods</h5>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_H</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>`Holt's method` <span class="op">=</span> </span>
+<span>          <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>                <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>                <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">vietnam_H</span> <span class="op">%&gt;%</span> <span class="fu">report</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Arrivals 
+Model: ETS(A,A,N) 
+  Smoothing parameters:
+    alpha = 0.9998999 
+    beta  = 0.0001000235 
+
+  Initial states:
+     l[0]     b[0]
+ 1999.921 37.64938
+
+  sigma^2:  17329230
+
+     AIC     AICc      BIC 
+5044.138 5044.408 5061.284 </code></pre>
+</div>
+</div>
+</section><section id="damped-trend-methods" class="level4" data-number="7.4.1"><h4 data-number="7.4.1" class="anchored" data-anchor-id="damped-trend-methods">
+<span class="header-section-number">7.4.1</span> Damped trend methods</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_HAd</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>`Holt's method` <span class="op">=</span> </span>
+<span>          <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>                <span class="fu">trend</span><span class="op">(</span><span class="st">"Ad"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>                <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">vietnam_HAd</span> <span class="op">%&gt;%</span> <span class="fu">report</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Arrivals 
+Model: ETS(A,Ad,N) 
+  Smoothing parameters:
+    alpha = 0.9998998 
+    beta  = 0.0001001135 
+    phi   = 0.9324906 
+
+  Initial states:
+     l[0]     b[0]
+ 1969.945 37.13925
+
+  sigma^2:  17415816
+
+     AIC     AICc      BIC 
+5046.254 5046.634 5066.830 </code></pre>
+</div>
+</div>
+</section><section id="checking-for-results" class="level4" data-number="7.4.2"><h4 data-number="7.4.2" class="anchored" data-anchor-id="checking-for-results">
+<span class="header-section-number">7.4.2</span> Checking for results</h4>
+<p>Check the model assumptions with residuals plots.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">gg_tsresiduals</span><span class="op">(</span><span class="va">vietnam_H</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">gg_tsresiduals</span><span class="op">(</span><span class="va">vietnam_HAd</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-40-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="fitting-ets-methods-with-season-holt-winters" class="level3" data-number="7.5"><h3 data-number="7.5" class="anchored" data-anchor-id="fitting-ets-methods-with-season-holt-winters">
+<span class="header-section-number">7.5</span> Fitting ETS Methods with Season: Holt-Winters</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Vietnam_WH</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span></span>
+<span>    Additive <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> </span>
+<span>                   <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> </span>
+<span>                   <span class="op">+</span> <span class="fu">season</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    Multiplicative <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span> </span>
+<span>                         <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> </span>
+<span>                         <span class="op">+</span> <span class="fu">season</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span><span class="va">Vietnam_WH</span> <span class="op">%&gt;%</span> <span class="fu">report</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 10
+  Country .model          sigma2 log_lik   AIC  AICc   BIC    MSE   AMSE     MAE
+  &lt;chr&gt;   &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 Vietnam Additive       7.39e+6  -2414. 4861. 4864. 4919. 6.87e6 1.38e7 1.92e+3
+2 Vietnam Multiplicative 2.03e-2  -2316. 4666. 4669. 4724. 2.56e6 3.21e6 9.23e-2</code></pre>
+</div>
+</div>
+</section><section id="fitting-multiple-ets-models" class="level3" data-number="7.6"><h3 data-number="7.6" class="anchored" data-anchor-id="fitting-multiple-ets-models">
+<span class="header-section-number">7.6</span> Fitting multiple ETS Models</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ETS</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span>`SES` <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>                      <span class="fu">trend</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>                      <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        `Holt`<span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>                      <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>                      <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        `damped Holt` <span class="op">=</span> </span>
+<span>          <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>                <span class="fu">trend</span><span class="op">(</span><span class="st">"Ad"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>                <span class="fu">season</span><span class="op">(</span><span class="st">"N"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        `WH_A` <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span></span>
+<span>          <span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            <span class="fu">season</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        `WH_M` <span class="op">=</span> <span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span> <span class="op">~</span> <span class="fu">error</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span> </span>
+<span>                         <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span> </span>
+<span>                         <span class="op">+</span> <span class="fu">season</span><span class="op">(</span><span class="st">"M"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="the-model-coefficient" class="level3" data-number="7.7"><h3 data-number="7.7" class="anchored" data-anchor-id="the-model-coefficient">
+<span class="header-section-number">7.7</span> The model Coefficient</h3>
+<p><a href="https://github.com/tidyverts/fabletools"><code>tidy()</code></a> of fabletools is be used to extract model coefficients from a mable.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ETS</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">tidy</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 45 × 4
+   Country .model      term     estimate
+   &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;       &lt;dbl&gt;
+ 1 Vietnam SES         alpha    1.000   
+ 2 Vietnam SES         l[0]  2142.      
+ 3 Vietnam Holt        alpha    1.000   
+ 4 Vietnam Holt        beta     0.000100
+ 5 Vietnam Holt        l[0]  2000.      
+ 6 Vietnam Holt        b[0]    37.6     
+ 7 Vietnam damped Holt alpha    1.000   
+ 8 Vietnam damped Holt beta     0.000100
+ 9 Vietnam damped Holt phi      0.932   
+10 Vietnam damped Holt l[0]  1970.      
+# ℹ 35 more rows</code></pre>
+</div>
+</div>
+</section><section id="step-4-model-comparison" class="level3" data-number="7.8"><h3 data-number="7.8" class="anchored" data-anchor-id="step-4-model-comparison">
+<span class="header-section-number">7.8</span> Step 4: Model Comparison</h3>
+<p>glance() of fabletool</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ETS</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">glance</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 10
+  Country .model          sigma2 log_lik   AIC  AICc   BIC    MSE   AMSE     MAE
+  &lt;chr&gt;   &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+1 Vietnam SES            1.72e+7  -2517. 5040. 5040. 5051. 1.70e7 3.66e7 2.71e+3
+2 Vietnam Holt           1.73e+7  -2517. 5044. 5044. 5061. 1.70e7 3.66e7 2.70e+3
+3 Vietnam damped Holt    1.74e+7  -2517. 5046. 5047. 5067. 1.70e7 3.66e7 2.71e+3
+4 Vietnam WH_A           7.39e+6  -2414. 4861. 4864. 4919. 6.87e6 1.38e7 1.92e+3
+5 Vietnam WH_M           2.03e-2  -2316. 4666. 4669. 4724. 2.56e6 3.21e6 9.23e-2</code></pre>
+</div>
+</div>
+</section><section id="step-5-forecasting-future-values" class="level3" data-number="7.9"><h3 data-number="7.9" class="anchored" data-anchor-id="step-5-forecasting-future-values">
+<span class="header-section-number">7.9</span> Step 5: Forecasting Future Values</h3>
+<p>To forecast the future values, <code>forecast()</code> of fable will be used. Notice that the forecast period is 12 months.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_ETS</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">forecast</span><span class="op">(</span>h <span class="op">=</span> <span class="st">"12 months"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="va">vietnam_ts</span>, </span>
+<span>           level <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="fitting-ets-automatically" class="level3" data-number="7.10"><h3 data-number="7.10" class="anchored" data-anchor-id="fitting-ets-automatically">
+<span class="header-section-number">7.10</span> Fitting ETS Automatically</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_autoETS</span> <span class="op">&lt;-</span> <span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">model</span><span class="op">(</span><span class="fu">ETS</span><span class="op">(</span><span class="va">Arrivals</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fit_autoETS</span> <span class="op">%&gt;%</span> <span class="fu">report</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Arrivals 
+Model: ETS(M,A,M) 
+  Smoothing parameters:
+    alpha = 0.2876103 
+    beta  = 0.0001077007 
+    gamma = 0.0007450998 
+
+  Initial states:
+     l[0]     b[0]      s[0]     s[-1]     s[-2]     s[-3]    s[-4]    s[-5]
+ 2037.892 59.59662 0.9126985 0.8398613 0.8785366 0.9057731 1.137611 1.448885
+    s[-6]     s[-7]    s[-8]     s[-9]    s[-10]    s[-11]
+ 1.297657 0.9514804 1.003835 0.9317896 0.8947858 0.7970882
+
+  sigma^2:  0.0203
+
+     AIC     AICc      BIC 
+4665.719 4668.633 4724.018 </code></pre>
+</div>
+</div>
+</section><section id="fitting-fitting-ets-automatically" class="level3" data-number="7.11"><h3 data-number="7.11" class="anchored" data-anchor-id="fitting-fitting-ets-automatically">
+<span class="header-section-number">7.11</span> Fitting Fitting ETS Automatically</h3>
+<p>Next, we will check the model assumptions with residuals plots by using gg_tsresiduals() of feasts package</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">gg_tsresiduals</span><span class="op">(</span><span class="va">fit_autoETS</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="forecast-the-future-values" class="level3" data-number="7.12"><h3 data-number="7.12" class="anchored" data-anchor-id="forecast-the-future-values">
+<span class="header-section-number">7.12</span> Forecast the Future Values</h3>
+<p>In the code chunk below, forecast() of fable package is used to forecast the future values. Then, autoplot() of feasts package is used to see the training data along with the forecast values.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_autoETS</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">forecast</span><span class="op">(</span>h <span class="op">=</span> <span class="st">"12 months"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">autoplot</span><span class="op">(</span><span class="va">vietnam_train</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="visualising-autoets-model-with-ggplot2" class="level3" data-number="7.13"><h3 data-number="7.13" class="anchored" data-anchor-id="visualising-autoets-model-with-ggplot2">
+<span class="header-section-number">7.13</span> Visualising AutoETS model with ggplot2</h3>
+<p>There are time that we are interested to visualise relationship between training data and fit data and forecasted values versus the hold-out data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fc_autoETS</span> <span class="op">&lt;-</span> <span class="va">fit_autoETS</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">forecast</span><span class="op">(</span>h <span class="op">=</span> <span class="st">"12 months"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vietnam_ts</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x<span class="op">=</span><span class="va">`Year-Month`</span>, </span>
+<span>             y<span class="op">=</span><span class="va">Arrivals</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">autolayer</span><span class="op">(</span><span class="va">fc_autoETS</span>, </span>
+<span>            alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span>    color <span class="op">=</span> <span class="va">Type</span><span class="op">)</span>, </span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="va">.mean</span>, </span>
+<span>    colour <span class="op">=</span> <span class="st">"Forecast"</span><span class="op">)</span>, </span>
+<span>    data <span class="op">=</span> <span class="va">fc_autoETS</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span>    y <span class="op">=</span> <span class="va">.fitted</span>, </span>
+<span>    colour <span class="op">=</span> <span class="st">"Fitted"</span><span class="op">)</span>, </span>
+<span>    data <span class="op">=</span> <span class="fu">augment</span><span class="op">(</span><span class="va">fit_autoETS</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="autoregressive-integrated-moving-averagearima-methods-for-time-series-forecasting-fable-tidyverts-methods" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="autoregressive-integrated-moving-averagearima-methods-for-time-series-forecasting-fable-tidyverts-methods">
+<span class="header-section-number">8</span> AutoRegressive Integrated Moving Average(ARIMA) Methods for Time Series Forecasting: fable (tidyverts) methods</h2>
+<section id="visualising-autocorrelations-feasts-methods" class="level3" data-number="8.1"><h3 data-number="8.1" class="anchored" data-anchor-id="visualising-autocorrelations-feasts-methods">
+<span class="header-section-number">8.1</span> Visualising Autocorrelations: feasts methods</h3>
+<p><strong>feasts</strong> package provides a very handy function for visualising ACF and PACF of a time series called <code>gg_tsdiaply()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vietnam_train</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">gg_tsdisplay</span><span class="op">(</span>plot_type<span class="op">=</span><span class="st">'partial'</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Hands-on_Extra_2_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="note" class="level2" data-number="9"><h2 data-number="9" class="anchored" data-anchor-id="note">
+<span class="header-section-number">9</span> NOTE</h2>
+<p>We can begin with horizon plot (ggHoriPlot), time plot, seasonal plot and STL decomposition, ACF and PACF from <strong>feasts</strong> for time series EDA, After exploratory analysis, we conduct clustering to group CPI components by behaviour (seasonal, trendy, and volatile). Then confirmatory analysis is conducted to statistically validate the observed patterns.</p>
+<p>Next, we start modelling with <strong>fable</strong> and then extend to <strong>fable.prophet</strong>. Prophet can be viewed as a hybrid approach: it incorporates automated and flexible modelling techniques that resemble machine learning, but it is still fundamentally a regression based time series model rather than a pure machine learning algorithm. After that, we can further extend to machine learning workflows using <strong>timetk</strong> and <strong>modeltime</strong> as a benchmark for verification and confirmation of the forecasting results. In the take-home exercise, we will focus on exploring these methods first, and then design the dashboard. For the dashboard, we can use <strong>tsibblecrosstalk</strong> to build coordinated views across plots and tables, which enhances interactivity and supports clearer visual comparisons.</p>
+<p><strong>EDA</strong></p>
+<ol type="1">
+<li><p>horizon plot</p></li>
+<li><p>time plot</p></li>
+<li><p>seasonal plot</p></li>
+<li><p>STL decomposition</p></li>
+<li><p>ACF/PACF plots (initial diagnosis of trend and seasonality) (ACF() and FACF() + autoplot, feat_acf() and feat_pacf())</p></li>
+</ol>
+<p><strong>Clustering</strong></p>
+<ol type="1">
+<li>feature based clustering (feasts)</li>
+</ol>
+<p><strong>CDA (confirmation)</strong></p>
+<ol type="1">
+<li><p>seasonal strength test SARIMA, feat_stl()</p></li>
+<li><p>ARIMA seasonal terms</p></li>
+<li><p>regression &amp; ANOVA across components</p></li>
+</ol>
+<p><strong>Forecasting</strong></p>
+<ol type="1">
+<li><p>fable ((ETS / ARIMA / SARIMA))</p></li>
+<li><p>fable.prophet (hybrid)</p></li>
+<li><p>timetk + modeltime (ML benchmark)</p></li>
+</ol>
+<p>Dashboard</p>
+<ol type="1">
+<li>tsibblecrosstalk coordinated views</li>
+</ol></section><section id="reference" class="level2" data-number="10"><h2 data-number="10" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">10</span> Reference</h2>
 <p>Kam, Tin Seong (2026), 19 Visualising, Analysing and Forecasting Time-series Data: tidyverts methods, https://r4va.netlify.app/chap19</p>
 
 
