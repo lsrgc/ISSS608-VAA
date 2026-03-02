@@ -635,7 +635,7 @@ tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N == "CENTRAL REGION", ]) +
   tm_borders(fill_alpha = 0.5)
 ```
 
-## 7 Complementing Thematic Map with Statistical Chart
+## Complementing Thematic Map with Statistical Chart
 
 Legend charts are small charts that are added to the map, usually in addition to legends. Arguments that could be assigned to **fill.chart** are *tm_chart_histogram(), tm_chart_bar(), tm_chart_donut(),tm_chart_violin(), tm_chart_box(), tm_chart_none(),tm_chart_heatmap().*
 
@@ -677,7 +677,7 @@ tm_shape(outlier_sf) +
   tm_layout(asp = 0.8)
 ```
 
-## 8 Creating Interactive Map
+## Creating Interactive Map
 
 Interactive maps (**tmap_mode("view")**) let users zoom, pan, and click for details.
 
@@ -739,7 +739,7 @@ tm_shape(region_selected,
 tmap_mode("plot")
 ```
 
-## 9 Reference
+## Reference
 
 Kam, T. S. Thematic Mapping and GeoVisualisation with R. R for Geospatial Data Science and Analytics. https://r4gdsa.netlify.app/chap02.html
 
