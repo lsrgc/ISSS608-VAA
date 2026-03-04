@@ -31,13 +31,11 @@ In this exercise, we will use the **tmap** package in R to create a proportional
 
 By the end of this hands on exercise, we will be able to use appropriate R packages to:
 
-- Import an aspatial data file into R.
-- Convert it into an `sf` point object and assign the correct coordinate reference system.
-- Create interactive proportional symbol maps.
+-   Import an aspatial data file into R.
+-   Convert it into an `sf` point object and assign the correct coordinate reference system.
+-   Create interactive proportional symbol maps.
 
-
-
-## Getting tarted
+## Getting Started
 
 There are **3** packages that will be used in this exercise.
 
@@ -57,9 +55,6 @@ pacman::p_load(sf,tmap,tidyverse)
 
 The dataset used in this hands on exercise is **SGPools_svy21**, provided in CSV format.
 
-The figure below shows the first 15 records of `SGPools_svy21.csv`. The file contains seven columns. The `XCOORD` and `YCOORD` fields store the projected x and y coordinates of Singapore Pools outlets and branches, using the [**SVY21** coordinate system](https://app.sla.gov.sg/sirent/About/PlaneCoordinateSystem).
-
-
 ### Data Import and Preparation
 
 we use [**`read_csv()`**](https://www.rdocumentation.org/packages/qtl2/versions/0.32/topics/read_csv) to import the csv file as a tibble dataframe and name it *sgpools*.
@@ -67,6 +62,12 @@ we use [**`read_csv()`**](https://www.rdocumentation.org/packages/qtl2/versions/
 ```{r}
 sgpools <- read_csv("data/aspatial/SGPools_svy21.csv")
 list(sgpools)
+```
+
+The table below shows the first 15 records of `SGPools_svy21.csv`. The file contains seven columns. The `XCOORD` and `YCOORD` fields store the projected x and y coordinates of Singapore Pools outlets and branches, using the [**SVY21** coordinate system](https://app.sla.gov.sg/sirent/About/PlaneCoordinateSystem).
+
+```{r}
+head(sgpools, 15)
 ```
 
 ### Creating a sf data.frame from an Aspatial data.frame
@@ -79,13 +80,10 @@ sgpools_sf <- st_as_sf(sgpools,
                        crs= 3414)
 ```
 
-:::callout-tip
+::: callout-tip
+-   The `coords` argument requires the x coordinate column name first, followed by the y coordinate column name.
 
-
-- The `coords` argument requires the x coordinate column name first, followed by the y coordinate column name.
-
-- The `crs` argument specifies the coordinate reference system in EPSG format. [**EPSG:3414**](https://epsg.io/3414) corresponds to the Singapore SVY21 projected coordinate system. You can look up other EPSG codes at [epsg.io](https://epsg.io/).
-
+-   The `crs` argument specifies the coordinate reference system in EPSG format. [**EPSG:3414**](https://epsg.io/3414) corresponds to the Singapore SVY21 projected coordinate system. You can look up other EPSG codes at [epsg.io](https://epsg.io/).
 :::
 
 When we print the sf object, the console returns the first 10 rows and basic information of the object, such as it contains 306 point features.
@@ -95,22 +93,19 @@ sgpools_sf
 ```
 
 We can also use `class()`,`st_crs()` to verify the class and Coordinate Reference System of the sgpools_sf file.
+
 ```{r}
 class(sgpools_sf)
 st_crs(sgpools_sf)
 ```
 
-
-
 ## Drawing Proportional Symbol Map
 
-To create an interactive proportional symbol map in R, the **view** mode of **tmap** is used.
-The code chunk below switches **tmap** to interactive mode.
+To create an interactive proportional symbol map in R, the **view** mode of **tmap** is used. The code chunk below switches **tmap** to interactive mode.
 
 ```{r}
 tmap_mode("view")
 ```
-
 
 ### It all started with an interactive point symbol map
 
@@ -124,11 +119,9 @@ tm_shape(sgpools_sf) +
            lwd = 1)
 ```
 
-
 ### Let's make it proportional
 
 To draw a proportional symbol map, a numeric variable must be mapped to the **size** visual attribute. The code chunk below assigns the variable `Gp1Gp2Winnings` to the size aesthetic.
-
 
 ```{r}
 tm_shape(sgpools_sf) + 
@@ -138,11 +131,9 @@ tm_shape(sgpools_sf) +
              lwd = 1)
 ```
 
-
 ### Let's give it a different colour
 
 The proportional symbol map can be enhanced by adding a colour visual attribute. In the code chunk below, the `OUTLET_TYPE` variable is mapped to the colour aesthetic.
-
 
 ```{r}
 tm_shape(sgpools_sf) + 
@@ -152,8 +143,7 @@ tm_shape(sgpools_sf) +
              lwd = 1)
 ```
 
-
-###  I have a twin brother :)
+### I have a twin brother :)
 
 An impressive and little known feature of **tmap** view mode is that it also supports faceted maps. The `sync` argument in `tm_facets()` can be used to display multiple maps with synchronised zoom and pan behaviour.
 
@@ -168,14 +158,10 @@ tm_shape(sgpools_sf) +
             sync = TRUE)
 ```
 
-
 ```{r}
 tmap_mode("plot")
 ```
 
-
 ## Reference
 
-
 Kam, Tin Seong (2026). 22 Visualising Geospatial Point Data, https://r4va.netlify.app/chap22
-
