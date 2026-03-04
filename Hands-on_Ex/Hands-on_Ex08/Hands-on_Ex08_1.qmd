@@ -27,7 +27,6 @@ A Choropleth map is a thematic map that represents statistical data by shading p
 
 In this chapter we will learn how to create clear accurate and meaningful Chrome plus map using the team map package in R with an emphasis on producing maps that communicate data effectively and responsibly.
 
-
 ## Getting tarted
 
 There are **3** packages that will be used in this exercise.
@@ -39,7 +38,7 @@ There are **3** packages that will be used in this exercise.
 | [sf](https://r-spatial.github.io/sf/) | Handles importing, managing, and processing vector-based geospatial data |
 
 ```{r}
-pacman::p_load(sf,tmap,tidyverse,rvest)
+pacman::p_load(sf,tmap,tidyverse)
 ```
 
 ## Importing Data into R
@@ -58,12 +57,12 @@ The code chunk below use [**`st_read()`**](https://www.rdocumentation.org/packag
 mpsz <- st_read(dsn = "data/geospatial/",
                 layer = "MP14_SUBZONE_WEB_PL")
 ```
+
 When the imported **mpsz** object is printed, the console automatically displays a preview of the first 10 spatial features. The displaying first 10 features is simply a built in print method designed to keep user's console output manageable and efficient.
 
 ```{r}
 mpsz
 ```
-
 
 ### Importing Attribute Data Into R
 
@@ -92,7 +91,7 @@ head(popdata, 5)
 
 **DEPENDENCY**: (YOUNG + AGED)/ECONOMY_ACTIVE ×100 as %
 
-####  Data Wrangling
+#### Data Wrangling
 
 ```{r}
 
@@ -191,7 +190,6 @@ tm_shape(mpsz_pop2020) +
 
 #### Drawing a Base map Using `tm_shape()`
 
-
 The code uses [`tm_shape()`](https://www.rdocumentation.org/packages/tmap/versions/3.3-3/topics/tm_shape) to supply the spatial dataset and [`tm_polygons()`](https://r-tmap.github.io/tmap/reference/tm_polygons.html) to render the polygon features, producing a choropleth map.
 
 By default, tmap draws polygons with a dark gray outline (**gray25**) and a light gray fill (**gray85**).
@@ -220,11 +218,11 @@ tm_shape(mpsz_pop2020)+
 
 `tm_polygons()` is essentially a convenient wrapper around two functions: `tm_fill()` and `tm_borders()`.
 
-- `tm_fill()` controls how the interior of the polygons is coloured, typically applying a default colour palette to shade the areas based on data values.
+-   `tm_fill()` controls how the interior of the polygons is coloured, typically applying a default colour palette to shade the areas based on data values.
 
-- `tm_borders()` draws the boundary lines of each polygon, adding the outlines of the shapefile to the choropleth map.
+-   `tm_borders()` draws the boundary lines of each polygon, adding the outlines of the shapefile to the choropleth map.
 
-Therefore, `tm_polygons() performs both filling and outlining in a single step.
+Therefore, \`tm_polygons() performs both filling and outlining in a single step.
 
 ```{r}
 tm_shape(mpsz_pop2020) +
@@ -372,7 +370,6 @@ tm_shape(mpsz_pop2020) +
 
 The tmap supports colour ramps that can be either user defined or selected from predefined palettes available in the **RColorBrewer** package.
 
-
 #### Using ColourBrewer Palette
 
 To change the colours, we assign the desired palette to the `values` argument in [`tm_scale_intervals()`](https://r-tmap.github.io/tmap/reference/tm_scale_intervals.html), as shown in the code below.
@@ -399,18 +396,15 @@ tm_shape(mpsz_pop2020) +
   tm_borders(fill_alpha = 0.5)
 ```
 
-
 ### Map Layout
 
 Map layout refers to the arrangement of all map elements into a cohesive map. These elements include the mapped features, title, scale bar, north arrow, margins, and aspect ratio.
 
 The colour settings and data classification methods discussed earlier, such as palettes and breakpoints, influence the visual appearance of the map.
 
-
 #### Map Legend
 
 In **tmap**, the [`tm_legend()`](https://r-tmap.github.io/tmap/reference/tm_legend.html) function provides several options to customise the legend’s placement, format, and appearance.
-
 
 ```{r}
 tm_shape(mpsz_pop2020) +
@@ -432,6 +426,7 @@ tm_shape(mpsz_pop2020) +
 ```
 
 #### Map style
+
 **tmap** offers a wide range of layout settings that can be modified using `tmap_style()`, which icludes white (default), gray, natural, classic, cobalt, albatross, beaver, and bw (black & white).
 
 The code chunk below applies the **classic** style.
@@ -460,10 +455,9 @@ tm_shape(mpsz_pop2020) +
   tmap_style("beaver")
 ```
 
-
 #### Cartographic Furniture
 
-The code chunk below uses **[`tm_compass()`](https://r-tmap.github.io/tmap/reference/tm_compass.html), [`tm_scale_bar()`](https://r-tmap.github.io/tmap/reference/tm_scale_bar.html), [`tm_grid()`](https://r-tmap.github.io/tmap/reference/tm_grid.html) and [`tm_credit()`](https://r-tmap.github.io/tmap/articles/basics_components)** to draw cartographic furniture like compass, scale bar, grid lines.
+The code chunk below uses [**`tm_compass()`**](https://r-tmap.github.io/tmap/reference/tm_compass.html)**, [`tm_scale_bar()`](https://r-tmap.github.io/tmap/reference/tm_scale_bar.html), [`tm_grid()`](https://r-tmap.github.io/tmap/reference/tm_grid.html) and [`tm_credit()`](https://r-tmap.github.io/tmap/articles/basics_components)** to draw cartographic furniture like compass, scale bar, grid lines.
 
 ```{r}
 tm_shape(mpsz_pop2020)+
@@ -483,12 +477,12 @@ tm_shape(mpsz_pop2020)+
              position = c("left", "bottom")) +
   tmap_style("classic")
 ```
+
 The code below resets the default style to "white".
 
 ```{r}
 tmap_style("white")
 ```
-
 
 ### Drawing Small Multiple (Facet) Choropleth Maps
 
@@ -496,15 +490,13 @@ Small multiple maps, also known as facet maps, consist of several maps arranged 
 
 In **tmap**, small multiple maps can be created in three ways:
 
-* assigning multiple values to at least one aesthetic argument,
-* specifying a grouping variable in `tm_facets()`, and
-* arranging separate maps using `tmap_arrange()`.
-
+-   assigning multiple values to at least one aesthetic argument,
+-   specifying a grouping variable in `tm_facets()`, and
+-   arranging separate maps using `tmap_arrange()`.
 
 #### By assigning multiple values to at least one of the aesthetic arguments
 
 In this example, small multiple choropleth maps are created by specifying the `ncols` argument in `tm_fill()`.
-
 
 ```{r, fig.width=16}
 #{r} and use #| both can adjust the figure settings.
@@ -538,9 +530,6 @@ tm_shape(mpsz_pop2020) +
   tm_borders(alpha = 0.5)
 ```
 
-
-
-
 #### By Defining a Group-by Variable in *tm_facets()*
 
 The code below uses [`tm_facets()`](https://r-tmap.github.io/tmap/reference/tm_facets.html) to split the map into facets by region name, arranged in 2 rows × 3 columns; each facet has its own coordinate system (**free.coords**), and subzones not in that facet are dropped (**drop.units**).
@@ -563,6 +552,7 @@ tm_shape(mpsz_pop2020) +
             title.size = 20) +
   tm_borders(fill_alpha = 0.5)
 ```
+
 #### By Arranging Multiples Choropleth Maps with tmap_arrange()
 
 In [`map_arrange()`](https://www.rdocumentation.org/packages/tmap/versions/4.1/topics/tmap_arrange), **asp** controls the panel aspect ratio (height ÷ width): **asp = 1 makes panels square**, asp \> 1 makes them taller than wide, asp \< 1 makes them wider than tall, and asp = 0 allows free stretching. The **ncol** argument sets how many maps are placed per row.
@@ -595,11 +585,9 @@ agedmap <- tm_shape(mpsz_pop2020) +
 tmap_arrange(youngmap, agedmap, asp = 1, ncol = 2)
 ```
 
-
 ## Mappping Spatial Object Meeting a Selection Criterion
 
 Instead of creating small multiple choropleth maps, we can use a selection function to highlight only the spatial features that meet a specified criterion.
-
 
 ```{r}
 mpsz_pop2020 %>%
@@ -743,6 +731,4 @@ tmap_mode("plot")
 
 Kam, T. S. Thematic Mapping and GeoVisualisation with R. R for Geospatial Data Science and Analytics. https://r4gdsa.netlify.app/chap02.html
 
-
 Kam, Tin Seong (2026). 21 Choropleth Mapping with R, https://r4va.netlify.app/chap21
-

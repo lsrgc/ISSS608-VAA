@@ -1,0 +1,181 @@
+---
+title: "08-2 Visualising Geospatial Point Data"
+author: "Yiqiong PAN"
+date: "Mar 02, 2026"
+date-modified: "last-modified"
+execute:
+  echo: true    # display the code
+  eval: true    # run the code
+  message: false
+  warning: false
+  freeze: true  # do not re-render if nothing edited
+
+format: 
+  html:
+    toc: true
+    code-link: true
+
+number-sections: true
+number-depth: 6
+
+editor: visual
+---
+
+## Overview
+
+Proportional symbol maps, also called graduated symbol maps, use symbol size to represent the magnitude of a variable, such as counts of populations. They can be either classed (graduated symbols) or unclassed (proportional symbols), where the symbol area is directly proportional to the data value.
+
+In this exercise, we will use the **tmap** package in R to create a proportional symbol map showing the number of wins at Singapore Pools outlets.
+
+### Learning Outcome
+
+By the end of this hands on exercise, we will be able to use appropriate R packages to:
+
+- Import an aspatial data file into R.
+- Convert it into an `sf` point object and assign the correct coordinate reference system.
+- Create interactive proportional symbol maps.
+
+
+
+## Getting tarted
+
+There are **3** packages that will be used in this exercise.
+
+| Package | Description |
+|------------------------------------|------------------------------------|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), [dplyr](https://dplyr.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/), [ggplot2](https://ggplot2.tidyverse.org/)). |
+| [tmap](https://r-tmap.github.io/tmap/) | Creates cartographic quality static and interactive thematic (choropleth) maps. |
+| [sf](https://r-spatial.github.io/sf/) | Handles importing, managing, and processing vector-based geospatial data |
+
+```{r}
+pacman::p_load(sf,tmap,tidyverse)
+```
+
+## Geospatial Data Wrangling
+
+### The Data
+
+The dataset used in this hands on exercise is **SGPools_svy21**, provided in CSV format.
+
+The figure below shows the first 15 records of `SGPools_svy21.csv`. The file contains seven columns. The `XCOORD` and `YCOORD` fields store the projected x and y coordinates of Singapore Pools outlets and branches, using the [**SVY21** coordinate system](https://app.sla.gov.sg/sirent/About/PlaneCoordinateSystem).
+
+
+### Data Import and Preparation
+
+we use [**`read_csv()`**](https://www.rdocumentation.org/packages/qtl2/versions/0.32/topics/read_csv) to import the csv file as a tibble dataframe and name it *sgpools*.
+
+```{r}
+sgpools <- read_csv("data/aspatial/SGPools_svy21.csv")
+list(sgpools)
+```
+
+### Creating a sf data.frame from an Aspatial data.frame
+
+The code chunk below converts the `sgpools` data frame into a simple features data frame using the [`st_as_sf()`](https://r-spatial.github.io/sf/reference/st_as_sf.html) function from the **sf** package.
+
+```{r}
+sgpools_sf <- st_as_sf(sgpools, 
+                       coords = c("XCOORD", "YCOORD"),
+                       crs= 3414)
+```
+
+:::callout-tip
+
+
+- The `coords` argument requires the x coordinate column name first, followed by the y coordinate column name.
+
+- The `crs` argument specifies the coordinate reference system in EPSG format. [**EPSG:3414**](https://epsg.io/3414) corresponds to the Singapore SVY21 projected coordinate system. You can look up other EPSG codes at [epsg.io](https://epsg.io/).
+
+:::
+
+When we print the sf object, the console returns the first 10 rows and basic information of the object, such as it contains 306 point features.
+
+```{r}
+sgpools_sf
+```
+
+We can also use `class()`,`st_crs()` to verify the class and Coordinate Reference System of the sgpools_sf file.
+```{r}
+class(sgpools_sf)
+st_crs(sgpools_sf)
+```
+
+
+
+## Drawing Proportional Symbol Map
+
+To create an interactive proportional symbol map in R, the **view** mode of **tmap** is used.
+The code chunk below switches **tmap** to interactive mode.
+
+```{r}
+tmap_mode("view")
+```
+
+
+### It all started with an interactive point symbol map
+
+The code chunks below are used to create an interactive point symbol map.
+
+```{r}
+tm_shape(sgpools_sf) + 
+  tm_bubbles(fill = "red",
+           size = 1,
+           col = "black",
+           lwd = 1)
+```
+
+
+### Let's make it proportional
+
+To draw a proportional symbol map, a numeric variable must be mapped to the **size** visual attribute. The code chunk below assigns the variable `Gp1Gp2Winnings` to the size aesthetic.
+
+
+```{r}
+tm_shape(sgpools_sf) + 
+  tm_bubbles(fill = "red",
+             size = "Gp1Gp2 Winnings",
+             col = "black",
+             lwd = 1)
+```
+
+
+### Let's give it a different colour
+
+The proportional symbol map can be enhanced by adding a colour visual attribute. In the code chunk below, the `OUTLET_TYPE` variable is mapped to the colour aesthetic.
+
+
+```{r}
+tm_shape(sgpools_sf) + 
+  tm_bubbles(fill = "OUTLET TYPE", 
+             size = "Gp1Gp2 Winnings",
+             col = "black",
+             lwd = 1)
+```
+
+
+###  I have a twin brother :)
+
+An impressive and little known feature of **tmap** view mode is that it also supports faceted maps. The `sync` argument in `tm_facets()` can be used to display multiple maps with synchronised zoom and pan behaviour.
+
+```{r}
+tm_shape(sgpools_sf) + 
+  tm_bubbles(fill = "OUTLET TYPE", 
+             size = "Gp1Gp2 Winnings",
+             col = "black",
+             lwd = 1) + 
+  tm_facets(by= "OUTLET TYPE",
+            nrow = 1,
+            sync = TRUE)
+```
+
+
+```{r}
+tmap_mode("plot")
+```
+
+
+## Reference
+
+
+Kam, Tin Seong (2026). 22 Visualising Geospatial Point Data, https://r4va.netlify.app/chap22
+
