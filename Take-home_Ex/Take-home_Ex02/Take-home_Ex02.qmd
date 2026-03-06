@@ -24,7 +24,7 @@ editor: visual
 
 ## Introduction
 
-CPI
+<mark>**CPI**</mark>
 
 **Assumption:**
 
@@ -34,7 +34,8 @@ All hypothesis tests in this exercise are conducted at the **5% significance lev
 
 ### Installing and Loading the Required Libraries
 
-There are **XX** packages that will be used in this exercise.
+There are <mark>**XX**</mark> packages that will be used in this exercise.
+
 
 | Package | Description |
 |------------------------------------|------------------------------------|
@@ -181,18 +182,14 @@ df_long <- df_long %>%
   )
 ```
 
-
 ### Standardising CPI names
 
-We use `str_remove()` to remove the **“CPI:” prefix** from the series names. This helps clean up the labels so the table does not repeatedly display “CPI:” in every series name, making the series easier to read and rename the file to `cpi`. 
-
+We use `str_remove()` to remove the **“CPI:” prefix** from the series names. This helps clean up the labels so the table does not repeatedly display “CPI:” in every series name, making the series easier to read and rename the file to `cpi`.
 
 ```{r}
 cpi <- df_long %>%
   mutate(series = str_remove(series, "^CPI: "))
 ```
-
-
 
 ### Sanity Check
 
@@ -205,38 +202,33 @@ glimpse(cpi)
 ```{r}
 sum(is.na(cpi))
 ```
-### Saving the Tided File
 
+### Saving the File
 
 Here we use the `write_rds()` function to save the cleaned CPI dataset. The file can later be reloaded into the system for further analysis.
 
-
 ```{r}
-#| code-fold: true
-#| code-summary: "SHOW"
+#| eval: false
 write_rds(cpi, "data/cpi.rds")
 write_csv(cpi, "data/cpi.csv")
 ```
-
 
 ```{r}
 cpi<- read_rds("data/cpi.rds")
 ```
 
-
 ### Building an Interactive Table
 
 Finally, we create a `DT` table to display the dataset in an interactive tabular format.
 
-:::panel-tabset
-
+::: panel-tabset
 #### Step 1: Creating Reference Table and Join
 
 The first step is to build a reference table for the CPI hierarchy. Since the list of CPI series is finite, we first extract the **distinct series names** from the dataset to create a clean list without duplicated monthly records.
 
 Next, we manually assign the hierarchy levels for each series, such as **division, group, and class**, to define the relationships in the CPI structure.
 
-Finally, this annotated hierarchy table is **joined** back to the main dataset, so that each observation inherits the hierarchy columns. 
+Finally, this annotated hierarchy table is **joined** back to the main dataset, so that each observation inherits the hierarchy columns.
 
 ```{r}
 #| code-fold: true
@@ -289,7 +281,7 @@ cpi_hier <- cpi %>%
 
 ```
 
-#### Step 2: MOdifying the Table for Interactivity 
+#### Step 2: MOdifying the Table for Interactivity
 
 Next we prepares the CPI dataset for display in an interactive table.
 
@@ -297,15 +289,14 @@ First, the data is sorted by `series` and `date`, then grouped by `series` so ca
 
 Within `mutate()`:
 
-- `As_of` keeps the original date for filtering, while `As_of_lab` creates a readable label such as *Jan 2024*.
-- `cpi_change` calculates the **month to month CPI change** using `lag()`.
-- `Trend` converts the change into symbols: ▲ increase, ▼ decrease, ◆ first observation or no change.
-- `level_label` converts numeric hierarchy levels into labels (Top Level, Major Category, Sub Category, Detailed).
-- `major_group` and `display_name` determine which hierarchy name (division, group, or class) should be shown.
-- `cpi_rounded` rounds CPI values to two decimals.
+-   `As_of` keeps the original date for filtering, while `As_of_lab` creates a readable label such as *Jan 2024*.
+-   `cpi_change` calculates the **month to month CPI change** using `lag()`.
+-   `Trend` converts the change into symbols: ▲ increase, ▼ decrease, ◆ first observation or no change.
+-   `level_label` converts numeric hierarchy levels into labels (Top Level, Major Category, Sub Category, Detailed).
+-   `major_group` and `display_name` determine which hierarchy name (division, group, or class) should be shown.
+-   `cpi_rounded` rounds CPI values to two decimals.
 
 Finally, the dataset is **ungrouped** and selected columns are renamed to produce a clean table ready for interactive display.
-
 
 ```{r}
 #| code-fold: true
@@ -365,13 +356,11 @@ cpi_hier_display <- cpi_hier %>%
 
 ```
 
-
 #### Step 3: Defining CSS
 
 Because the table contains many columns and large fonts, it is difficult to display everything clearly on a single screen. To improve readability, we make the table more compact and enable responsive behaviour.
 
-First, we add a small CSS block to **reduce** the font size and cell paddin* in the DataTable. This allows more information to fit within the visible space without shrinking the entire browser view.
-
+First, we add a small CSS block to **reduce** the font size and cell paddin\* in the DataTable. This allows more information to fit within the visible space without shrinking the entire browser view.
 
 ```{r}
 #| code-fold: true
@@ -393,11 +382,9 @@ compact_dt_css <- tags$style(HTML("
 
 ```
 
-
-#### Step 4: Defining JavaScript Render 
+#### Step 4: Defining JavaScript Render
 
 First, a **JavaScript renderer (`trend_js`)** is defined. This function colours the trend symbols in the table: ▲ appears in green for an increase, ▼ appears in red for a decrease, and ◆ appears in grey for no change or the first observation. The symbols are also displayed in bold with a larger font size to make the trend visually clear.
-
 
 ```{r}
 #| code-fold: true
@@ -414,11 +401,9 @@ trend_js <- JS(
 )
 ```
 
-
 #### Step 5: Putting Everything Together
 
 Finally we builds a compact, interactive CPI table using the `DT` package and custom styling. It combines **JavaScript, HTML layout, and DataTable options** to make the CPI hierarchy easier to explore.
-
 
 The table layout is created using `div()`. The `compact_dt_css` style is applied to reduce font size and padding so the table can fit more information on the screen. The container also limits the maximum width and centres the table for a cleaner layout.
 
@@ -428,10 +413,7 @@ Below the title, a **summary bar** shows three key statistics: the total number 
 
 The **main interactive table** is created using `datatable()`. Only the relevant columns are displayed: hierarchy levels (Level, Division, Group, Class, Series), CPI value, date label, and trend indicator. The table includes several features:
 
-The **filter row** at the top allows users to filter values in each column.
-The **Buttons extension** enables exporting the table to formats such as CSV, Excel, PDF, and Print.
-The **ColReorder extension** allows users to rearrange column positions.
-The **Responsive extension** ensures that important columns remain visible while lower priority columns collapse into a details view on smaller screens.
+The **filter row** at the top allows users to filter values in each column. The **Buttons extension** enables exporting the table to formats such as CSV, Excel, PDF, and Print. The **ColReorder extension** allows users to rearrange column positions. The **Responsive extension** ensures that important columns remain visible while lower priority columns collapse into a details view on smaller screens.
 
 Additional table options control the display behaviour. Pagination is enabled with default page length of 25 rows. The length menu allows users to change the number of rows shown. Automatic column width adjustment helps fit the content neatly.
 
@@ -440,7 +422,6 @@ Column definitions further refine the display. Key columns such as Level, Divisi
 Finally, a **footer note** explains the meaning of the trend symbols and shows the CPI base year and data source.
 
 Here we have an interactive CPI dashboard that allows users to filter, explore hierarchy levels, export data, and quickly interpret CPI movements.
-
 
 ```{r}
 #| code-fold: true
@@ -552,12 +533,10 @@ cpi_hier_table <- div(
   )
 )
 ```
-
 :::
 
-Here we have an interactive CPI dashboard that allows users to filter, explore hierarchy levels, export data, and interpret CPI movements.
+Here we have an **interactive CPI dashboard** that allows users to filter, explore hierarchy levels, export data, and interpret CPI movements.
 
 ```{r}
 cpi_hier_table
 ```
-
