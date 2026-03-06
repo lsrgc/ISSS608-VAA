@@ -1,5 +1,5 @@
 ---
-title: "02: EDA and ACF PACF Analysis for Singapore CPI (2020 to 2025)"
+title: "02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)"
 author: "Yiqiong PAN"
 date: "24 Feb, 2026"
 date-modified: last-modified
@@ -276,7 +276,7 @@ series_meta <- cpi %>%
     )
   )
 
-cpi_hier <- cpi %>%
+cpi_h <- cpi %>%
   left_join(series_meta, by = c("series", "level"))
 
 ```
@@ -302,7 +302,7 @@ Finally, the dataset is **ungrouped** and selected columns are renamed to produc
 #| code-fold: true
 #| code-summary: "SHOW"
 #| 
-cpi_hier_display <- cpi_hier %>%
+cpi_h_display <- cpi_h %>%
   arrange(series, date) %>%
   group_by(series) %>%                     # for MoM change
   mutate(
@@ -409,7 +409,7 @@ The table layout is created using `div()`. The `compact_dt_css` style is applied
 
 A **title section** is added at the top to display the dashboard heading (“Singapore Consumer Price Index”) and the latest available data month, which is calculated dynamically from the dataset.
 
-Below the title, a **summary bar** shows three key statistics: the total number of rows in the dataset, the number of distinct CPI divisions, and the latest update date. These values are calculated directly from `cpi_hier_display`.
+Below the title, a **summary bar** shows three key statistics: the total number of rows in the dataset, the number of distinct CPI divisions, and the latest update date. These values are calculated directly from `cpi_h_display`.
 
 The **main interactive table** is created using `datatable()`. Only the relevant columns are displayed: hierarchy levels (Level, Division, Group, Class, Series), CPI value, date label, and trend indicator. The table includes several features:
 
@@ -421,14 +421,12 @@ Column definitions further refine the display. Key columns such as Level, Divisi
 
 Finally, a **footer note** explains the meaning of the trend symbols and shows the CPI base year and data source.
 
-Here we have an interactive CPI dashboard that allows users to filter, explore hierarchy levels, export data, and quickly interpret CPI movements.
-
 ```{r}
 #| code-fold: true
 #| code-summary: "SHOW"
 
 
-cpi_hier_table <- div(
+cpi_h_table <- div(
   compact_dt_css,
   style = "
     width: 100%;
@@ -444,7 +442,7 @@ cpi_hier_table <- div(
     h2('Singapore Consumer Price Index',
        style = 'color: #2c3e50; margin-bottom: 5px;'),
     h4(paste('Latest Data:',
-             format(max(cpi_hier_display$`As of`), '%B %Y')),
+             format(max(cpi_h_display$`As of`), '%B %Y')),
        style = 'color: #7f8c8d; font-weight: normal; margin-top: 0;')
   ),
 
@@ -455,26 +453,26 @@ cpi_hier_table <- div(
       style = 'text-align: center; flex: 1;',
       div(style = 'font-size: 12px; color: #7f8c8d;', 'Total Rows'),
       div(style = 'font-size: 24px; font-weight: bold; color: #2c3e50;',
-          nrow(cpi_hier_display))
+          nrow(cpi_h_display))
     ),
     div(
       style = 'text-align: center; flex: 1; border-left: 1px solid #dee2e6; border-right: 1px solid #dee2e6;',
       div(style = 'font-size: 12px; color: #7f8c8d;', 'Divisions'),
       div(style = 'font-size: 24px; font-weight: bold; color: #2c3e50;',
-          dplyr::n_distinct(cpi_hier_display$Division))
+          dplyr::n_distinct(cpi_h_display$Division))
     ),
     div(
       style = 'text-align: center; flex: 1;',
       div(style = 'font-size: 12px; color: #7f8c8d;', 'Last Updated'),
       div(style = 'font-size: 16px; font-weight: bold; color: #2c3e50;',
-          format(max(cpi_hier_display$`As of`), '%b %Y'))
+          format(max(cpi_h_display$`As of`), '%b %Y'))
     )
   ),
 
   # Main table
   datatable(
     # no more original_* columns to drop
-    cpi_hier_display %>%
+    cpi_h_display %>%
       select(Level, Division, Group, Class, Series,
              `CPI Value`, `As of label`, Trend),
     class = 'cell-border stripe hover',
@@ -538,5 +536,175 @@ cpi_hier_table <- div(
 Here we have an **interactive CPI dashboard** that allows users to filter, explore hierarchy levels, export data, and interpret CPI movements.
 
 ```{r}
-cpi_hier_table
+cpi_h_table
 ```
+
+
+## EDA
+
+
+### Trend
+
+```{r}
+cpi_h %>%
+  filter(series == "Consumer Price Index (CPI)") %>%
+  plot_time_series(
+    .date_var = date,
+    .value = cpi,
+    .facet_ncol = 1,
+    .interactive = TRUE,
+    .title = "Singapore Headline CPI (Index, 2024 = 100)",
+    .y_lab = "CPI Index"
+  )
+
+```
+
+
+```{r}
+make_cpi_plot <- function(data, level_val) {
+  if (level_val == 1) {
+    data %>%
+      filter(level == 1) %>%
+      group_by(division) %>%
+      plot_time_series(
+        .date_var = date,
+        .value = cpi,
+        .facet_ncol  = 3,
+        .facet_scales  = "free_y",
+        .smooth = FALSE,
+        .interactive = TRUE
+      )
+  } else if (level_val == 2) {
+  data %>%
+  filter(level ==2) %>%
+  group_by(group) %>%
+  plot_time_series(
+    .date_var = date,
+    .value= cpi,
+    .facet_ncol= 3,              
+    .facet_scales= "free_y",       
+    .line_color= "#2E86AB",     
+    .smooth = FALSE,         
+    .interactive  = TRUE
+  )
+  } else {
+    data %>%
+      filter(level == 3) %>%
+      group_by(class) %>%
+      plot_time_series(
+        .date_var= date,
+        .value= cpi,
+        .facet_ncol= 3,
+        .facet_scales  = "free_y",
+        .smooth = FALSE,  
+        .interactive= TRUE
+      )
+  }
+}
+```
+
+
+
+```{r}
+make_cpi_plot(cpi_h, 1)
+```
+
+```{r}
+make_cpi_plot(cpi_h, 2)
+```
+
+```{r}
+make_cpi_plot(cpi_h, 3)
+```
+
+
+
+
+
+```{r}
+#| eval: false
+library(shiny)
+library(plotly)  
+
+ui <- fluidPage(
+  titlePanel("Singapore CPI explorer"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        "level", "Detail level",
+        choices = c("Divisions" = 1, "Groups" = 2, "Classes" = 3),
+        selected = 1
+      )
+    ),
+    mainPanel(
+      plotlyOutput("cpi_plot", height = "700px")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  output$cpi_plot <- renderPlotly({
+    make_cpi_plot(cpi_h, as.integer(input$level))
+  })
+}
+shinyApp(ui, server)
+```
+
+
+### Seasonality
+
+```{r}
+cpi_h %>%
+  filter(series == "Consumer Price Index (CPI)") %>%
+  plot_seasonal_diagnostics(date, cpi, .interactive = TRUE)
+
+```
+
+
+### Autocorrelation
+
+```{r}
+cpi_h %>%
+  filter(series == "Consumer Price Index (CPI)") %>%
+  plot_acf_diagnostics(
+    .date_var = date,
+    .value = cpi,
+    .lags = 36,        
+    .interactive = TRUE
+  )
+
+```
+
+
+
+```{r}
+#| eval: false
+output$acf_plot <- renderPlotly({
+  cpi_h %>%
+    filter(series == input$acf_series) %>%  # e.g. 'Consumer Price Index (CPI)'
+    plot_acf_diagnostics(
+      date, cpi,
+      .lags = 36,
+      .interactive = TRUE
+    )
+})
+
+
+
+```
+
+
+
+```{r}
+cpi_h %>%
+  filter(level == 1) %>%
+  group_by(division) %>%
+  plot_acf_diagnostics(
+    date, cpi,
+    .lags = 36,
+    .facet_ncol = 3,
+    .interactive = TRUE
+  )
+
+```
+

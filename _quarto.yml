@@ -59,7 +59,7 @@ website:
         menu: 
           - text: "01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data"
             href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
-          - text: "02: EDA and ACF PACF Analysis for Singapore CPI (2020 to 2025)"
+          - text: "02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)"
             href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" 
     right: 
       - href: index.qmd
