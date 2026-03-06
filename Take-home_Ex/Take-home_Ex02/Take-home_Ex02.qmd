@@ -1,5 +1,5 @@
 ---
-title: "02: Take Home Ex"
+title: "02: EDA and ACF PACF Analysis for Singapore CPI (2020 to 2025)"
 author: "Yiqiong PAN"
 date: "24 Feb, 2026"
 date-modified: last-modified
@@ -22,22 +22,542 @@ number-depth: 6
 editor: visual
 ---
 
+## Introduction
+
+CPI
+
+**Assumption:**
+
+All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
+
+## Getting Started
+
+### Installing and Loading the Required Libraries
+
+There are **XX** packages that will be used in this exercise.
+
+| Package | Description |
+|------------------------------------|------------------------------------|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
+| [knitr](https://cran.r-project.org/web/packages/knitr/index.html/) | Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques. |
+| [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
+| [patchwork](https://cran.r-project.org/web/packages/patchwork/index.html) | Simpily combine separate ggplots into the same graphic. |
+| [scales](https://cran.r-project.org/web/packages/scales/index.html) | Provides graphical scales map data to aesthetics. |
+| [magick](https://cran.r-project.org/web/packages/magick/index.html) | Offer advanced graphics and image-Processing in R. |
+| [ggthemes](https://cran.r-project.org/web/packages/ggthemes/index.html) | Provides 'ggplot2' themes and scales that replicate some of the famous looks. |
+| [readxl](https://cran.r-project.org/web/packages/readxl/readxl.pdf) | Imports excel files into R. |
+| [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
+| [gifski](https://cran.r-project.org/web/packages/gifski/index.html) | A rendering engine used by gganimate to turn animation frames into high quality GIFs. It handles the final export, not the animation logic itself. |
+| [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
+| [gapminder](https://cran.r-project.org/web/packages/gapminder/index.html) | A dataset and visualisation concept popularised by Hans Rosling. In ggplot and gganimate, Gapminder data is often used as an example to demonstrate animated plots over time, such as countries moving across income and life expectancy.Used here solely to apply its country color scheme. |
+| [tidymodels](https://www.tidymodels.org/) | A unified modelling framework for machine learning in R |
+| [timetk](https://github.com/business-science/timetk) | A cutting-edge toolkit for time series preparation and exploration. |
+| [modeltime](https://business-science.github.io/modeltime/index.html) | A new forecasting framework that simplifies the full workflow of building time series models (such as ARIMA, exponential smoothing, and machine learning models) |
+| [lubridate](https://cran.r-project.org/web/packages/lubridate/index.html) | A Tidyverse package that handles date-time objects |
+
+The code below installs and loads the required packages into R environment.
+
 ```{r}
-#| eval: false
-install.packages("xml2")
-install.packages("R6")
-install.packages("zoo")
-install.packages("httr")
-install.packages("getPass")
-install.packages("ceic", repos =
-"https://downloads.ceicdata.com/R/", type = "source")
+pacman::p_load(tidyverse, DT, readxl,
+             knitr,patchwork, scales,magick, ggthemes,gifski, gapminder,
+               plotly, gganimate,tidymodels,modeltime, timetk, lubridate, stringr, htmltools)
+```
+
+### Importing the Data
+
+The dataset was obtained from the [CEIC Database](https://www.ceicdata.com/en) via the SMU Library. The Excel file contains monthly Consumer Price Index (CPI) data with base year 2024, spanning from January 1961 to January 2026,last updated on 23/02/2026.
+
+The dataset is imported into R using the [`read_excel()`](https://readxl.tidyverse.org/reference/read_excel.html) function from the **readxl** package and stored as a tibble named `df`. The first few rows of the dataset are then displayed using `kable()` for inspection.
+
+```{r}
+df <- read_excel("data/Series.xlsx")
 ```
 
 ```{r}
-library(ceic)
+kable(head(df, 10), "html")
+```
 
-# 1. Log in once per session
+When downloading the dataset, only the Data Column: **Series Name** option was selected in the output settings. As a result, the metadata rows were not included in the downloaded file. If the metadata rows are present, they could be removed using the `slice()` function, for example `slice(-1:28)`, to exclude the first 28 rows from the dataset.
 
+The dataset contains **208 columns and 781 rows**. The column names are not well structured and contain inconsistent formatting and lengthy labels. Therefore, further cleaning and standardisation are required before the dataset can be used for analysis.
+
+## Data Wrangling
+
+### Renaming Date Column and filtering the Study Period
+
+The code below uses the `rename()` function to replace the unnecessarily long column name with `date`. It also applies the **`filter()` function from `dplyr`** to keep observations between **2020 and 2025** for exploratory data analysis (EDA). This ensures consistency with the project scope, which focuses on **demonstration and forecasting**. Although **data for January 2026 has already been released**, it is excluded at this stage to maintain a consistent analysis period.
+
+```{r}
+df <- df %>%
+  rename(date = 1) %>%
+  mutate(date = as_date(date)) %>%
+  filter(date >= "2020-01-01" & date <= "2025-12-31")
+```
+
+### Reshaping the Data
+
+Since this project focuses on **time series analysis**, the original CPI dataset in **wide format** was transformed into a **long format** to make it suitable for time series modelling and analysis.
+
+The code below uses the `pivot_longer()` function to transform the dataset from wide format to long format.
+
+```{r}
+df_long <- df %>%
+  pivot_longer(
+    cols = -date,
+    names_to = "series",
+    values_to = "cpi"
+  )
+```
+
+### Labelling CPI Levels
+
+The code block below saves and displays all CPI items in order to determine the desired table structure. Here we display the first 20 CPI items.
+
+```{r}
+cpi_items <- df %>%
+  names() %>%
+  setdiff("date")
+
+length(cpi_items)
+cpi_items[1:20]
+```
+
+To ensure the structure aligns with the official CPI classification, the [**Department of Statistics (DOS) CPI documentation**](https://www.singstat.gov.sg/-/media/files/news/cpijan26.ashx) was used as a reference. All published CPI items and their corresponding hierarchical levels were extracted according to the official structure.
+
+The dataset preserves the full level of granularity defined by the official CPI classification. As a result, some combinations contain **missing values**, which is expected because not every subcategory is reported for all periods.
+
+The code below reveals that we have 2064 missing values in the dataset.
+
+```{r}
+sum(is.na(df))
+```
+
+After the transformation and extraction process, the CPI items in the dataset now match the official DOS CPI classification structure.
+
+After the transformation, the CPI hierarchy is identified by counting the number of **colon (`:`) occurrences** in the item names by using `str_count()` function from **stringr** package.
+
+A new column called `level` is created to represent the hierarchical structure of the CPI categories. For example:
+
+-   `Consumer Price Index (CPI)` is assigned **level 0**
+
+-   Major groups such as **Food** and **Health** are assigned **level 1**
+
+-   Their subcategories are assigned **level 2**
+
+```{r}
+df_long <- df_long %>%
+ mutate(
+    level = str_count(series, ":")) %>%
+  filter(level <= 2)
+```
+
+However, several exceptions must be handled after the initial level assignment. While the number of colon occurrences provides a useful starting point for identifying CPI hierarchy levels, it does not fully align with the official DOS classification.
+
+In particular, categories under **Food** require manual adjustment: **Food** is classified as level 1, while `CPI: Food Excl Food & Beverage Serving Services (FFBSS)` and `CPI: Food & Beverage Serving Services (FBSS)` should be reclassified as level 2, with their nested subgroups assigned to level 3.
+
+In addition, categories beginning with **All Items Less** should be treated as level 0. These refinements ensure that the final hierarchy is consistent with the official CPI classification structure.
+
+The code chunk below uses `str_detect()` from the **stringr** package to identify specific CPI categories using regular expressions and revise the assigned CPI levels to match the official published classification structure.
+
+```{r}
+df_long <- df_long %>%
+  mutate(
+    level = case_when(
+      str_detect(series, "^CPI: All Items Less") ~ 0,
+
+      series %in% c(
+        "CPI: Food Excl Food & Beverage Serving Services (FFBSS)",
+        "CPI: Food & Beverage Serving Services (FBSS)"
+      ) ~ 2,
+
+      str_detect(series, "^CPI: FFBSS") &
+        str_count(series, ":") >= 2 ~ str_count(series, ":") + 1,
+
+      str_detect(series, "^CPI: FBSS") &
+        str_count(series, ":") >= 2 ~ str_count(series, ":") + 1,
+
+      TRUE ~ level
+    )
+  )
+```
+
+
+### Standardising CPI names
+
+We use `str_remove()` to remove the **“CPI:” prefix** from the series names. This helps clean up the labels so the table does not repeatedly display “CPI:” in every series name, making the series easier to read and rename the file to `cpi`. 
+
+
+```{r}
+cpi <- df_long %>%
+  mutate(series = str_remove(series, "^CPI: "))
+```
+
+
+
+### Sanity Check
+
+Here, we take a quick look at the structure of the CPI dataset using the `glimpse()` function from the **dplyr** package. We also perform a sanity check to confirm that there are no missing values in the dataset.
+
+```{r}
+glimpse(cpi)
+```
+
+```{r}
+sum(is.na(cpi))
+```
+### Saving the Tided File
+
+
+Here we use the `write_rds()` function to save the cleaned CPI dataset. The file can later be reloaded into the system for further analysis.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+write_rds(cpi, "data/cpi.rds")
+write_csv(cpi, "data/cpi.csv")
+```
+
+
+```{r}
+cpi<- read_rds("data/cpi.rds")
+```
+
+
+### Building an Interactive Table
+
+Finally, we create a `DT` table to display the dataset in an interactive tabular format.
+
+:::panel-tabset
+
+#### Step 1: Creating Reference Table and Join
+
+The first step is to build a reference table for the CPI hierarchy. Since the list of CPI series is finite, we first extract the **distinct series names** from the dataset to create a clean list without duplicated monthly records.
+
+Next, we manually assign the hierarchy levels for each series, such as **division, group, and class**, to define the relationships in the CPI structure.
+
+Finally, this annotated hierarchy table is **joined** back to the main dataset, so that each observation inherits the hierarchy columns. 
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+series_meta <- cpi %>%
+  distinct(series, level) %>%
+  mutate(
+    division = case_when(
+      series == "Consumer Price Index (CPI)" ~ NA_character_,
+      series == "Food" ~ "Food",
+      series == "Clothing and Footwear (C&F)" ~ "Clothing & Footwear",
+      series == "Housing & Utilities" ~ "Housing & Utilities",
+      series == "Household Durables & Services (HDS)" ~ "Household Durables & Services",
+      series == "Health" ~ "Health",
+      series == "Transport" ~ "Transport",
+      series == "Information & Communication (InfoComm)" ~ "Information & Communication",
+      series == "Recreation, Sport & Culture (RSC)" ~ "Recreation, Sport & Culture",
+      series == "Education" ~ "Education",
+      series == "Miscellaneous Goods & Services (MG&S)" ~ "Miscellaneous Goods & Services",
+      # groups/classes inherit division from their parent:
+      grepl("^Food|FFBSS|FBSS", series) ~ "Food",
+      grepl("^C&F:", series) ~ "Clothing & Footwear",
+      grepl("^Housing & Utilities", series) ~ "Housing & Utilities",
+      grepl("^HDS:", series) ~ "Household Durables & Services",
+      grepl("^Health:", series) ~ "Health",
+      grepl("^Transport:", series) ~ "Transport",
+      grepl("^InfoComm:", series) ~ "Information & Communication",
+      grepl("^RSC:", series) ~ "Recreation, Sport & Culture",
+      grepl("^Education:", series) ~ "Education",
+      grepl("^MG&S:", series) ~ "Miscellaneous Goods & Services",
+      TRUE ~ NA_character_
+    ),
+    group = case_when(
+      level == 1 ~ series,  # divisions themselves as group label if you like
+      level == 2 ~ series,  # each level-2 row is a group
+      level == 3 & grepl("^FFBSS:", series) ~
+        "Food Excl Food & Beverage Serving Services (FFBSS)",
+      level == 3 & grepl("^FBSS:", series) ~
+        "Food & Beverage Serving Services (FBSS)",
+      TRUE ~ NA_character_
+    ),
+    class = case_when(
+      level == 3 ~ series,  # keep full label for classes
+      TRUE ~ NA_character_
+    )
+  )
+
+cpi_hier <- cpi %>%
+  left_join(series_meta, by = c("series", "level"))
+
+```
+
+#### Step 2: MOdifying the Table for Interactivity 
+
+Next we prepares the CPI dataset for display in an interactive table.
+
+First, the data is sorted by `series` and `date`, then grouped by `series` so calculations are applied within each CPI series.
+
+Within `mutate()`:
+
+- `As_of` keeps the original date for filtering, while `As_of_lab` creates a readable label such as *Jan 2024*.
+- `cpi_change` calculates the **month to month CPI change** using `lag()`.
+- `Trend` converts the change into symbols: ▲ increase, ▼ decrease, ◆ first observation or no change.
+- `level_label` converts numeric hierarchy levels into labels (Top Level, Major Category, Sub Category, Detailed).
+- `major_group` and `display_name` determine which hierarchy name (division, group, or class) should be shown.
+- `cpi_rounded` rounds CPI values to two decimals.
+
+Finally, the dataset is **ungrouped** and selected columns are renamed to produce a clean table ready for interactive display.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+#| 
+cpi_hier_display <- cpi_hier %>%
+  arrange(series, date) %>%
+  group_by(series) %>%                     # for MoM change
+  mutate(
+    # raw Date for filtering
+    As_of = date,
+    As_of_lab = format(date, "%b %Y"),
+
+    # month-on-month change (current - previous month)
+    cpi_change = cpi - lag(cpi),
+
+    # Trend symbol based on change
+    Trend = case_when(
+      is.na(cpi_change) ~ "◆",   # first observation
+      cpi_change > 0  ~ "▲",
+      cpi_change < 0 ~ "▼",
+      TRUE ~ "◆"
+    ),
+
+    level_label = case_when(
+      level == 0 ~ "Top Level",
+      level == 1 ~ "Major Category",
+      level == 2 ~ "Sub-Category",
+      level == 3 ~ "Detailed",
+      TRUE       ~ paste("Level", level)
+    ),
+    major_group = case_when(
+      level == 0 ~ "Overall CPI & Special Indices",
+      TRUE       ~ division
+    ),
+    display_name = case_when(
+      level == 0 ~ series,
+      level == 1 ~ division,
+      level == 2 ~ group,
+      level == 3 ~ class,
+      TRUE       ~ series
+    ),
+    cpi_rounded = round(cpi, 2)
+  ) %>%
+  ungroup() %>%
+  select(
+    Level = level_label,
+    Division= major_group,
+    Group = group,
+    Class = class,
+    Series = display_name,
+    `CPI Value`= cpi_rounded,
+    `As of` = As_of,       # Date for filters
+    `As of label` = As_of_lab, # pretty label
+    Trend
+  )
+
+```
+
+
+#### Step 3: Defining CSS
+
+Because the table contains many columns and large fonts, it is difficult to display everything clearly on a single screen. To improve readability, we make the table more compact and enable responsive behaviour.
+
+First, we add a small CSS block to **reduce** the font size and cell paddin* in the DataTable. This allows more information to fit within the visible space without shrinking the entire browser view.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+compact_dt_css <- tags$style(HTML("
+  table.dataTable tbody td {
+    padding: 4px 6px !important;
+    font-size: 13px !important;
+  }
+  table.dataTable thead th {
+    padding: 6px 6px !important;
+    font-size: 13px !important;
+  }
+  div.dataTables_filter input {
+    font-size: 13px;
+  }
+"))
 
 
 ```
+
+
+#### Step 4: Defining JavaScript Render 
+
+First, a **JavaScript renderer (`trend_js`)** is defined. This function colours the trend symbols in the table: ▲ appears in green for an increase, ▼ appears in red for a decrease, and ◆ appears in grey for no change or the first observation. The symbols are also displayed in bold with a larger font size to make the trend visually clear.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+# JS for colored trend symbols
+trend_js <- JS(
+  "function(data, type, row, meta) {",
+  "  if(type === 'display') {",
+  "    var color = data === '▲' ? 'green' : (data === '▼' ? 'red' : 'gray');",
+  "    return '<span style=\"color:' + color + '; font-weight:bold; font-size:18px;\">' + data + '</span>';",
+  "  }",
+  "  return data;",
+  "}"
+)
+```
+
+
+#### Step 5: Putting Everything Together
+
+Finally we builds a compact, interactive CPI table using the `DT` package and custom styling. It combines **JavaScript, HTML layout, and DataTable options** to make the CPI hierarchy easier to explore.
+
+
+The table layout is created using `div()`. The `compact_dt_css` style is applied to reduce font size and padding so the table can fit more information on the screen. The container also limits the maximum width and centres the table for a cleaner layout.
+
+A **title section** is added at the top to display the dashboard heading (“Singapore Consumer Price Index”) and the latest available data month, which is calculated dynamically from the dataset.
+
+Below the title, a **summary bar** shows three key statistics: the total number of rows in the dataset, the number of distinct CPI divisions, and the latest update date. These values are calculated directly from `cpi_hier_display`.
+
+The **main interactive table** is created using `datatable()`. Only the relevant columns are displayed: hierarchy levels (Level, Division, Group, Class, Series), CPI value, date label, and trend indicator. The table includes several features:
+
+The **filter row** at the top allows users to filter values in each column.
+The **Buttons extension** enables exporting the table to formats such as CSV, Excel, PDF, and Print.
+The **ColReorder extension** allows users to rearrange column positions.
+The **Responsive extension** ensures that important columns remain visible while lower priority columns collapse into a details view on smaller screens.
+
+Additional table options control the display behaviour. Pagination is enabled with default page length of 25 rows. The length menu allows users to change the number of rows shown. Automatic column width adjustment helps fit the content neatly.
+
+Column definitions further refine the display. Key columns such as Level, Division, Series, CPI value, date label, and Trend are always visible. Group and Class are given lower priority so they can collapse on smaller screens. All columns are centre aligned, and the Trend column uses the custom JavaScript renderer to display coloured symbols.
+
+Finally, a **footer note** explains the meaning of the trend symbols and shows the CPI base year and data source.
+
+Here we have an interactive CPI dashboard that allows users to filter, explore hierarchy levels, export data, and quickly interpret CPI movements.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
+
+cpi_hier_table <- div(
+  compact_dt_css,
+  style = "
+    width: 100%;
+    max-width: 1200px;
+    margin: 10px auto;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  ",
+
+  # Title
+  div(
+    style = 'text-align: center; margin-bottom: 20px;',
+    h2('Singapore Consumer Price Index',
+       style = 'color: #2c3e50; margin-bottom: 5px;'),
+    h4(paste('Latest Data:',
+             format(max(cpi_hier_display$`As of`), '%B %Y')),
+       style = 'color: #7f8c8d; font-weight: normal; margin-top: 0;')
+  ),
+
+  # Summary bar
+  div(
+    style = 'display: flex; justify-content: space-between; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;',
+    div(
+      style = 'text-align: center; flex: 1;',
+      div(style = 'font-size: 12px; color: #7f8c8d;', 'Total Rows'),
+      div(style = 'font-size: 24px; font-weight: bold; color: #2c3e50;',
+          nrow(cpi_hier_display))
+    ),
+    div(
+      style = 'text-align: center; flex: 1; border-left: 1px solid #dee2e6; border-right: 1px solid #dee2e6;',
+      div(style = 'font-size: 12px; color: #7f8c8d;', 'Divisions'),
+      div(style = 'font-size: 24px; font-weight: bold; color: #2c3e50;',
+          dplyr::n_distinct(cpi_hier_display$Division))
+    ),
+    div(
+      style = 'text-align: center; flex: 1;',
+      div(style = 'font-size: 12px; color: #7f8c8d;', 'Last Updated'),
+      div(style = 'font-size: 16px; font-weight: bold; color: #2c3e50;',
+          format(max(cpi_hier_display$`As of`), '%b %Y'))
+    )
+  ),
+
+  # Main table
+  datatable(
+    # no more original_* columns to drop
+    cpi_hier_display %>%
+      select(Level, Division, Group, Class, Series,
+             `CPI Value`, `As of label`, Trend),
+    class = 'cell-border stripe hover',
+    filter = 'top',
+    extensions = c('Buttons', 'ColReorder', 'Responsive'),
+    width = '100%',
+    options = list(
+      pageLength = 25,
+      lengthMenu = list(c(10, 25, 50, 100, -1),
+                        c('10', '25', '50', '100', 'All')),
+      dom = 'B<"toolbar">lfrtip',
+      buttons = list(
+        list(
+          extend = 'collection',
+          text   = 'Export',
+          buttons = list(
+            list(extend = 'copy', text = 'Copy'),
+            list(extend = 'csv',  text = 'CSV'),
+            list(extend = 'excel', text = 'Excel'),
+            list(extend = 'pdf',  text = 'PDF'),
+            list(extend = 'print', text = 'Print')
+          )
+        ),
+        list(extend = 'colvis', text = 'Columns')
+      ),
+      scrollX = FALSE,
+      scrollY = FALSE,
+      autoWidth = TRUE,
+      responsive = TRUE,
+      columnDefs = list(
+        # Always show: Level, Division, Series, CPI Value, As of label, Trend
+        # column order: 0=Level,1=Division,2=Group,3=Class,4=Series,5=CPI,6=As of label,7=Trend
+        list(className = 'all', targets = c(0, 1, 4, 5, 6, 7)),
+        # Group & Class lower priority
+        list(className = 'min-tablet', targets = c(2, 3)),
+        # Center text
+        list(className = 'dt-center', targets = '_all'),
+        # Trend renderer
+        list(
+          targets  = 7,
+          render = trend_js,
+          orderable = FALSE,
+          searchable = FALSE
+        )
+      )
+    ),
+    selection = 'single',
+    rownames  = FALSE
+  ),
+
+  # Footer
+  div(
+    style = 'margin-top: 15px; font-size: 12px; color: #7f8c8d; text-align: center;',
+    '▲ = Increase from previous month | ▼ = Decrease from previous month | ◆ = No change', br(),
+    'Base Year: 2024 | Source: Singapore Department of Statistics & CEIC Database'
+  )
+)
+```
+
+:::
+
+Here we have an interactive CPI dashboard that allows users to filter, explore hierarchy levels, export data, and interpret CPI movements.
+
+```{r}
+cpi_hier_table
+```
+
