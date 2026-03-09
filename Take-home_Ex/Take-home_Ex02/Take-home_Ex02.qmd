@@ -17,7 +17,7 @@ format:
     code-link: true
 
 number-sections: true
-number-depth: 6
+number-depth: 9
 
 editor: visual
 ---
@@ -265,9 +265,9 @@ series_meta <- cpi %>%
       level == 1 ~ series,  # divisions themselves as group label if you like
       level == 2 ~ series,  # each level-2 row is a group
       level == 3 & grepl("^FFBSS:", series) ~
-        "Food Excl Food & Beverage Serving Services (FFBSS)",
+        "FFBSS",
       level == 3 & grepl("^FBSS:", series) ~
-        "Food & Beverage Serving Services (FBSS)",
+        "FBSS",
       TRUE ~ NA_character_
     ),
     class = case_when(
@@ -552,8 +552,409 @@ glimpse(cpi_h)
 
 ##### Single View 
 
+
+
 ```{r}
-library(plotly)
+create_cpi_plot <- function(data, 
+                            plot_level,
+                            category = NULL,
+                            start_date = "2020-01-01",
+                            end_date = "2026-01-01",
+                            plot_title = NULL,
+                            ref_line_color = "black",
+                            ref_line_width = 0.9,
+                            plot_line_width = 0.6) {
+  # Format dates
+  start_date <- as.Date(start_date)
+  end_date <- as.Date(end_date)
+  
+  # Setup based on level
+  if (plot_level == 0) {
+    plot_data <- data %>% filter(level == 0)
+    ref_data <- NULL
+    ref_label <- NULL
+    default_title <- "CPI Aggregated Indices"
+    color_label <- "Index"
+    
+  } else if (plot_level == 1) {
+    plot_data <- data %>% filter(level == 1)
+    ref_data <- data %>% filter(level == 0, series == "Consumer Price Index (CPI)")
+    ref_label <- "Overall CPI"
+    default_title <- "CPI Major Groups"
+    color_label <- "Category"
+    
+  } else if (plot_level == 2) {
+    if (is.null(category)) stop("For level 2, specify a category")
+    plot_data <- data %>% filter(level == 2, division == category)
+    ref_data <- data %>% filter(level == 1, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Subgroups")
+    color_label <- "Subcategory"
+    
+  } else if (plot_level == 3) {
+    if (is.null(category)) stop("For level 3, specify a group")
+    plot_data <- data %>% filter(level == 3, group == category)
+    ref_data <- data %>% filter(level == 2, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Detailed Classes")
+    color_label <- "Detailed Class"
+    
+  } else {
+    stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  # Use custom or default title
+  if (is.null(plot_title)) {
+    plot_title <- paste0(default_title, ", ", format(start_date, "%Y"), "-", format(end_date, "%Y"))
+  }
+  
+  has_reference <- !is.null(ref_data) && nrow(ref_data) > 0
+  
+  # Build ggplot
+  p <- ggplot(plot_data, aes(x = date, y = cpi, color = series)) +
+    geom_line(linewidth = plot_line_width, alpha = 0.7)
+  
+  if (has_reference) {
+    p <- p + geom_line(data = ref_data, aes(x = date, y = cpi),
+                       color = ref_line_color, linewidth = ref_line_width,
+                       linetype = "solid", inherit.aes = FALSE)
+  }
+  
+  p <- p + labs(
+    title = plot_title,
+    subtitle = ifelse(has_reference, paste("Black line =", ref_label), NULL),
+    x = "Date", y = "CPI Index", color = color_label
+  ) +
+  scale_x_date(limits = c(start_date, end_date),
+               breaks = seq(start_date, end_date, by = "6 months"),
+               date_labels = "%b%y",
+               expand = expansion(mult = c(0, 0))) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.subtitle = element_text(size = 10, hjust = 0.5, color = "gray40"))
+  
+  # Convert to plotly
+  ggplotly(p) %>%
+    layout(
+      title = list(text = plot_title, font = list(size = 16, family = "Arial", color = "#2c3e50"),
+                   x = 0.5, xanchor = "center"),
+      legend = list(orientation = "h", y = -0.3, x = 0.5, xanchor = "center",
+                    font = list(family = "Arial", size = 9, color = "#333333"),
+                    itemsizing = "constant", itemwidth = 35,
+                    bgcolor = "rgba(255,255,255,0.9)",
+                    bordercolor = "#cccccc", borderwidth = 1),
+      annotations = list(list(
+        text = paste0("<b>Source:</b> CEIC Database; Index, 2024 = 100",
+                     ifelse(has_reference, paste0("; Black line = ", ref_label), "")),
+        x = 1, y = -0.25, xref = "paper", yref = "paper", showarrow = FALSE,
+        font = list(family = "Arial", size = 9, color = "#666666"),
+        xanchor = "right", align = "right"
+      )),
+      xaxis = list(tickfont = list(size = 9), gridcolor = "#f0f0f0", tickangle = -45),
+      yaxis = list(tickfont = list(size = 9), gridcolor = "#f0f0f0", zerolinecolor = "#cccccc"),
+      hoverlabel = list(bgcolor = "white", bordercolor = "#cccccc", font = list(size = 10, family = "Arial")),
+      margin = list(b = 150, l = 60, r = 40, t = 60),
+      plot_bgcolor = "white", paper_bgcolor = "white"
+    )
+}
+
+```
+
+```{r}
+create_cpi_plot <- function(data, 
+                            plot_level,
+                            category = NULL,
+                            start_date = "2020-01-01",
+                            end_date = "2026-01-01",
+                            plot_title = NULL,
+                            ref_line_color = "black",
+                            ref_line_width = 0.9,
+                            plot_line_width = 0.6) {
+  # Format dates
+  start_date <- as.Date(start_date)
+  end_date <- as.Date(end_date)
+  
+  # Setup based on level
+  if (plot_level == 0) {
+    plot_data <- data %>% filter(level == 0)
+    ref_data <- NULL
+    ref_label <- NULL
+    default_title <- "CPI Aggregated Indices"
+    color_label <- "Index"
+    
+  } else if (plot_level == 1) {
+    plot_data <- data %>% filter(level == 1)
+    ref_data <- data %>% filter(level == 0, series == "Consumer Price Index (CPI)")
+    ref_label <- "Overall CPI"
+    default_title <- "CPI Major Groups"
+    color_label <- "Category"
+    
+  } else if (plot_level == 2) {
+    if (is.null(category)) stop("For level 2, specify a category")
+    plot_data <- data %>% filter(level == 2, division == category)
+    ref_data <- data %>% filter(level == 1, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Subgroups")
+    color_label <- "Subcategory"
+    
+  } else if (plot_level == 3) {
+    if (is.null(category)) stop("For level 3, specify a group")
+    plot_data <- data %>% filter(level == 3, group == category)
+    ref_data <- data %>% filter(level == 2, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Detailed Classes")
+    color_label <- "Detailed Class"
+    
+  } else {
+    stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  # Use custom or default title
+  if (is.null(plot_title)) {
+    plot_title <- paste0(default_title, ", ", format(start_date, "%Y"), "-", format(end_date, "%Y"))
+  }
+  
+  has_reference <- !is.null(ref_data) && nrow(ref_data) > 0
+  
+  # Build ggplot
+  p <- ggplot(plot_data, aes(x = date, y = cpi, color = series)) +
+    geom_line(linewidth = plot_line_width, alpha = 0.7)
+  
+  if (has_reference) {
+    p <- p + geom_line(data = ref_data, aes(x = date, y = cpi),
+                       color = ref_line_color, linewidth = ref_line_width,
+                       linetype = "solid", inherit.aes = FALSE)
+  }
+  
+  p <- p + labs(
+    title = plot_title,
+    subtitle = ifelse(has_reference, paste("Black line =", ref_label), NULL),
+    x = "Date", y = "CPI Index", color = color_label
+  ) +
+  scale_x_date(limits = c(start_date, end_date),
+               breaks = seq(start_date, end_date, by = "6 months"),
+               date_labels = "%b%y",
+               expand = expansion(mult = c(0, 0))) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.subtitle = element_text(size = 10, hjust = 0.5, color = "gray40"))
+  
+  # Convert to plotly
+  ggplotly(p) %>%
+    layout(
+      title = list(text = plot_title, font = list(size = 16, family = "Arial", color = "#2c3e50"),
+                   x = 0.5, xanchor = "center"),
+      legend = list(orientation = "h", y = -0.3, x = 0.5, xanchor = "center",
+                    font = list(family = "Arial", size = 9, color = "#333333"),
+                    itemsizing = "constant", itemwidth = 35,
+                    bgcolor = "rgba(255,255,255,0.9)",
+                    bordercolor = "#cccccc", borderwidth = 1),
+      annotations = list(list(
+        text = paste0("<b>Source:</b> CEIC Database; Index, 2024 = 100",
+                     ifelse(has_reference, paste0("; Black line = ", ref_label), "")),
+        x = 1, y = -0.25, xref = "paper", yref = "paper", showarrow = FALSE,
+        font = list(family = "Arial", size = 9, color = "#666666"),
+        xanchor = "right", align = "right"
+      )),
+      xaxis = list(tickfont = list(size = 9), gridcolor = "#f0f0f0", tickangle = -45),
+      yaxis = list(tickfont = list(size = 9), gridcolor = "#f0f0f0", zerolinecolor = "#cccccc"),
+      hoverlabel = list(bgcolor = "white", bordercolor = "#cccccc", font = list(size = 10, family = "Arial")),
+      margin = list(b = 150, l = 60, r = 40, t = 60),
+      plot_bgcolor = "white", paper_bgcolor = "white"
+    )
+}
+```
+
+
+```{r}
+create_cpi_plot <- function(data, 
+                            plot_level,
+                            category = NULL,
+                            start_date = "2020-01-01",
+                            end_date = "2026-01-01",
+                            plot_title = NULL,
+                            ref_line_color = "black",
+                            ref_line_width = 0.9,
+                            plot_line_width = 0.6) {
+  
+  # Validate and format dates
+  start_date <- as.Date(start_date)
+  end_date <- as.Date(end_date)
+  
+  if (start_date >= end_date) {
+    stop("start_date must be before end_date")
+  }
+  
+  # Setup based on level
+  if (plot_level == 0) {
+    plot_data <- data %>% filter(level == 0)
+    ref_data <- NULL
+    ref_label <- NULL
+    default_title <- "Signapore CPI Trend"
+    color_label <- "Index"
+    
+  } else if (plot_level == 1) {
+    plot_data <- data %>% filter(level == 1)
+    ref_data <- data %>% filter(level == 0, series == "Consumer Price Index (CPI)")
+    ref_label <- "Overall CPI"
+    default_title <- "CPI Major Groups"
+    color_label <- "Category"
+    
+  } else if (plot_level == 2) {
+    if (is.null(category)) stop("For level 2, specify a category (division name)")
+    plot_data <- data %>% filter(level == 2, division == category)
+    ref_data <- data %>% filter(level == 1, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Subgroups")
+    color_label <- "Subcategory"
+    
+  } else if (plot_level == 3) {
+    if (is.null(category)) stop("For level 3, specify a group")
+    plot_data <- data %>% filter(level == 3, group == category)
+    ref_data <- data %>% filter(level == 2, series == category)
+    ref_label <- category
+    default_title <- paste(category, "- Detailed Classes")
+    color_label <- "Detailed Class"
+    
+  } else {
+    stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  # Check if data exists after filtering
+  if (nrow(plot_data) == 0) {
+    stop(paste0("No data found for plot_level=", plot_level, 
+                ifelse(!is.null(category), paste0(" and category='", category, "'"), "")))
+  }
+  
+  # Use custom or default title
+  if (is.null(plot_title)) {
+    plot_title <- paste0(default_title, ", ", format(start_date, "%Y"), "-", format(end_date, "%Y"))
+  }
+  
+  has_reference <- !is.null(ref_data) && nrow(ref_data) > 0
+  
+  # Calculate date breaks safely
+  date_breaks_seq <- seq(start_date, end_date, by = "6 months")
+  if (length(date_breaks_seq) < 2) {
+    date_breaks_seq <- seq(start_date, end_date, by = "2 months")
+  }
+  
+  # Build ggplot
+  p <- ggplot(plot_data, aes(x = date, y = cpi, color = series)) +
+    geom_line(linewidth = plot_line_width, alpha = 0.7)
+  
+  if (has_reference) {
+    p <- p + geom_line(data = ref_data, aes(x = date, y = cpi),
+                       color = ref_line_color, linewidth = ref_line_width,
+                       linetype = "solid", inherit.aes = FALSE)
+  }
+  
+  p <- p + labs(
+    title = plot_title,
+    subtitle = if (has_reference) paste("Black line =", ref_label) else "",
+    x = "Date", 
+    y = "CPI Index", 
+    color = color_label
+  ) +
+  scale_x_date(
+    limits = c(start_date, end_date),
+    breaks = date_breaks_seq,  # Use pre-calculated breaks
+    date_labels = "%b%y",
+    expand = expansion(mult = c(0.01, 0.01)) 
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(hjust = 1),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 10, hjust = 0.5, color = "gray40")
+  )
+  
+  # Convert to plotly
+  ggplotly(p) %>%
+    layout(
+      title = list(
+        text = plot_title, 
+        font = list(size = 16, family = "Arial", color = "#2c3e50"),
+        x = 0.5, 
+        xanchor = "center"
+      ),
+      legend = list(
+        orientation = "h", 
+        y = -0.3, 
+        x = 0.5, 
+        xanchor = "center",
+        font = list(family = "Arial", size = 9, color = "#333333"),
+        itemsizing = "constant", 
+        itemwidth = 35,
+        bgcolor = "rgba(255,255,255,0.9)",
+        bordercolor = "#cccccc", 
+        borderwidth = 1
+      ),
+      annotations = list(list(
+        text = paste0(
+          "<b>Source:</b> CEIC Database; Index, 2024 = 100",
+          if (has_reference) paste0("; Black line = ", ref_label) else ""
+        ),
+        x = 1, y = -0.25, 
+        xref = "paper", yref = "paper", 
+        showarrow = FALSE,
+        font = list(family = "Arial", size = 9, color = "#666666"),
+        xanchor = "right", 
+        align = "right"
+      )),
+      xaxis = list(
+        tickfont = list(size = 9), 
+        gridcolor = "#f0f0f0", 
+        tickangle = -45
+      ),
+      yaxis = list(
+        tickfont = list(size = 9), 
+        gridcolor = "#f0f0f0", 
+        zerolinecolor = "#cccccc"
+      ),
+      hoverlabel = list(
+        bgcolor = "white", 
+        bordercolor = "#cccccc", 
+        font = list(size = 10, family = "Arial")
+      ),
+      margin = list(b = 150, l = 60, r = 40, t = 60),
+      plot_bgcolor = "white", 
+      paper_bgcolor = "white"
+    )
+}
+
+```
+
+
+```{r}
+# Level 0: Aggregated indices
+create_cpi_plot(cpi_h, plot_level = 0)
+
+# Level 1: Major groups with Overall CPI reference
+create_cpi_plot(cpi_h, plot_level = 1)
+
+# Level 2: Food subgroups with Food as reference
+create_cpi_plot(cpi_h, plot_level = 2, category = "Food")
+
+# Level 3: FFBSS detailed classes with FFBSS as reference
+create_cpi_plot(cpi_h, plot_level = 3, category = "FFBSS")
+
+# Custom parameters
+create_cpi_plot(cpi_h, plot_level = 2, category = "Food",
+                start_date = "2022-01-01", end_date = "2025-12-31",
+                ref_line_color = "darkred", ref_line_width = 1.5)
+
+```
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
 
 p <- cpi_h %>%
   filter(level == 0) %>% 
@@ -611,6 +1012,9 @@ ggplotly(p) %>%
 
 
 ```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
+
 p <- cpi_h %>%
   filter(level == 0) %>%
   group_by(series) %>%
@@ -657,6 +1061,8 @@ p %>% layout(
 ##### Single View
 
 ```{r}
+#| code-fold: true
+#| code-summary: "SHOW"
 # Get Overall CPI as reference data
 overall_cpi <- cpi_h %>%
   filter(level == 0 & series == "Consumer Price Index (CPI)")
@@ -770,56 +1176,84 @@ ggplotly(p) %>%
 
 
 ```{r}
-make_cpi_plot <- function(data, level_val) {
+#| code-fold: true
+#| code-summary: "SHOW"
+make_cpi_plot_improved <- function(data, level_val, 
+                          category_filter = NULL, 
+                          group_filter = NULL, interactive = TRUE,
+                          smooth = FALSE, facet_ncol = 3) {
+  
+  # Apply category filter (division level) if specified
+  if (!is.null(category_filter)) {
+    data <- data %>%
+      filter(division == category_filter)
+  }
+  
+  # Apply group filter if specified
+  if (!is.null(group_filter)) {
+    data <- data %>%
+      filter(group == group_filter)
+  }
+  
+  # Determine title
+  if (!is.null(group_filter)) {
+    base_title <- paste(group_filter, "CPI")
+  } else if (!is.null(category_filter)) {
+    base_title <- paste(category_filter, "CPI")
+  } else {
+    base_title <- "CPI"
+  }
+  
   if (level_val == 1) {
-    # Level 1: Major groups
+    # Level 1: Major groups - facet by division
     data %>%
       filter(level == 1) %>%
       group_by(division) %>%
       plot_time_series(
         .date_var = date,
         .value = cpi,
-        .facet_ncol = 3,
+        .facet_ncol = facet_ncol,
         .facet_scales = "free_y",
-        .smooth = FALSE,
-        .interactive = TRUE,
-        .title = "CPI Major Groups (Level 1)",
-        .y_lab = "CPI Index",
-        .x_lab = "Date"
+        .smooth = smooth,
+        .interactive = interactive,
+        .title = paste(base_title, "- Major Groups (Level 1)"),
+        .y_lab = "CPI Index"
       )
+      
   } else if (level_val == 2) {
-    # Level 2: Sub-groups
+    # Level 2: Sub-groups - facet by group
     data %>%
       filter(level == 2) %>%
       group_by(group) %>%
       plot_time_series(
         .date_var = date,
         .value = cpi,
-        .facet_ncol = 3,
+        .facet_ncol = facet_ncol,
         .facet_scales = "free_y",
-        .line_color = "#2E86AB",
-        .smooth = FALSE,
-        .interactive = TRUE,
-        .title = "CPI Sub-Groups (Level 2)",
-        .y_lab = "CPI Index",
-        .x_lab = "Date"
+        .smooth = smooth,
+        .interactive = interactive,
+        .title = paste(base_title, "- Subgroups (Level 2)"),
+        .y_lab = "CPI Index"
       )
-  } else {
-    # Level 3: Detailed classes
+      
+  } else if (level_val == 3) {
+    # Level 3: Detailed classes - facet by class
     data %>%
       filter(level == 3) %>%
       group_by(class) %>%
       plot_time_series(
         .date_var = date,
         .value = cpi,
-        .facet_ncol = 3,
+        .facet_ncol = facet_ncol,
         .facet_scales = "free_y",
-        .smooth = FALSE,
-        .interactive = TRUE,
-        .title = "CPI Detailed Classes (Level 3)",
-        .y_lab = "CPI Index",
-        .x_lab = "Date"
+        .smooth = smooth,
+        .interactive = interactive,
+        .title = paste(base_title, "- Detailed Classes (Level 3)"),
+        .y_lab = "CPI Index"
       )
+      
+  } else {
+    stop("level_val must be 1, 2, or 3")
   }
 }
 
@@ -827,12 +1261,15 @@ make_cpi_plot <- function(data, level_val) {
 
 
 ```{r}
-make_cpi_plot(cpi_h, level = 1)
+make_cpi_plot_improved(cpi_h, level = 1)
 ```
 
 ```{r}
 unique(cpi_h$series[cpi_h$level == 1])
 ```
+
+:::panel-tabset
+
 #### Food
 
 ##### Subgroup 
@@ -845,6 +1282,8 @@ unique(cpi_h$series[cpi_h$division == "Food" & cpi_h$level == 2])
 ###### Single View
 
 ```{r}
+#|code-fold: true
+#|ccode-summary: "SHOW"
 # Get Food main category as reference data (level 1)
 food_main <- cpi_h %>%
   filter(level == 1 & series == "Food")
@@ -962,130 +1401,175 @@ ggplotly(p) %>%
 ```
 
 
-###### Facet View - Function
-
-```{r}
-make_cpi_plot_improved <- function(data, level_val, 
-                          category_filter = NULL, 
-                          group_filter = NULL, interactive = TRUE,
-                          smooth = FALSE, facet_ncol = 3) {
-  
-  # Apply category filter (division level) if specified
-  if (!is.null(category_filter)) {
-    data <- data %>%
-      filter(division == category_filter)
-  }
-  
-  # Apply group filter if specified
-  if (!is.null(group_filter)) {
-    data <- data %>%
-      filter(group == group_filter)
-  }
-  
-  # Determine title
-  if (!is.null(group_filter)) {
-    base_title <- paste(group_filter, "CPI")
-  } else if (!is.null(category_filter)) {
-    base_title <- paste(category_filter, "CPI")
-  } else {
-    base_title <- "CPI"
-  }
-  
-  if (level_val == 1) {
-    # Level 1: Major groups - facet by division
-    data %>%
-      filter(level == 1) %>%
-      group_by(division) %>%
-      plot_time_series(
-        .date_var = date,
-        .value = cpi,
-        .facet_ncol = facet_ncol,
-        .facet_scales = "free_y",
-        .smooth = smooth,
-        .interactive = interactive,
-        .title = paste(base_title, "- Major Groups (Level 1)"),
-        .y_lab = "CPI Index"
-      )
-      
-  } else if (level_val == 2) {
-    # Level 2: Sub-groups - facet by group
-    data %>%
-      filter(level == 2) %>%
-      group_by(group) %>%
-      plot_time_series(
-        .date_var = date,
-        .value = cpi,
-        .facet_ncol = facet_ncol,
-        .facet_scales = "free_y",
-        .smooth = smooth,
-        .interactive = interactive,
-        .title = paste(base_title, "- Subgroups (Level 2)"),
-        .y_lab = "CPI Index"
-      )
-      
-  } else if (level_val == 3) {
-    # Level 3: Detailed classes - facet by class
-    data %>%
-      filter(level == 3) %>%
-      group_by(class) %>%
-      plot_time_series(
-        .date_var = date,
-        .value = cpi,
-        .facet_ncol = facet_ncol,
-        .facet_scales = "free_y",
-        .smooth = smooth,
-        .interactive = interactive,
-        .title = paste(base_title, "- Detailed Classes (Level 3)"),
-        .y_lab = "CPI Index"
-      )
-      
-  } else {
-    stop("level_val must be 1, 2, or 3")
-  }
-}
-
-```
-
+###### Facet View
 ```{r}
 make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Food", interactive = FALSE)
 ```
 
 
-##### Detailed Classes
-###### FFBBS
+##### FFBSS
 
+"Food Excl Food & Beverage Serving Services (FFBSS)"
+[2] "Food & Beverage Serving Services (FBSS)"    
 
-###### FFBB
+###### Single View
 
 
 ```{r}
-make_cpi_plot_improved(cpi_h, level_val = 3, category_filter = "Food", interactive = FALSE)
+#|code-fold: true
+#|ccode-summary: "SHOW"
+# Get FFBSS subgroup as reference (level 2)
+food_FFBSS <- cpi_h %>%
+  filter(level == 2 & series == "Food Excl Food & Beverage Serving Services (FFBSS)")
+
+# Get FFBSS detailed classes (level 3)
+FFBSS_sub <- cpi_h %>%
+  filter(group == "FFBSS" & level == 3)
+
+# Plot with reference line
+p <- FFBSS_sub %>%
+  ggplot(aes(x = date, y = cpi, color = series)) +
+  geom_line(linewidth = 0.6, alpha = 0.7) +
+  geom_line(
+    data = food_FFBSS,  
+    aes(x = date, y = cpi),
+    color = "black",
+    linewidth = 0.9,
+    linetype = "solid"
+  ) +
+  labs(
+    title = "FFBSS CPI: Subgroup vs Detailed Classes, 2020-2025",
+    subtitle = "Black line = FFBSS (Food Excl F&B Serving Services)",
+    x = "Date",
+    y = "CPI Index",
+    color = "FFBSS Detailed Classes"
+  ) +  
+  scale_x_date(
+    limits = c(as.Date("2020-01-01"), as.Date("2026-01-01")),
+    breaks = seq(as.Date("2020-01-01"), as.Date("2026-01-01"), by = "6 months"),
+    date_labels = "%b%y",
+    expand = expansion(mult = c(0, 0))  
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(hjust = 1), 
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 10, hjust = 0.5, color = "gray40")
+  )
+
+ggplotly(p) %>%
+  layout(
+    title = list(
+      text = "FFBSS CPI: Subgroup vs Detailed Classes, 2020-2025",
+      font = list(size = 16, family = "Arial", color = "#2c3e50"),
+      x = 0.5,
+      xanchor = "center"
+    ),
+    
+    legend = list(
+      orientation = "h",
+      y = -0.3,
+      x = 0.5,
+      xanchor = "center",
+      font = list(family = "Arial", size = 8, color = "#333333"),
+      itemsizing = "constant",
+      itemwidth = 30,
+      bgcolor = "rgba(255,255,255,0.9)",
+      bordercolor = "#cccccc",
+      borderwidth = 1
+    ),
+    
+    annotations = list(
+      list(
+        text = "<b>Source:</b> CEIC Database; Index, 2024 = 100; Black line = FFBSS",
+        x = 1,
+        y = -0.25,
+        xref = "paper",
+        yref = "paper",
+        showarrow = FALSE,
+        font = list(family = "Arial", size = 9, color = "#666666"),
+        xanchor = "right",
+        align = "right"
+      )
+    ),
+    
+    xaxis = list(
+      tickfont = list(size = 9),
+      gridcolor = "#f0f0f0",
+      tickangle = -45
+    ),
+    yaxis = list(
+      tickfont = list(size = 9),
+      gridcolor = "#f0f0f0",
+      zerolinecolor = "#cccccc"
+    ),
+    
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#cccccc",
+      font = list(size = 10, family = "Arial")
+    ),
+    
+    margin = list(b = 150, l = 60, r = 40, t = 60),
+    plot_bgcolor = "white",
+    paper_bgcolor = "white"
+  )
+
+```
+
+
+
+###### Facet View
+
+```{r}
+make_cpi_plot_improved(cpi_h, level_val = 3, 
+      category_filter = "Food",group_filter = "FFBSS",interactive = FALSE, facet_ncol = 4)
+```
+
+
+
+##### FBSS
+
+###### Single View
+
+###### Facet View
+
+```{r}
+make_cpi_plot_improved(cpi_h, level_val = 3, category_filter = "Food",group_filter = "FBSS",interactive = FALSE, facet_ncol = 2)
 ```
 
 
 
 #### Clothing and Footwear (C&F)
 
+##### Single View
 
 ##### Facet View
 
 ```{r}
-make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Clothing & Footwear", interactive = FALSE)
+make_cpi_plot_improved(cpi_h, level_val = 2, 
+category_filter = "Clothing & Footwear", interactive = FALSE)
 ```
 
 
 
 #### Housing & Utilities
 
+##### Single View
+
+
 
 ##### Facet View
 
 ```{r}
-make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Housing & Utilities",interactive = FALSE)
+make_cpi_plot_improved(cpi_h, level_val = 2,
+category_filter = "Housing & Utilities",interactive = FALSE)
 ```
 
 #### Household Durables & Services (HDS)
 
+##### Single View
 
 
 ##### Facet View
@@ -1097,6 +1581,9 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Household Durabl
 
 #### Health
 
+##### Single View
+
+
 ##### Facet View
 
 ```{r}
@@ -1104,6 +1591,8 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Health",interact
 ```
 
 #### Transport
+
+##### Single View
 
 
 ##### Facet View
@@ -1115,6 +1604,9 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Transport", inte
 #### Information & Communication (InfoComm)
 
 
+##### Single View
+
+
 ##### Facet View
 
 ```{r}
@@ -1124,6 +1616,9 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Information & Co
 
 
 #### Recreation, Sport & Culture (RSC)   
+
+##### Single View
+
 ##### Facet View
 
 ```{r}
@@ -1133,6 +1628,9 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Recreation, Spor
 
 #### Education
 
+##### Single View
+
+
 ##### Facet View
 
 ```{r}
@@ -1141,20 +1639,24 @@ make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Education",, int
 
 #### Miscellaneous Goods & Services (MG&S)
 
+##### Single View
+
+
 ##### Facet View
 
 ```{r}
 make_cpi_plot_improved(cpi_h, level_val = 2, category_filter = "Miscellaneous Goods & Services", interactive = FALSE)
 ```
 
-
+:::
 
 
 
 
 
 ```{r}
-
+#|code-fold: true
+#|ccode-summary: "SHOW"
 cpi_cycle <- cpi_h %>%
   # Filter for overall CPI or main category of interest
   filter(series == "Consumer Price Index (CPI)") %>%
