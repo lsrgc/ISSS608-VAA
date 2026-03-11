@@ -24,11 +24,37 @@ editor: visual
 
 ## Introduction
 
-<mark>**CPI**</mark>
+The Consumer Price Index (CPI) is a widely used economic indicator that measures inflation by tracking changes in the price level of a basket of goods and services consumed by households. CPI provides an important reference for economic policy, wage adjustments, and cost of living assessments. In Singapore, CPI statistics are compiled and published by the Singapore Department of Statistics and are structured into 10 expenditure categories such as food, housing, transport, healthcare, and recreation.
 
-**Assumption:**
+The CPI dataset naturally forms a **hierarchical** structure, where detailed consumption items aggregate into broader categories and ultimately contribute to the overall inflation index. For example, individual items such as rice, meat, and vegetables belong to lower level sub categories, which aggregate into food related groups and eventually into the overall CPI. 
 
-All hypothesis tests in this exercise are conducted at the **5% significance level**, where the null hypothesis states that no significant difference or no relationship exists between the variables of interest.
+This study examines monthly Singapore CPI data from 2020 to 2025, covering multiple CPI categories from the overall index to detailed expenditure components. The period from **2020 to 2025** represents an especially meaningful timeframe for inflation analysis. During this period, the global economy experienced significant disruptions due to the COVID 19 pandemic, supply chain constraints, and subsequent economic recovery. These factors contributed to changes in consumption patterns and price volatility across different sectors. Analysing CPI during this period provides insights into how inflation dynamics evolved under these unusual economic conditions. By combining exploratory visualisation and time series forecasting, the study aims to understand the behaviour of inflation across different CPI components and generate forecasts for future price movements.
+
+
+## Motivation
+
+While headline inflation measures such as the overall CPI provide a broad indication of price changes, they often conceal important differences across consumption categories. Certain components, such as food or energy related items, may experience stronger volatility or seasonal patterns compared with more stable categories such as healthcare or education. Analysing CPI at a more detailed level therefore allows a clearer understanding of which sectors contribute most to inflation changes.
+
+Visualisation plays an important role in exploring CPI data. Time series plots, seasonal visualisations, and autocorrelation analysis help reveal underlying patterns such as trends, seasonal behaviour, and persistence in price movements. These exploratory insights are valuable for understanding the structure of CPI data and informing the selection of appropriate forecasting models.
+
+Another challenge arises from the fact that CPI datasets often contain many related time series across different categories. In this study, multiple CPI components are analysed simultaneously, each representing a separate time series with its own price dynamics. Manually building and evaluating forecasting models for each series would be inefficient and difficult to maintain.
+
+To address this challenge, the study adopts a nested time series forecasting approach using the Modeltime package. Nested forecasting allows each CPI series to be modelled independently within a unified workflow. Multiple forecasting models can be trained, evaluated, and compared automatically across all CPI categories, enabling efficient model selection and scalable forecasting.
+
+This approach offers several advantages. First, it enables systematic modelling of a large number of CPI series while maintaining a consistent workflow. Second, it allows different models to compete for each series, ensuring that the most suitable model is selected based on performance. Finally, it provides a flexible framework that integrates statistical forecasting methods and machine learning techniques within a tidy data workflow.
+
+By combining exploratory data visualisation with nested forecasting techniques, this study aims to provide a comprehensive analysis of Singapore’s CPI dynamics and produce reliable forecasts for its key components.
+
+## Analytical Workflow
+
+To analyse and forecast Singapore’s CPI data, a structured analytical workflow was implemented to ensure systematic exploration, modelling, and evaluation of the time series.
+
+First, data preparation and transformation were conducted to organise the CPI dataset into a tidy time series structure suitable for analysis. Monthly CPI data from 2020 to 2025 was reshaped into a long format so that each CPI category represents an individual time series. This structure enables consistent analysis across multiple CPI components.
+
+Second, exploratory data analysis (EDA) was performed to understand the statistical properties of the CPI series. Time series visualisations were used to examine long term trends and variability across categories. In addition, time series decomposition was applied to separate each series into its trend, seasonal, and irregular components, allowing clearer interpretation of underlying inflation patterns. Autocorrelation and partial autocorrelation analysis were also conducted to assess temporal dependence and provide insights into appropriate model structures.
+
+Third, a nested forecasting workflow was implemented using the Modeltime package. In this approach, each CPI category is treated as an individual time series within a nested data structure. Multiple forecasting models are trained and evaluated automatically across all series, enabling efficient model comparison and scalable forecasting.
+
 
 ## Getting Started
 
@@ -61,7 +87,7 @@ The code below installs and loads the required packages into R environment.
 ```{r}
 pacman::p_load(tidyverse, DT, readxl,
              knitr,patchwork, scales,magick, ggthemes,gifski, gapminder,
-               plotly, gganimate,tidymodels,modeltime, timetk, lubridate, stringr, htmltools, viridis)
+               plotly, gganimate,tidymodels,modeltime, timetk, lubridate, stringr, htmltools, viridis, rlang)
 ```
 
 ### Importing the Data
@@ -328,7 +354,7 @@ cpi_h_display <- cpi_h %>%
       TRUE ~ paste("Level", level)
     ),
     major_group = case_when(
-      level == 0 ~ "Overall CPI & Special Indices",
+      level == 0 ~ NA_character_,
       TRUE       ~ division
     ),
     display_name = case_when(
@@ -458,7 +484,10 @@ cpi_h_table <- div(
       style = 'text-align: center; flex: 1; border-left: 1px solid #dee2e6; border-right: 1px solid #dee2e6;',
       div(style = 'font-size: 12px; color: #7f8c8d;', 'Divisions'),
       div(style = 'font-size: 24px; font-weight: bold; color: #2c3e50;',
-          dplyr::n_distinct(cpi_h_display$Division))
+          cpi_h_display %>%
+      filter(Level == "Major Category") %>%
+      summarise(n = n_distinct(Division)) %>%
+      pull(n))
     ),
     div(
       style = 'text-align: center; flex: 1;',
@@ -537,6 +566,7 @@ Here we have an **interactive CPI dashboard** that allows users to filter, explo
 ```{r}
 cpi_h_table
 ```
+
 
 ```{r}
 glimpse(cpi_h)
@@ -1434,20 +1464,6 @@ plot_cpi_seasonal(cpi_h, 3, group = "FFBSS", interactive = FALSE)
 
 ### Autocorrelation
 
-```{r}
-#| code-fold: true
-#| code-summary: "SHOW"
-
-cpi_h %>%
-  filter(series == "Consumer Price Index (CPI)") %>%
-  plot_acf_diagnostics(
-    .date_var = date,
-    .value = cpi,
-    .lags = 36,        
-    .interactive = TRUE
-  )
-
-```
 
 
 
@@ -1473,15 +1489,203 @@ output$acf_plot <- renderPlotly({
 #| code-fold: true
 #| code-summary: "SHOW"
 
-cpi_h %>%
-  filter(level == 1) %>%
-  group_by(division) %>%
-  plot_acf_diagnostics(
-    date, cpi,
-    .lags = 36,
-    .facet_ncol = 3,
-    .interactive = FALSE
-  )
-
+plot_cpi_acf <- function(data,
+                         plot_level,
+                         category = NULL,
+                         group_name = NULL,
+                         lags = 36,
+                         interactive = FALSE,
+                         facet_ncol = 3,
+                         facet_scales = "fixed",
+                         line_color = "#2c3e50",
+                         line_size = 0.5,
+                         line_alpha = 1,
+                         point_color = "#2c3e50",
+                         point_size = 1,
+                         point_alpha = 1,
+                         x_intercept = NULL,
+                         x_intercept_color = "#E31A1C",
+                         hline_color = "#2c3e50",
+                         white_noise_line_type = 2,
+                         white_noise_line_color = "#A6CEE3",
+                         show_ccf_vars_only = FALSE,
+                         show_white_noise_bars = TRUE,
+                         plotly_slider = FALSE,
+                         return_plot = FALSE,
+                         ccf_target = NULL,
+                         ccf_predictors = NULL) {
+  
+  
+  # Step 1: filter hierarchy
+  if (plot_level == 0) {
+    plot_data <- data %>% filter(level == 0)
+    plot_title <- "CPI Top Level: Lag Diagnostics"
+    
+  } else if (plot_level == 1) {
+    plot_data <- data %>% filter(level == 1)
+    plot_title <- "CPI Major Groups: Lag Diagnostics"
+    
+  } else if (plot_level == 2) {
+    if (is.null(category)) {
+      stop("For level 2, specify a category")
+    }
+    plot_data <- data %>% filter(level == 2, division == category)
+    plot_title <- paste(category, ": Sub-Categories Lag Diagnostics")
+    
+  } else if (plot_level == 3) {
+    if (is.null(group_name)) {
+      stop("For level 3, specify a group_name")
+    }
+    plot_data <- data %>% filter(level == 3, group == group_name)
+    plot_title <- paste(group_name, ": Detailed Classes Lag Diagnostics")
+    
+  } else {
+    stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  if (nrow(plot_data) == 0) {
+    stop("No data found for the specified criteria")
+  }
+  
+  use_ccf <- !is.null(ccf_target) && !is.null(ccf_predictors)
+  
+  # Step 2A: ACF/PACF mode
+  if (!use_ccf) {
+    
+    if (plot_level == 0) {
+      acf_data <- plot_data
+    } else if (plot_level == 1) {
+      acf_data <- plot_data %>% group_by(division)
+    } else {
+      acf_data <- plot_data %>% group_by(series)
+    }
+    
+    p <- timetk::plot_acf_diagnostics(
+      .data = acf_data,
+      .date_var = date,
+      .value = cpi,
+      .lags = lags,
+      .show_white_noise_bars = show_white_noise_bars,
+      .facet_ncol = facet_ncol,
+      .facet_scales = facet_scales,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_alpha = line_alpha,
+      .point_color = point_color,
+      .point_size = point_size,
+      .point_alpha = point_alpha,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .hline_color = hline_color,
+      .white_noise_line_type = white_noise_line_type,
+      .white_noise_line_color = white_noise_line_color,
+      .title = plot_title,
+      .x_lab = "Lag",
+      .y_lab = "Correlation",
+      .interactive = interactive,
+      .plotly_slider = plotly_slider
+    )
+    
+  } else {
+    
+    # Step 2B: CCF mode
+    series_needed <- c(ccf_target, ccf_predictors)
+    
+    missing_series <- setdiff(series_needed, unique(plot_data$series))
+    if (length(missing_series) > 0) {
+      stop(
+        paste(
+          "These series were not found in the filtered data:",
+          paste(missing_series, collapse = ", ")
+        )
+      )
+    }
+    
+    wide_data <- plot_data %>%
+      filter(series %in% series_needed) %>%
+      select(date, series, cpi) %>%
+      distinct() %>%
+      pivot_wider(names_from = series, values_from = cpi) %>%
+      arrange(date) %>%
+      drop_na(all_of(series_needed))
+    
+    if (nrow(wide_data) == 0) {
+      stop("No complete cases available after reshaping to wide format.")
+    }
+    
+    target_sym <- rlang::sym(ccf_target)
+    
+    p <- timetk::plot_acf_diagnostics(
+      .data = wide_data,
+      .date_var = date,
+      .value = !!target_sym,
+      .ccf_vars = all_of(ccf_predictors),
+      .lags = lags,
+      .show_ccf_vars_only = show_ccf_vars_only,
+      .show_white_noise_bars = show_white_noise_bars,
+      .facet_ncol = facet_ncol,
+      .facet_scales = facet_scales,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_alpha = line_alpha,
+      .point_color = point_color,
+      .point_size = point_size,
+      .point_alpha = point_alpha,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .hline_color = hline_color,
+      .white_noise_line_type = white_noise_line_type,
+      .white_noise_line_color = white_noise_line_color,
+      .title = paste0(
+        plot_title,
+        " | Target: ", ccf_target,
+        " | Predictors: ", paste(ccf_predictors, collapse = ", ")
+      ),
+      .x_lab = "Lag",
+      .y_lab = "Correlation",
+      .interactive = interactive,
+      .plotly_slider = plotly_slider
+    )
+  }
+  
+  if (return_plot) {
+    return(p)
+  } else {
+    print(p)
+  }
+}
 ```
+
+
+```{r}
+plot_cpi_acf(cpi_h, plot_level = 1)
+```
+
+```{r}
+plot_cpi_acf(cpi_h, plot_level = 2, category = "Food")
+```
+
+```{r}
+plot_cpi_acf(
+  cpi_h,
+  plot_level = 3,
+  group_name = "Food Excl Food & Beverage Serving Services (FFBSS)",
+  facet_ncol = 3
+)
+```
+
+
+
+```{r}
+plot_cpi_acf(
+  cpi_h,
+  plot_level = 3,
+  group_name = "Food Excl Food & Beverage Serving Services (FFBSS)",
+  ccf_target = "FFBSS: Ready-Made & Oth. Food Nec",
+  ccf_predictors = c("FFBSS: Vegetables", "FFBSS: Meat"),
+  lags = 24,
+  facet_ncol = 1
+)
+```
+
 
