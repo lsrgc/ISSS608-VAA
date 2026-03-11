@@ -753,6 +753,280 @@ create_cpi_plot(cpi_h, plot_level = 0)
 
 
 ##### Facet View
+```{r}
+plot_cpi_time_series <- function(data,
+                                 plot_level,
+                                 category = NULL,
+                                 group_name = NULL,
+                                 add_year = TRUE,
+                                 use_year_colour = FALSE,
+                                 facet_by = TRUE,
+                                 facet_ncol = 1,
+                                 facet_nrow = 1,
+                                 facet_scales = "free_y",
+                                 facet_dir = "h",
+                                 facet_collapse = FALSE,
+                                 facet_collapse_sep = " ",
+                                 facet_strip_remove = FALSE,
+                                 line_color = "#2c3e50",
+                                 line_size = 0.5,
+                                 line_type = 1,
+                                 line_alpha = 1,
+                                 y_intercept = NULL,
+                                 y_intercept_color = "#2c3e50",
+                                 x_intercept = NULL,
+                                 x_intercept_color = "#2c3e50",
+                                 smooth = FALSE,
+                                 smooth_period = "auto",
+                                 smooth_message = FALSE,
+                                 smooth_span = NULL,
+                                 smooth_degree = 2,
+                                 smooth_color = "#3366FF",
+                                 smooth_size = 1,
+                                 smooth_alpha = 1,
+                                 legend_show = FALSE,
+                                 title = NULL,
+                                 x_lab = "",
+                                 y_lab = "CPI Index",
+                                 color_lab = "Legend",
+                                 interactive = TRUE,
+                                 plotly_slider = FALSE,
+                                 trelliscope = FALSE,
+                                 trelliscope_params = list(),
+                                 return_plot = FALSE) {
+  
+  if (add_year) {
+    data <- data %>%
+      dplyr::mutate(year = lubridate::year(date))
+  }
+  
+  if (plot_level == 0) {
+    plot_data <- data %>% dplyr::filter(level == 0)
+    default_title <- "CPI Top Level Time Series"
+    facet_col <- NULL
+    
+  } else if (plot_level == 1) {
+    plot_data <- data %>% dplyr::filter(level == 1)
+    default_title <- "CPI Major Groups Time Series"
+    facet_col <- "division"
+    
+  } else if (plot_level == 2) {
+    if (is.null(category)) stop("For level 2, specify a category")
+    
+    plot_data <- data %>%
+      dplyr::filter(level == 2, division == category)
+    
+    default_title <- paste(category, "CPI Sub Categories Time Series")
+    facet_col <- "series"
+    
+  } else if (plot_level == 3) {
+    if (is.null(group_name)) stop("For level 3, specify a group_name")
+    
+    plot_data <- data %>%
+      dplyr::filter(level == 3, group == group_name)
+    
+    default_title <- paste(group_name, "Detailed CPI Time Series")
+    facet_col <- "series"
+    
+  } else {
+    stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  if (nrow(plot_data) == 0) {
+    stop("No data found for the specified criteria")
+  }
+  
+  if (is.null(title)) {
+    title <- default_title
+  }
+  
+  # Build the call safely based on user options
+  if (use_year_colour && facet_by && !is.null(facet_col) && "year" %in% names(plot_data)) {
+    
+    p <- timetk::plot_time_series(
+      .data = plot_data,
+      .date_var = date,
+      .value = cpi,
+      .color_var = year,
+      .facet_vars = tidyselect::all_of(facet_col),
+      .facet_ncol = facet_ncol,
+      .facet_nrow = facet_nrow,
+      .facet_scales = facet_scales,
+      .facet_dir = facet_dir,
+      .facet_collapse = facet_collapse,
+      .facet_collapse_sep = facet_collapse_sep,
+      .facet_strip_remove = facet_strip_remove,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_type = line_type,
+      .line_alpha = line_alpha,
+      .y_intercept = y_intercept,
+      .y_intercept_color = y_intercept_color,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .smooth = smooth,
+      .smooth_period = smooth_period,
+      .smooth_message = smooth_message,
+      .smooth_span = smooth_span,
+      .smooth_degree = smooth_degree,
+      .smooth_color = smooth_color,
+      .smooth_size = smooth_size,
+      .smooth_alpha = smooth_alpha,
+      .legend_show = legend_show,
+      .title = title,
+      .x_lab = x_lab,
+      .y_lab = y_lab,
+      .color_lab = color_lab,
+      .interactive = interactive,
+      .plotly_slider = plotly_slider,
+      .trelliscope = trelliscope,
+      .trelliscope_params = trelliscope_params
+    )
+    
+  } else if (use_year_colour && !facet_by && "year" %in% names(plot_data)) {
+    
+    p <- timetk::plot_time_series(
+      .data = plot_data,
+      .date_var = date,
+      .value = cpi,
+      .color_var = year,
+      .facet_ncol = facet_ncol,
+      .facet_nrow = facet_nrow,
+      .facet_scales = facet_scales,
+      .facet_dir = facet_dir,
+      .facet_collapse = facet_collapse,
+      .facet_collapse_sep = facet_collapse_sep,
+      .facet_strip_remove = facet_strip_remove,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_type = line_type,
+      .line_alpha = line_alpha,
+      .y_intercept = y_intercept,
+      .y_intercept_color = y_intercept_color,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .smooth = smooth,
+      .smooth_period = smooth_period,
+      .smooth_message = smooth_message,
+      .smooth_span = smooth_span,
+      .smooth_degree = smooth_degree,
+      .smooth_color = smooth_color,
+      .smooth_size = smooth_size,
+      .smooth_alpha = smooth_alpha,
+      .legend_show = legend_show,
+      .title = title,
+      .x_lab = x_lab,
+      .y_lab = y_lab,
+      .color_lab = color_lab,
+      .interactive = interactive,
+      .plotly_slider = plotly_slider,
+      .trelliscope = trelliscope,
+      .trelliscope_params = trelliscope_params
+    )
+    
+  } else if (!use_year_colour && facet_by && !is.null(facet_col)) {
+    
+    p <- timetk::plot_time_series(
+      .data = plot_data,
+      .date_var = date,
+      .value = cpi,
+      .facet_vars = tidyselect::all_of(facet_col),
+      .facet_ncol = facet_ncol,
+      .facet_nrow = facet_nrow,
+      .facet_scales = facet_scales,
+      .facet_dir = facet_dir,
+      .facet_collapse = facet_collapse,
+      .facet_collapse_sep = facet_collapse_sep,
+      .facet_strip_remove = facet_strip_remove,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_type = line_type,
+      .line_alpha = line_alpha,
+      .y_intercept = y_intercept,
+      .y_intercept_color = y_intercept_color,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .smooth = smooth,
+      .smooth_period = smooth_period,
+      .smooth_message = smooth_message,
+      .smooth_span = smooth_span,
+      .smooth_degree = smooth_degree,
+      .smooth_color = smooth_color,
+      .smooth_size = smooth_size,
+      .smooth_alpha = smooth_alpha,
+      .legend_show = legend_show,
+      .title = title,
+      .x_lab = x_lab,
+      .y_lab = y_lab,
+      .color_lab = color_lab,
+      .interactive = interactive,
+      .plotly_slider = plotly_slider,
+      .trelliscope = trelliscope,
+      .trelliscope_params = trelliscope_params
+    )
+    
+  } else {
+    
+    p <- timetk::plot_time_series(
+      .data = plot_data,
+      .date_var = date,
+      .value = cpi,
+      .facet_ncol = facet_ncol,
+      .facet_nrow = facet_nrow,
+      .facet_scales = facet_scales,
+      .facet_dir = facet_dir,
+      .facet_collapse = facet_collapse,
+      .facet_collapse_sep = facet_collapse_sep,
+      .facet_strip_remove = facet_strip_remove,
+      .line_color = line_color,
+      .line_size = line_size,
+      .line_type = line_type,
+      .line_alpha = line_alpha,
+      .y_intercept = y_intercept,
+      .y_intercept_color = y_intercept_color,
+      .x_intercept = x_intercept,
+      .x_intercept_color = x_intercept_color,
+      .smooth = smooth,
+      .smooth_period = smooth_period,
+      .smooth_message = smooth_message,
+      .smooth_span = smooth_span,
+      .smooth_degree = smooth_degree,
+      .smooth_color = smooth_color,
+      .smooth_size = smooth_size,
+      .smooth_alpha = smooth_alpha,
+      .legend_show = legend_show,
+      .title = title,
+      .x_lab = x_lab,
+      .y_lab = y_lab,
+      .color_lab = color_lab,
+      .interactive = interactive,
+      .plotly_slider = plotly_slider,
+      .trelliscope = trelliscope,
+      .trelliscope_params = trelliscope_params
+    )
+  }
+  
+  if (return_plot) {
+    return(p)
+  } else {
+    print(p)
+  }
+}
+```
+
+
+```{r}
+plot_cpi_time_series(
+  cpi_h,
+  plot_level = 1,
+  use_year_colour = TRUE,
+  facet_by = TRUE,
+  facet_ncol = 5,  interactive = FALSE
+)
+```
+
+
+
 
 
 ```{r}
