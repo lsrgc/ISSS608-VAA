@@ -58,8 +58,7 @@ Third, a nested forecasting workflow was implemented using the Modeltime package
 
 ### Installing and Loading the Required Libraries
 
-:::panel-tabset
-
+::: panel-tabset
 #### Package Description
 
 There are <mark>**XX**</mark> packages that will be used in this exercise.
@@ -85,7 +84,6 @@ There are <mark>**XX**</mark> packages that will be used in this exercise.
 
 The code below installs and loads the required packages into R environment.
 
-
 #### The Code
 
 ```{r}
@@ -93,7 +91,6 @@ pacman::p_load(tidyverse, DT, readxl,
              knitr,patchwork, scales,ggthemes,
                plotly, timetk, lubridate, stringr, htmltools, viridis, rlang)
 ```
-
 :::
 
 ### Importing the Data
@@ -583,15 +580,11 @@ In this section, we conduct an **exploratory data analysis (EDA)** of Singapore�
 
 ### Trend
 
-
 In the **trend analysis section**, the temporal behaviour of CPI items is examined through time series visualisation. A custom plotting function is first developed by incorporating `geom_line()` from the **ggplot2** package to produce a **consolidated view of the series**. In addition, `plot_time_series()` from the **timetk** package is used to generate **faceted plots** to have clearer comparisons across multiple CPI categories. This workflow also supports the **early prototyping of visual components for the Shiny application** prior to the full development of the dashboard.
 
-
-
-#### Single-view Function 
+#### Single-view Function
 
 The `create_cpi_plot()` function generates an **interactive** CPI time series visualisation across different levels of the CPI hierarchy. It filters the dataset based on the selected `plot_level` and optional category, and plots the relevant CPI series while optionally including a **reference line** from the higher level CPI index for comparison. The function then converts the ggplot output into an interactive Plotly chart with customised styling, legends, and source annotations for clearer interpretation and potential integration into a Shiny dashboard.
-
 
 ```{r}
 #| code-fold: true
@@ -1054,10 +1047,7 @@ plot_cpi_time_series <- function(data,
 }
 ```
 
-
-
-#### Top Level CPI
-
+#### Top Level CPIs
 
 There are three top level CPI series at the aggregated level: Overall CPI (Consumer Price Index CPI), All Items Less Accommodation, and All Items Less Imputed Rentals.
 
@@ -1082,9 +1072,6 @@ plot_cpi_time_series(
   interactive = TRUE
 )
 ```
-
-
-
 
 ```{r}
 #| echo: false
@@ -1138,25 +1125,13 @@ p %>% layout(
 
 This section examines the major CPI groups that collectively form the overall Consumer Price Index (CPI). As each group is assigned a **different expenditure weight**, their contributions to the index are not equal.
 
-
-The list below shows that the overall CPI is composed of ten major groups: 
-- Food (2,042); 
-- Clothing and Footwear (C&F) (165); 
-- Housing and Utilities (2,938); 
-- Household Durables and Services (HDS) (547);
-- Health (1,008); 
-- Transport (1,307); 
-- Information and Communication (InfoComm) (381); 
-- Recreation, Sport and Culture (RSC) (595); 
-- Education (579); 
-- and Miscellaneous Goods and Services (MG&S) (438).
+The list below shows that the overall CPI is composed of ten major groups: - Food (2,042); - Clothing and Footwear (C&F) (165); - Housing and Utilities (2,938); - Household Durables and Services (HDS) (547); - Health (1,008); - Transport (1,307); - Information and Communication (InfoComm) (381); - Recreation, Sport and Culture (RSC) (595); - Education (579); - and Miscellaneous Goods and Services (MG&S) (438).
 
 These weighted components are then aggregated to derive the **overall CPI** (10,000).
 
 ```{r}
 unique(cpi_h$series[cpi_h$level == 1])
 ```
-
 
 ##### Single View
 
@@ -1271,13 +1246,9 @@ make_cpi_plot_improved <- function(data, level_val,
 
 ```
 
-
-::: panel-tabset
-
 #### Food
 
-Food accounts for 2,042 out of the total CPI weight of 10,000, making it second largest component of the overall CPI basket. It is also the only major group that is further divided into subgroups and detailed classes. 
-
+Food accounts for 2,042 out of the total CPI weight of 10,000, making it second largest component of the overall CPI basket. It is also the only major group that is further divided into subgroups and detailed classes.
 
 ##### Subgroup
 
@@ -1307,7 +1278,7 @@ plot_cpi_time_series(
   category = "Food",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1315,22 +1286,11 @@ plot_cpi_time_series(
 
 Food Excluding Food and Beverage Serving Services (FFBSS) carries a weight of 651 within the CPI basket. Although it has a smaller weight than Food and Beverage Serving Services (FBSS), it includes items related to grocery consumption, which affect the daily spending of most households.
 
-The FFBSS subgroup is further divided into **10** detailed classes, including
-- Rice and Cereals (122), 
-- Meat (101), 
-- Fish and Seafood (79), 
-- Milk, Other Dairy Products and Eggs (64), 
-- Oils and Fats (12), 
-- Fruits and Nuts (79), 
-- Vegetables (82), 
-- Sugar, Confectionery and Desserts (27), 
-- Ready Made and Other Food Products (44), 
-- and Non Alcoholic Beverages (41).
+The FFBSS subgroup is further divided into **10** detailed classes, including - Rice and Cereals (122), - Meat (101), - Fish and Seafood (79), - Milk, Other Dairy Products and Eggs (64), - Oils and Fats (12), - Fruits and Nuts (79), - Vegetables (82), - Sugar, Confectionery and Desserts (27), - Ready Made and Other Food Products (44), - and Non Alcoholic Beverages (41).
 
 ```{r}
 unique(cpi_h$series[cpi_h$group == "Food Excl Food & Beverage Serving Services (FFBSS)" & cpi_h$level == 3])
 ```
-
 
 ###### Single View
 
@@ -1350,7 +1310,7 @@ plot_cpi_time_series(
   group_name = "Food Excl Food & Beverage Serving Services (FFBSS)",
   facet_by = TRUE,
   facet_ncol = 3,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1358,10 +1318,10 @@ plot_cpi_time_series(
 
 The Food and Beverage Serving Services (FBSS) subgroup has a total weight of 1,391 in the CPI basket and consists of four detailed classes:
 
-- Restaurants, Cafés and Pubs (585), 
-- Fast Food (85), 
-- Hawker Food including Food Courts (707), 
-- and Other Catering Services including Vending Machines (14). 
+-   Restaurants, Cafés and Pubs (585),
+-   Fast Food (85),
+-   Hawker Food including Food Courts (707),
+-   and Other Catering Services including Vending Machines (14).
 
 The weights of these classes collectively sum to 1,391, reflecting the overall contribution of food related dining services to the CPI.
 
@@ -1369,7 +1329,6 @@ The weights of these classes collectively sum to 1,391, reflecting the overall c
 
 unique(cpi_h$series[cpi_h$group == "Food & Beverage Serving Services (FBSS)" & cpi_h$level == 3])
 ```
-
 
 ###### Single View
 
@@ -1390,7 +1349,7 @@ plot_cpi_time_series(
   group_name = "Food & Beverage Serving Services (FBSS)",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1398,9 +1357,10 @@ plot_cpi_time_series(
 
 The Clothing and Footwear (C&F) category has a total weight of 165 within the CPI basket and is divided into two detailed classes:
 
-- Clothing, with a weight of 129,
+-   Clothing, with a weight of 129,
 
-- and Footwear, with a weight of 36.
+-   and Footwear, with a weight of 36.
+
 ```{r}
 unique(cpi_h$series[cpi_h$division == "Clothing and Footwear (C&F)" & cpi_h$level == 2])
 ```
@@ -1420,25 +1380,23 @@ plot_cpi_time_series(
   category ="Clothing and Footwear (C&F)",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
 #### Housing & Utilities
 
-Housing and Utilities carries a total weight of 2,938 in the CPI basket, making it the largest component of the index. It is composed of two detailed classes: 
+Housing and Utilities carries a total weight of 2,938 in the CPI basket, making it the largest component of the index. It is composed of two detailed classes:
 
-- Accommodation, with a weight of 2,656,
+-   Accommodation, with a weight of 2,656,
 
-- and Utilities and Other Fuels, with a weight of 282.
+-   and Utilities and Other Fuels, with a weight of 282.
 
 ```{r}
 unique(cpi_h$series[cpi_h$division == "Housing & Utilities" & cpi_h$level == 2])
 ```
 
-
 ##### Single View
-
 
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Housing & Utilities")
@@ -1453,27 +1411,26 @@ plot_cpi_time_series(
   category = "Housing & Utilities",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
 #### Household Durables & Services (HDS)
 
-Household Durables and Services (HDS) carries a total weight of 547 in the CPI basket. 
+Household Durables and Services (HDS) carries a total weight of 547 in the CPI basket.
 
 This category is divided into **6** detailed classes, including:
 
-- Furniture and Furnishings (128), 
-- Household Textiles (17), 
-- Household Appliances (101), 
-- Glassware, Tableware and Household Utensils (17), 
-- Tools and Equipment for House and Garden (5), 
-- and Household Services and Supplies (279).
+-   Furniture and Furnishings (128),
+-   Household Textiles (17),
+-   Household Appliances (101),
+-   Glassware, Tableware and Household Utensils (17),
+-   Tools and Equipment for House and Garden (5),
+-   and Household Services and Supplies (279).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Household Durables & Services (HDS)"& cpi_h$level==2])
 ```
-
 
 ##### Single View
 
@@ -1491,7 +1448,7 @@ plot_cpi_time_series(
   category = "Household Durables & Services (HDS)",
   facet_by = TRUE,
   facet_ncol = 3,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1499,15 +1456,15 @@ plot_cpi_time_series(
 
 Health accounts for a total weight of 1,008 in the CPI basket and consists of the following detailed classes:
 
-- Medicines and Health Products (94),
+-   Medicines and Health Products (94),
 
-- Outpatient Services (428),
+-   Outpatient Services (428),
 
-- Inpatient Services (238),
+-   Inpatient Services (238),
 
-- Other Health Services (OHS) (23),
+-   Other Health Services (OHS) (23),
 
-- Health Insurance (225).
+-   Health Insurance (225).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Health"& cpi_h$level==2])
@@ -1530,7 +1487,7 @@ plot_cpi_time_series(
   category = "Health",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1538,13 +1495,13 @@ plot_cpi_time_series(
 
 Transport is the third largest category in the CPI basket and consists of the following detailed classes:
 
-- Private Transport (906),
+-   Private Transport (906),
 
-- Land Transport Services (262),
+-   Land Transport Services (262),
 
-- Other Transport Services (131),
+-   Other Transport Services (131),
 
-- Transport Services of Goods (8),
+-   Transport Services of Goods (8),
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Transport"& cpi_h$level==2])
@@ -1566,7 +1523,7 @@ plot_cpi_time_series(
   category = "Transport",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1574,16 +1531,15 @@ plot_cpi_time_series(
 
 Information and Communication (InfoComm) carries a total weight of 381 in the CPI basket and consists of the following detailed classes:
 
-- Information and Communication Equipment (91),
+-   Information and Communication Equipment (91),
 
-- Software Excluding Games (3),
+-   Software Excluding Games (3),
 
-- Information and Communication Services (287).
+-   Information and Communication Services (287).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Information & Communication (InfoComm)"& cpi_h$level==2])
 ```
-
 
 ##### Single View
 
@@ -1600,7 +1556,7 @@ plot_cpi_time_series(
   category = "Information & Communication (InfoComm)",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1608,24 +1564,23 @@ plot_cpi_time_series(
 
 Recreation, Sport and Culture (RSC) has a total weight of 595 in the CPI basket and consists of the following detailed classes:
 
-- Recreational and Cultural Goods (9),
+-   Recreational and Cultural Goods (9),
 
-- Other Recreational Goods (ORG) (33),
+-   Other Recreational Goods (ORG) (33),
 
-- Garden Products and Pets (27),
+-   Garden Products and Pets (27),
 
-- Recreational Services (144),
+-   Recreational Services (144),
 
-- Cultural Services (52),
+-   Cultural Services (52),
 
-- Newspapers, Books and Stationery (NBS) (20),
+-   Newspapers, Books and Stationery (NBS) (20),
 
-- Holiday Expenses (310).
+-   Holiday Expenses (310).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Recreation, Sport & Culture (RSC)"& cpi_h$level==2])
 ```
-
 
 ##### Single View
 
@@ -1642,7 +1597,7 @@ plot_cpi_time_series(
   category = "Recreation, Sport & Culture (RSC)",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1650,16 +1605,15 @@ plot_cpi_time_series(
 
 Education has a total weight of 579 in the CPI basket and consists of the following components:
 
-- General, Vocational and Higher Education (GVH Edu) (391),
+-   General, Vocational and Higher Education (GVH Edu) (391),
 
-- Private Tuition and Other Educational Courses (184),
+-   Private Tuition and Other Educational Courses (184),
 
-- School Textbooks and Study Guides (4).
+-   School Textbooks and Study Guides (4).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Education"& cpi_h$level==2])
 ```
-
 
 ##### Single View
 
@@ -1676,7 +1630,7 @@ plot_cpi_time_series(
   category = "Education",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
 
@@ -1684,21 +1638,19 @@ plot_cpi_time_series(
 
 Miscellaneous Goods and Services (MG&S) has a total weight of 438 in the CPI basket and consists of the following components:
 
-- Personal Care (211),
+-   Personal Care (211),
 
-- Alcoholic Beverages and Tobacco (58),
+-   Alcoholic Beverages and Tobacco (58),
 
-- Other Personal Effects (62),
+-   Other Personal Effects (62),
 
-- Social Services (32),
+-   Social Services (32),
 
-- Other Miscellaneous Services (75).
-
+-   Other Miscellaneous Services (75).
 
 ```{r}
 unique(cpi_h$series[cpi_h$division=="Miscellaneous Goods & Services (MG&S)"& cpi_h$level==2])
 ```
-
 
 ##### Single View
 
@@ -1715,23 +1667,17 @@ plot_cpi_time_series(
   category = "Miscellaneous Goods & Services (MG&S)",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = TRUE
+  interactive = FALSE
 )
 ```
-:::
-
-
 
 ### Seasonality
 
-
 **Seasonality** refers to systematic patterns in a time series that recur over fixed and known intervals, such as hourly, weekly, monthly, quarterly, or yearly cycles. For instance, traffic volume may vary by **hour**, consumer spending may fluctuate by **week or month**, and travel demand may change across **quarters**. Since this study uses **monthly CPI data**, the seasonal analysis focuses on patterns observed at the **monthly, quarterly, and yearly** levels. To visualise these recurring patterns, **boxplots and violin plots** are employed to show the distribution of CPI values across seasonal periods using the `plot_seasonal_diagnostics()` function from the **timetk** package. As in the previous section, a reusable function is first developed to facilitate consistent analysis across the CPI hierarchy.
 
+#### Sesonality Function
 
-####  Sesonality Function
-
-The `plot_cpi_seasonal()` function generates seasonal diagnostic plots for CPI series across different levels of the CPIs. Based on the selected `plot_level` and optional category or group, it first identifies the relevant CPI series and then applies `plot_seasonal_diagnostics()` from the **timetk** package to visualise seasonal patterns such as monthly, quarterly, and yearly distributions. The function can either display the plots sequentially or return them as a list, with options for interactive output and flexible visualisation settings.
-
+The `plot_cpi_seasonal()` function generates seasonal diagnostic plots for CPI series across different levels of the CPIs. Based on the selected `plot_level` and optional category or group, it first identifies the relevant CPI series and then applies `plot_seasonal_diagnostics()` from the **timetk** package to visualise seasonal patterns such as monthly, quarterly, and yearly distributions. The function can display the plots sequentially for interactive output and flexible visualisation settings.
 
 ```{r}
 #| code-fold: true
@@ -1742,7 +1688,7 @@ plot_cpi_seasonal <- function(data,
                               group = NULL,
                               interactive = FALSE,
                               geom = "boxplot",
-                              facet_vars = NULL,
+                              #facet_vars = NULL,
                               geom_color = "#2c3e50",
                               feature_set = c("month.lbl", "quarter", "year"),
                               return_plots = FALSE,
@@ -1801,7 +1747,7 @@ plot_cpi_seasonal <- function(data,
       .title = paste("Seasonal Diagnostics:", s),
       .x_lab = "Date",
       .y_lab = "CPI Index",
-      .facet_vars = facet_vars,
+      #.facet_vars = facet_vars,
       .interactive = interactive
     )
     
@@ -1821,14 +1767,13 @@ plot_cpi_seasonal <- function(data,
 
 ```
 
-#### CPI All
+#### Top Level CPIs
 
 In this section, CPI: All Items is first used as a demonstration of the cycle plot based on monthly observations.
 
 ##### Cycle Plot
 
 The cycle plot shows overall CPI by month (Jan–Dec), with separate lines for each year (2020–2025). Year-over-year levels increase consistently from 2020 (lowest, 85) to 2025 (highest, 101–102). Within each year, CPI values tend to be slightly lower in April–May and higher in November–December. The gap between consecutive years is largest between 2021 and 2022, indicating the fastest year-over-year inflation during that period.
-
 
 ```{r}
 #| code-fold: true
@@ -1927,13 +1872,9 @@ cpi_h %>%
   )
 ```
 
-
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 0, interactive = FALSE)
 ```
-
-
 
 #### Major Groups
 
@@ -2031,23 +1972,19 @@ ggplotly(p, tooltip = "text") %>%
 
 ```
 
-
 ##### Seasonal Plot
 
 Each of the 10 major group decomposition plots displays distinct seasonal and trend characteristics. Transport's seasonal component shows the largest amplitude. Education exhibits step-like seasonal patterns. Food and Health show minimal seasonal effects relative to their strong trend components. InfoComm has a relatively flat trend with noticeable seasonal oscillations. The remainder components vary in magnitude across groups.
 
-
 ```{r}
-plot_cpi_seasonal(cpi_h, 1,interactive = FALSE, facet_var = series)
+plot_cpi_seasonal(cpi_h, 1,interactive = FALSE)
 ```
 
 #### Food
 
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Food", interactive = FALSE)
 ```
-
 
 ##### Food: Food Excl Food & Beverage Serving Services (FFBSS)
 
@@ -2057,15 +1994,11 @@ plot_cpi_seasonal(cpi_h, 3, group = "Food Excl Food & Beverage Serving Services 
 
 ##### Food: Food & Beverage Serving Services (FBSS)
 
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 3, group = "Food & Beverage Serving Services (FBSS)", interactive = FALSE)
 ```
 
-
-
 #### Clothing and Footwear (C&F)
-
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Food", interactive = FALSE)
@@ -2085,11 +2018,9 @@ plot_cpi_seasonal(cpi_h, 2, category = "Household Durables & Services (HDS)", in
 
 #### Health
 
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Health", interactive = FALSE)
 ```
-
 
 #### Transport
 
@@ -2097,13 +2028,11 @@ plot_cpi_seasonal(cpi_h, 2, category = "Health", interactive = FALSE)
 plot_cpi_seasonal(cpi_h, 2, category = "Transport", interactive = FALSE)
 ```
 
-
 #### Information & Communication (InfoComm)
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Information & Communication (InfoComm)", interactive = FALSE)
 ```
-
 
 #### Recreation, Sport & Culture (RSC)
 
@@ -2113,20 +2042,15 @@ plot_cpi_seasonal(cpi_h, 2, category = "Recreation, Sport & Culture (RSC)", inte
 
 #### Education
 
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Education", interactive = FALSE)
 ```
 
 #### Miscellaneous Goods & Services (MG&S)
 
-
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Miscellaneous Goods & Services (MG&S)", interactive = FALSE)
 ```
-
-
-
 
 ### Autocorrelation
 
@@ -2140,7 +2064,7 @@ The **ACF** shows the correlation between a time series and its own lagged value
 
 Before computing the CCF, the data is transformed from long format to **wide** format to meet the input structure required by the CCF function, since cross correlation analysis requires the two series to be aligned as separate columns for comparison.
 
-n this analysis, **24** monthly lags are used when computing the ACF, PACF, and CCF. Since the CPI data is recorded monthly, this lag length captures up to two years of past observations, which is sufficient to reveal annual seasonal patterns and medium term dependencies in the series. The lag length can be adjusted depending on the analytical objective or the length of the time series.
+In this analysis, **24** monthly lags are used when computing the ACF, PACF, and CCF. Since the CPI data is recorded monthly, this lag length captures up to two years of past observations, which is sufficient to reveal annual seasonal patterns and medium term dependencies in the series. The lag length can be adjusted depending on the analytical objective or the length of the time series lags.
 
 ```{r}
 #| code-fold: true
@@ -2150,7 +2074,7 @@ plot_cpi_acf <- function(data,
                          plot_level,
                          category = NULL,
                          group_name = NULL,
-                         lags = 36,
+                         lags = 24,
                          interactive = FALSE,
                          facet_ncol = 3,
                          facet_scales = "fixed",
@@ -2313,32 +2237,27 @@ plot_cpi_acf <- function(data,
 }
 ```
 
-
 #### Top Level CPIs
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 0)
 ```
 
-
 #### Major CPIs
-```{r}
+
+```{r, fig.height=15, fig.width=40}
 plot_cpi_acf(cpi_h, plot_level = 1)
 ```
 
-
 #### Food
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Food")
 ```
 
-
 ##### Food: Food Excl Food & Beverage Serving Services (FFBSS)
 
-
-```{r}
+```{r, fig.height=15, fig.width=40}
 plot_cpi_acf(
   cpi_h,
   plot_level = 3,
@@ -2346,7 +2265,6 @@ plot_cpi_acf(
   facet_ncol = 3
 )
 ```
-
 
 ##### Food: Food & Beverage Serving Services (FBSS)
 
@@ -2359,83 +2277,63 @@ plot_cpi_acf(
 )
 ```
 
-
 #### Clothing and Footwear (C&F)
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Clothing and Footwear (C&F)")
 ```
 
-
 #### Housing & Utilities
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Housing & Utilities")
 ```
 
-
 #### Household Durables & Services (HDS)
 
-
-```{r}
+```{r, fig.height=10, fig.width=20}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Household Durables & Services (HDS)")
 ```
 
-
-
 #### Health
 
-
-```{r}
+```{r, fig.height=15, fig.width=30}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Health")
 ```
 
-
 #### Transport
 
-
-```{r}
+```{r, fig.height=10, fig.width=20}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Transport")
 ```
 
-
 #### Information & Communication (InfoComm)
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Information & Communication (InfoComm)")
 ```
 
-
 #### Recreation, Sport & Culture (RSC)
 
-
-```{r}
+```{r, fig.height=10, fig.width=20}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Recreation, Sport & Culture (RSC)")
 ```
 
-
 #### Education
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Education")
 ```
 
-
 #### Miscellaneous Goods & Services (MG&S)
-
 
 ```{r}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Miscellaneous Goods & Services (MG&S)")
 ```
 
+### CCF
 
-### CCF 
-
-```{r}
+```{r, fig.height=12, fig.width=20}
 plot_cpi_acf(
   cpi_h,
   plot_level = 3,
@@ -2447,22 +2345,39 @@ plot_cpi_acf(
 )
 ```
 
-
-
 ## Consulsion
 
+This exploratory data analysis begins with **data wrangling**, where the dataset is cleaned and structured into a **hierarchical table** to reflect the CPI classification framework. The analysis then examines the **trend, seasonality, and autocorrelation patterns** of individual CPI series to build a basic understanding of their behaviour and support future forecasting modelling. Rather than focusing on the expenditure weights within the overall CPI index, the study zooms into **individual CPI components** to observe their underlying patterns over time. The dataset used in this study is obtained from the **CEIC database**, which is accessible through the university library. The CPI data is also available as part of Singapore’s **open government data**, which can be downloaded from [data.gov.sg](data.gov.sg).
+
+One limitation of this analysis is that it focuses mainly on exploratory techniques. Future research could incorporate **external** explanatory variables, such as foreign exchange rates, to further investigate potential relationships and patterns in CPI movements.
+
+Overall, this study demonstrates how publicly available statistical data can be transformed into useful insights that support a clearer understanding of CPI trends.
 
 
+## Shiny App Prototype
+
+In this section, we create several design sketches for the group project to support the implementation of the **Shiny application**. Due to limited drawing skills, the final illustrations were generated with the assistance of AI tools, based on initial **hand drawn sketches** prepared by human.
 
 
+### Overview Dashboard Tab
 
+![](images/EDA.jpg)
 
-## Shiny App Note
+The **Overview Dashboard** presents a high level summary of the CPI dataset through key performance indicators and aggregated visualisations. It highlights **metrics** such as latest CPI value, month on month change, year on year inflation, and number of CPI series. Supporting charts display the **overall CPI trend and the contribution of major CPI groups**, providing a quick overview of price movements across the CPI basket.
 
+### Data Explorer Tab
 
+![](images/datatable.jpg)
 
+The **Data Explorer** tab allows users to browse the Singapore CPI dataset in a structured table format. Users can filter by date range and hierarchy levels, customise which columns are displayed, and export the dataset in formats such as **CSV, Excel, PDF, or print view**. Interactive sorting and callouts help users quickly inspect CPI values and trends across different series.
 
+### EDA Dashboard Tab
 
+![](images/landing.jpeg)
+
+The **EDA Dashboard** provides interactive visual tools for exploring CPI behaviour across different hierarchy levels. Users can analyse **trend, seasonality, and autocorrelation** patterns by selecting divisions, series, and date ranges from the control panel. The dashboard also supports options such as smoothing, colour by year, faceting, and lag selection to facilitate flexible exploratory analysis.
+
+### Code
 
 ```{r}
 #| eval: false
@@ -2493,7 +2408,6 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
-
 ```{r}
 #| eval: false
 output$acf_plot <- renderPlotly({
@@ -2508,9 +2422,8 @@ output$acf_plot <- renderPlotly({
 
 ```
 
-
 ## Reference
 
-Kam, Tin Seong (2026), [R for Visual Analytics](https://r4va.netlify.app) 
+Kam, Tin Seong (2026), [R for Visual Analytics](https://r4va.netlify.app)
 
 Rob J Hyndman and George Athanasopoulos (2022) [Forecasting: Principles and Practice (3rd ed)](https://otexts.com/fpp3/), online version.
