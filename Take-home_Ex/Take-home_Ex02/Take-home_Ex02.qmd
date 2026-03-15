@@ -591,6 +591,8 @@ In this section, we conduct an **exploratory data analysis (EDA)** of Singaporeâ
 
 In the **trend analysis section**, the temporal behaviour of CPI items is examined through time series visualisation. A custom plotting function is first developed by incorporating `geom_line()` from the **ggplot2** package to produce a **consolidated view of the series**. In addition, `plot_time_series()` from the **timetk** package is used to generate **faceted plots** to have clearer comparisons across multiple CPI categories. This workflow also supports the **early prototyping of visual components for the Shiny application** prior to the full development of the dashboard.
 
+:::panel-tabset
+
 #### Single-view Function
 
 The `create_cpi_plot()` function generates an **interactive** CPI time series visualisation across different levels of the CPI hierarchy. It filters the dataset based on the selected `plot_level` and optional category, and plots the relevant CPI series while optionally including a **reference line** from the higher level CPI index for comparison. The function then converts the ggplot output into an interactive Plotly chart with customised styling, legends, and source annotations for clearer interpretation and potential integration into a Shiny dashboard.
@@ -1010,6 +1012,10 @@ plot_cpi_time_series <- function(data,
 }
 ```
 
+:::
+
+:::panel-tabset
+
 #### Top Level CPIs
 
 There are three top level CPI series at the aggregated level: Overall CPI (Consumer Price Index CPI), All Items Less Accommodation, and All Items Less Imputed Rentals.
@@ -1226,7 +1232,7 @@ make_cpi_plot_improved <- function(data, level_val,
 ```
 
 
-:::panel-tabset
+
 
 
 #### Food
@@ -1925,6 +1931,10 @@ plot_cpi_seasonal <- function(data,
 }
 ```
 
+
+
+:::panel-tabset
+
 #### Top Level CPIs
 
 In this section, CPI: All Items is first used as a demonstration of the cycle plot based on monthly observations.
@@ -2240,7 +2250,6 @@ Each of the 10 major group decomposition plots displays distinct seasonal and tr
 plot_cpi_seasonal(cpi_h, 1,interactive = FALSE)
 ```
 
-:::panel-tabset
 
 #### Food
 
@@ -2966,6 +2975,9 @@ plot_cpi_acf <- function(data,
 }
 ```
 
+:::panel-tabset
+
+
 #### Top Level CPIs
 
 At **lag 24**, the ACF and PACF are essentially near zero for all three CPI series, staying within the significance bands.
@@ -2990,7 +3002,6 @@ In the PACF panels, each group has a single large spike at **lag 1**, with subse
 plot_cpi_acf(cpi_h, plot_level = 1)
 ```
 
-:::panel-tabset
 
 #### Food
 
