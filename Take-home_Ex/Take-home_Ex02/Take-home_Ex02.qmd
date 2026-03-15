@@ -17,7 +17,7 @@ format:
     code-link: true
 
 number-sections: true
-number-depth: 9
+number-depth: 6
 
 editor: visual
 ---
