@@ -61,25 +61,22 @@ Third, a nested forecasting workflow was implemented using the Modeltime package
 ::: panel-tabset
 #### Package Description
 
-There are <mark>**XX**</mark> packages that will be used in this exercise.
+There are **13** packages that will be used in this exercise.
 
 | Package | Description |
 |------------------------------------|------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [knitr](https://cran.r-project.org/web/packages/knitr/index.html/) | Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques. |
 | [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
-| [patchwork](https://cran.r-project.org/web/packages/patchwork/index.html) | Simpily combine separate ggplots into the same graphic. |
 | [scales](https://cran.r-project.org/web/packages/scales/index.html) | Provides graphical scales map data to aesthetics. |
-| [magick](https://cran.r-project.org/web/packages/magick/index.html) | Offer advanced graphics and image-Processing in R. |
 | [ggthemes](https://cran.r-project.org/web/packages/ggthemes/index.html) | Provides 'ggplot2' themes and scales that replicate some of the famous looks. |
 | [readxl](https://cran.r-project.org/web/packages/readxl/readxl.pdf) | Imports excel files into R. |
-| [gganimate](https://gganimate.com/) | The ggplot2 extension used to create animated statistical graphs. |
-| [gifski](https://cran.r-project.org/web/packages/gifski/index.html) | A rendering engine used by gganimate to turn animation frames into high quality GIFs. It handles the final export, not the animation logic itself. |
+| [rlang](https://cran.r-project.org/web/packages/rlang/index.html) | Tools for working with base types, expressions, environments, and especially “tidy evaluation.|
 | [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
-| [gapminder](https://cran.r-project.org/web/packages/gapminder/index.html) | A dataset and visualisation concept popularised by Hans Rosling. In ggplot and gganimate, Gapminder data is often used as an example to demonstrate animated plots over time, such as countries moving across income and life expectancy.Used here solely to apply its country color scheme. |
-| [tidymodels](https://www.tidymodels.org/) | A unified modelling framework for machine learning in R |
+| [viridis](https://cran.r-project.org/web/packages/gapminder/index.html) | A dataset and visualisation concept popularised by Hans Rosling. In ggplot and gganimate, Gapminder data is often used as an example to demonstrate animated plots over time, such as countries moving across income and life expectancy.Used here solely to apply its country color scheme. |
+| [htmltools](https://rstudio.github.io/htmltools/) | Useful tools for creating, manipulating, and writing HTML from R.|
 | [timetk](https://github.com/business-science/timetk) | A cutting-edge toolkit for time series preparation and exploration. |
-| [modeltime](https://business-science.github.io/modeltime/index.html) | A new forecasting framework that simplifies the full workflow of building time series models (such as ARIMA, exponential smoothing, and machine learning models) |
+| [stringr](https://cran.r-project.org/web/packages/stringr/index.html) | Provides a consistent and user friendly set of functions for performing common string manipulation tasks, with functions such as `str_detect()`, `str_replace()` and `str_extract()` etc |
 | [lubridate](https://cran.r-project.org/web/packages/lubridate/index.html) | A Tidyverse package that handles date-time objects |
 
 The code below installs and loads the required packages into R environment.
@@ -88,7 +85,7 @@ The code below installs and loads the required packages into R environment.
 
 ```{r}
 pacman::p_load(tidyverse, DT, readxl,
-             knitr,patchwork, scales,ggthemes,
+             knitr, scales,ggthemes,
                plotly, timetk, lubridate, stringr, htmltools, viridis, rlang)
 ```
 :::
@@ -759,80 +756,74 @@ plot_cpi_time_series <- function(data,
                                  plot_level,
                                  category = NULL,
                                  group_name = NULL,
-                                 add_year = TRUE,
+                                 series_select = NULL, 
                                  use_year_colour = FALSE,
                                  facet_by = TRUE,
                                  facet_ncol = 1,
                                  facet_nrow = 1,
-                                 facet_scales = "free_y",
-                                 facet_dir = "h",
-                                 facet_collapse = FALSE,
-                                 facet_collapse_sep = " ",
-                                 facet_strip_remove = FALSE,
-                                 line_color = "#2c3e50",
-                                 line_size = 0.5,
-                                 line_type = 1,
-                                 line_alpha = 1,
-                                 y_intercept = NULL,
-                                 y_intercept_color = "#2c3e50",
-                                 x_intercept = NULL,
-                                 x_intercept_color = "#2c3e50",
+                                 facet_scales = "fixed",
                                  smooth = FALSE,
                                  smooth_period = "auto",
-                                 smooth_message = FALSE,
                                  smooth_span = NULL,
                                  smooth_degree = 2,
-                                 smooth_color = "#3366FF",
-                                 smooth_size = 1,
-                                 smooth_alpha = 1,
-                                 legend_show = FALSE,
+                                 plotly_slider = FALSE,
+                                 interactive = TRUE,
+                                 add_caption = TRUE,
+                                 caption_text = "Source: CEIC Database | Index, 2024 = 100",
                                  title = NULL,
                                  x_lab = "",
                                  y_lab = "CPI Index",
-                                 color_lab = "Legend",
-                                 interactive = TRUE,
-                                 plotly_slider = FALSE,
-                                 trelliscope = FALSE,
-                                 trelliscope_params = list(),
-                                 add_source_note = TRUE,
-                                 source_note = "<b>Source:</b> CEIC Database; Index, 2024 = 100",
+                                 color_lab = "Year",
+                                 line_color = "#2c3e50",
                                  return_plot = FALSE) {
   
-  if (add_year) {
-    data <- data %>%
-      mutate(year = year(date))
-  }
+  data <- data %>%
+    mutate(year = factor(lubridate::year(date)))
   
   if (plot_level == 0) {
     plot_data <- data %>% filter(level == 0)
-    default_title <- "CPI Top Level Time Series"
+    default_title <- "CPI Top Level Time Series, 2020-2025"
     facet_col <- "series"
     
   } else if (plot_level == 1) {
     plot_data <- data %>% filter(level == 1)
-    default_title <- "CPI Major Groups Time Series"
+    default_title <- "CPI Major Groups Time Series, 2020-2025"
     facet_col <- "division"
     
   } else if (plot_level == 2) {
-    if (is.null(category)) stop("For level 2, specify a category")
+    if (is.null(category)) stop("For plot_level = 2, specify category")
     
     plot_data <- data %>%
       filter(level == 2, division == category)
     
-    default_title <- paste(category, "CPI Sub Categories Time Series")
+    default_title <- paste(category, "CPI Sub Categories Time Series, 2020-2025")
     facet_col <- "series"
     
   } else if (plot_level == 3) {
-    if (is.null(group_name)) stop("For level 3, specify a group_name")
+    if (is.null(group_name)) stop("For plot_level = 3, specify group_name")
     
     plot_data <- data %>%
       filter(level == 3, group == group_name)
     
-    default_title <- paste(group_name, "Detailed CPI Time Series")
+    default_title <- paste(group_name, "Detailed CPI Time Series, 2020-2025")
     facet_col <- "series"
     
   } else {
     stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  # NEW: Apply series selection if specified
+  if (!is.null(series_select)) {
+    plot_data <- plot_data %>%
+      filter(series %in% series_select)
+    
+    # Update title to reflect selection
+    if (length(series_select) <= 3) {
+      series_text <- paste(series_select, collapse = ", ")
+      default_title <- paste0(default_title, ": ", series_text)
+    } else {
+      default_title <- paste0(default_title, " (", length(series_select), " selected series)")
+    }
   }
   
   if (nrow(plot_data) == 0) {
@@ -843,7 +834,7 @@ plot_cpi_time_series <- function(data,
     title <- default_title
   }
   
-  if (use_year_colour && facet_by && !is.null(facet_col) && "year" %in% names(plot_data)) {
+  if (use_year_colour && facet_by) {
     
     p <- timetk::plot_time_series(
       .data = plot_data,
@@ -854,38 +845,21 @@ plot_cpi_time_series <- function(data,
       .facet_ncol = facet_ncol,
       .facet_nrow = facet_nrow,
       .facet_scales = facet_scales,
-      .facet_dir = facet_dir,
-      .facet_collapse = facet_collapse,
-      .facet_collapse_sep = facet_collapse_sep,
-      .facet_strip_remove = facet_strip_remove,
       .line_color = line_color,
-      .line_size = line_size,
-      .line_type = line_type,
-      .line_alpha = line_alpha,
-      .y_intercept = y_intercept,
-      .y_intercept_color = y_intercept_color,
-      .x_intercept = x_intercept,
-      .x_intercept_color = x_intercept_color,
       .smooth = smooth,
       .smooth_period = smooth_period,
-      .smooth_message = smooth_message,
       .smooth_span = smooth_span,
       .smooth_degree = smooth_degree,
-      .smooth_color = smooth_color,
-      .smooth_size = smooth_size,
-      .smooth_alpha = smooth_alpha,
-      .legend_show = legend_show,
+      .legend_show = TRUE,
       .title = title,
       .x_lab = x_lab,
       .y_lab = y_lab,
       .color_lab = color_lab,
       .interactive = interactive,
-      .plotly_slider = plotly_slider,
-      .trelliscope = trelliscope,
-      .trelliscope_params = trelliscope_params
+      .plotly_slider = plotly_slider
     )
     
-  } else if (use_year_colour && !facet_by && "year" %in% names(plot_data)) {
+  } else if (use_year_colour && !facet_by) {
     
     p <- timetk::plot_time_series(
       .data = plot_data,
@@ -895,38 +869,21 @@ plot_cpi_time_series <- function(data,
       .facet_ncol = facet_ncol,
       .facet_nrow = facet_nrow,
       .facet_scales = facet_scales,
-      .facet_dir = facet_dir,
-      .facet_collapse = facet_collapse,
-      .facet_collapse_sep = facet_collapse_sep,
-      .facet_strip_remove = facet_strip_remove,
       .line_color = line_color,
-      .line_size = line_size,
-      .line_type = line_type,
-      .line_alpha = line_alpha,
-      .y_intercept = y_intercept,
-      .y_intercept_color = y_intercept_color,
-      .x_intercept = x_intercept,
-      .x_intercept_color = x_intercept_color,
       .smooth = smooth,
       .smooth_period = smooth_period,
-      .smooth_message = smooth_message,
       .smooth_span = smooth_span,
       .smooth_degree = smooth_degree,
-      .smooth_color = smooth_color,
-      .smooth_size = smooth_size,
-      .smooth_alpha = smooth_alpha,
-      .legend_show = legend_show,
+      .legend_show = TRUE,
       .title = title,
       .x_lab = x_lab,
       .y_lab = y_lab,
       .color_lab = color_lab,
       .interactive = interactive,
-      .plotly_slider = plotly_slider,
-      .trelliscope = trelliscope,
-      .trelliscope_params = trelliscope_params
+      .plotly_slider = plotly_slider
     )
     
-  } else if (!use_year_colour && facet_by && !is.null(facet_col)) {
+  } else if (!use_year_colour && facet_by) {
     
     p <- timetk::plot_time_series(
       .data = plot_data,
@@ -936,35 +893,17 @@ plot_cpi_time_series <- function(data,
       .facet_ncol = facet_ncol,
       .facet_nrow = facet_nrow,
       .facet_scales = facet_scales,
-      .facet_dir = facet_dir,
-      .facet_collapse = facet_collapse,
-      .facet_collapse_sep = facet_collapse_sep,
-      .facet_strip_remove = facet_strip_remove,
       .line_color = line_color,
-      .line_size = line_size,
-      .line_type = line_type,
-      .line_alpha = line_alpha,
-      .y_intercept = y_intercept,
-      .y_intercept_color = y_intercept_color,
-      .x_intercept = x_intercept,
-      .x_intercept_color = x_intercept_color,
       .smooth = smooth,
       .smooth_period = smooth_period,
-      .smooth_message = smooth_message,
       .smooth_span = smooth_span,
       .smooth_degree = smooth_degree,
-      .smooth_color = smooth_color,
-      .smooth_size = smooth_size,
-      .smooth_alpha = smooth_alpha,
-      .legend_show = legend_show,
+      .legend_show = FALSE,
       .title = title,
       .x_lab = x_lab,
       .y_lab = y_lab,
-      .color_lab = color_lab,
       .interactive = interactive,
-      .plotly_slider = plotly_slider,
-      .trelliscope = trelliscope,
-      .trelliscope_params = trelliscope_params
+      .plotly_slider = plotly_slider
     )
     
   } else {
@@ -976,66 +915,48 @@ plot_cpi_time_series <- function(data,
       .facet_ncol = facet_ncol,
       .facet_nrow = facet_nrow,
       .facet_scales = facet_scales,
-      .facet_dir = facet_dir,
-      .facet_collapse = facet_collapse,
-      .facet_collapse_sep = facet_collapse_sep,
-      .facet_strip_remove = facet_strip_remove,
       .line_color = line_color,
-      .line_size = line_size,
-      .line_type = line_type,
-      .line_alpha = line_alpha,
-      .y_intercept = y_intercept,
-      .y_intercept_color = y_intercept_color,
-      .x_intercept = x_intercept,
-      .x_intercept_color = x_intercept_color,
       .smooth = smooth,
       .smooth_period = smooth_period,
-      .smooth_message = smooth_message,
       .smooth_span = smooth_span,
       .smooth_degree = smooth_degree,
-      .smooth_color = smooth_color,
-      .smooth_size = smooth_size,
-      .smooth_alpha = smooth_alpha,
-      .legend_show = legend_show,
+      .legend_show = FALSE,
       .title = title,
       .x_lab = x_lab,
       .y_lab = y_lab,
-      .color_lab = color_lab,
       .interactive = interactive,
-      .plotly_slider = plotly_slider,
-      .trelliscope = trelliscope,
-      .trelliscope_params = trelliscope_params
+      .plotly_slider = plotly_slider
     )
   }
   
-  if (interactive) {
-    annotation_list <- list()
-    
-    if (add_source_note) {
-      annotation_list <- list(
-        list(
-          text = source_note,
-          x = 1,
-          y = -0.32,
-          xref = "paper",
-          yref = "paper",
-          showarrow = FALSE,
-          font = list(size = 10, color = "gray50"),
-          xanchor = "right"
+  if (!interactive && add_caption) {
+    p <- p +
+      labs(caption = caption_text) +
+      theme(
+        plot.caption = element_text(
+          size = 9,
+          colour = "grey40",
+          hjust = 1
         )
       )
-    }
-    
+  }
+  
+  if (interactive && add_caption) {
     p <- p %>%
       plotly::layout(
-        legend = list(
-          orientation = "h",
-          y = -0.18,
-          x = 0.5,
-          xanchor = "center"
+        annotations = list(
+          list(
+            text = caption_text,
+            x = 1,
+            y = -0.18,
+            xref = "paper",
+            yref = "paper",
+            showarrow = FALSE,
+            xanchor = "right",
+            font = list(size = 10, color = "gray50")
+          )
         ),
-        annotations = annotation_list,
-        margin = list(b = if (add_source_note) 120 else 80)
+        margin = list(b = 90)
       )
   }
   
@@ -1063,13 +984,26 @@ create_cpi_plot(cpi_h, plot_level = 0)
 
 The three faceted panels confirm the same pattern seen in the single view. Each series shows an S-shaped trajectory: flat to slightly declining in 2020, accelerating upward through 2021–2023, then levelling off near 100 in 2024. The faceted layout makes it easier to see that each series spans a similar range (85–102) and that within-year variability is relatively small compared to the year-over-year trend.
 
-```{r}
+```{r, fig.width=12, fig.height = 4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 0,
   facet_by = TRUE,
   facet_ncol = 3,
-  interactive = TRUE
+  interactive = FALSE,facet_scales = "fixed", use_year_colour = TRUE
+)
+```
+
+
+```{r}
+plot_cpi_time_series(
+  data = cpi_h,
+  plot_level = 0,
+  series_select = "Consumer Price Index (CPI)",  # Just one series
+  facet_by = TRUE,
+  facet_ncol = 1,
+  interactive = TRUE,
+  plotly_slider = TRUE, smooth = TRUE
 )
 ```
 
@@ -1121,7 +1055,7 @@ p %>% layout(
 
 ```
 
-#### Major Group
+#### Major Groups
 
 This section examines the major CPI groups that collectively form the overall Consumer Price Index (CPI). As each group is assigned a **different expenditure weight**, their contributions to the index are not equal.
 
@@ -1144,15 +1078,21 @@ create_cpi_plot(cpi_h, plot_level = 1)
 
 ##### Facet View
 
-Each of the 10 faceted panels reveals distinct patterns. Transport has the widest range (78–105) and most volatility. Clothing & Footwear fluctuates around 92–104 with visible oscillations. Education shows a staircase-like pattern with sudden jumps. HDS and MG&S display gradual upward curves. InfoComm shows a narrow range (96–100). Health rises from 90 to 105. Housing & Utilities climbs steadily from 85 to 100. Food and RSC show smooth upward trajectories.
+Among the **CPI major groups**, most categories show a clear upward movement over the period. **Food** rises steadily from around **86 in 2020 to about 103 by 2025**. **Health** increases from approximately **89 to around 105**, while **Education** grows gradually from about **91 to 102**. **Transport** records one of the largest increases, climbing from roughly **75 in 2020 to about 105 by 2025**.
 
-```{r}
+**Housing & Utilities** increases from around **87 to about 102**, with visible cyclical fluctuations. **Recreation, Sport & Culture** also rises steadily from approximately **86 to around 101**. **Miscellaneous Goods & Services** shows moderate growth from about **95 to around 100**, before stabilising towards the later period. **Household Durables & Services** increases gradually from around **94 to about 100**, then levels off.
+
+In contrast, **Information & Communication** remains relatively stable, fluctuating around **97–100** throughout the period. **Clothing & Footwear** shows the most variability, moving between approximately **93 and 104** without a clear long term upward trend.
+
+
+
+```{r, fig.width=12, fig.height=12}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 1,
   facet_by = TRUE,
   facet_ncol = 3,
-  interactive = TRUE
+  interactive = FALSE,facet_scales = "fixed"
 )
 ```
 
@@ -1252,7 +1192,11 @@ Food accounts for 2,042 out of the total CPI weight of 10,000, making it second 
 
 ##### Subgroup
 
-The Food category consists of two main subgroups: **Food Excluding Food and Beverage Serving Services (FFBSS)** with a weight of 651, and **Food and Beverage Serving Services (FBSS)** with a weight of 1,391.
+The Food category consists of two main subgroups:
+
+- **Food Excluding Food and Beverage Serving Services (FFBSS)** with a weight of 651, 
+
+- and **Food and Beverage Serving Services (FBSS)** with a weight of 1,391.
 
 ```{r}
 unique(cpi_h$series[cpi_h$division == "Food" & cpi_h$level == 2])
@@ -1271,14 +1215,14 @@ create_cpi_plot(cpi_h, plot_level = 2, category = "Food")
 
 The two-panel facet confirms FFBSS has a more volatile trajectory with sharper month-to-month fluctuations, while FBSS follows a smoother, more linear upward path. FFBSS shows visible plateaus around mid 2023 to mid 2024 before resuming growth. FBSS accelerates more consistently throughout the period, with its steepest gains occurring in 2022–2023.
 
-```{r}
+```{r, fig.width=8, fig.height=4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Food",
   facet_by = TRUE,
   facet_ncol = 2,
-  interactive = FALSE
+  interactive = FALSE,facet_scales = "fixed"
 )
 ```
 
@@ -1286,7 +1230,27 @@ plot_cpi_time_series(
 
 Food Excluding Food and Beverage Serving Services (FFBSS) carries a weight of 651 within the CPI basket. Although it has a smaller weight than Food and Beverage Serving Services (FBSS), it includes items related to grocery consumption, which affect the daily spending of most households.
 
-The FFBSS subgroup is further divided into **10** detailed classes, including - Rice and Cereals (122), - Meat (101), - Fish and Seafood (79), - Milk, Other Dairy Products and Eggs (64), - Oils and Fats (12), - Fruits and Nuts (79), - Vegetables (82), - Sugar, Confectionery and Desserts (27), - Ready Made and Other Food Products (44), - and Non Alcoholic Beverages (41).
+The FFBSS subgroup is further divided into **10** detailed classes, including:
+
+- Rice and Cereals (122)
+
+- Meat (101)
+
+- Fish and Seafood (79
+
+- Milk, Other Dairy Products and Eggs (64)
+
+ - Oils and Fats (12)
+
+- Fruits and Nuts (79)
+
+- Vegetables (82) 
+
+- Sugar, Confectionery and Desserts (27)
+
+- Ready Made and Other Food Products (44)
+
+- and Non Alcoholic Beverages (41).
 
 ```{r}
 unique(cpi_h$series[cpi_h$group == "Food Excl Food & Beverage Serving Services (FFBSS)" & cpi_h$level == 3])
@@ -1303,7 +1267,10 @@ create_cpi_plot(cpi_h, plot_level = 3, category = "Food Excl Food & Beverage Ser
 
 ###### Facet View
 
-```{r}
+Among the ten **FFBSS sub-categories**, **Oils & Fats** and **Vegetables** show the highest volatility, with notable peaks around **2022–2023** before moderating. **Sugar, Confectionery & Desserts** records the largest overall increase, reaching the highest index level by **2025**. **Rice & Cereals** and **Meat** exhibit steady upward trends, while **Fish & Seafood** rises sharply between **2021 and 2022** before stabilising thereafter. **Non-Alcoholic Beverages** and **Ready-Made Food** display more gradual and consistent increases.
+
+
+```{r, fig.width=12, fig.height = 15}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 3,
@@ -1340,9 +1307,10 @@ create_cpi_plot(cpi_h, plot_level = 3, category = "Food & Beverage Serving Servi
 
 ###### Facet View
 
-The four faceted panels show each FBSS class individually. All display upward trends but differ in steepness and smoothness. Fast Food shows the steepest incline. Hawker Food and Restaurants show similar moderate slopes. Other Catering Services has the flattest trajectory, with most growth occurring 2022–2024. All four series exhibit minimal within-year volatility.
+Among the **FBSS service categories**, all four segments show a clear upward trend over the period. **Fast Food** records the strongest increase, with a sharp rise after **2022**. **Hawker Food including Food Courts** shows steady growth with a gradual upward movement. **Restaurants, Cafés & Pubs** also follow a consistent upward trajectory. In contrast, **Other Catering Services including Vending Machines** increases gradually before stabilising around **2024–2025**.
 
-```{r}
+
+```{r, fig.width=8, fig.height=6}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 3,
@@ -1367,13 +1335,21 @@ unique(cpi_h$series[cpi_h$division == "Clothing and Footwear (C&F)" & cpi_h$leve
 
 ##### Single View
 
+
+Within **Clothing & Footwear**, both subgroups display noticeable variability over time. **Clothing** fluctuates roughly between **94 and 104**, while **Footwear** shows wider movements, ranging from about **92 to 105**. The overall **Clothing & Footwear index** (black line) remains relatively stable, generally moving within the **96–103 range** throughout the period.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Clothing and Footwear (C&F)")
 ```
 
 ##### Facet View
 
-```{r}
+
+Within the **Clothing & Footwear sub-categories**, both series show noticeable fluctuations without a clear long term upward trend. **Clothing** varies roughly between **94 and 104**, with declines around **2021** and **2024** before partial recoveries. **Footwear** exhibits greater volatility, ranging from approximately **87 to 105**, with a sharp dip around **2022** followed by several rebounds and subsequent fluctuations.
+
+
+```{r, fig.width=8, fig.height=4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
@@ -1398,13 +1374,19 @@ unique(cpi_h$series[cpi_h$division == "Housing & Utilities" & cpi_h$level == 2])
 
 ##### Single View
 
+Within **Housing & Utilities**, both subcategories show an overall upward trend over the period. **Accommodation** increases steadily from around **88 in 2020 to about 101 by 2025**, with small periodic fluctuations. **Utilities & Other Fuels** shows greater variability, declining from about **84 to around 78 in 2020–2021**, before rising sharply to approximately **100 by 2024** and stabilising thereafter. The overall **Housing & Utilities index** follows a gradual upward path, moving from roughly **87 in 2020 to around 101 by 2025**.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Housing & Utilities")
 ```
 
 ##### Facet View
 
-```{r}
+Within the **Housing & Utilities sub-categories**, **Accommodation** shows a steady upward trend, increasing from around **87 in 2020 to approximately 101 by 2025**, with regular seasonal fluctuations. In contrast, **Utilities & Other Fuels** exhibits greater variability, declining from about **84 to around 77 in 2020–2021**, before rising sharply to around **100 by 2024** and fluctuating slightly thereafter.
+
+
+```{r, fig.width=8, fig.height=4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
@@ -1434,6 +1416,13 @@ unique(cpi_h$series[cpi_h$division=="Household Durables & Services (HDS)"& cpi_h
 
 ##### Single View
 
+The overall Household Durables & Services index (black reference line) increases gradually from about 94 in 2020 to around 100 by 2024–2025, before stabilising thereafter. 
+
+**Furniture & Furnishings** rises steadily from about **92 in 2020 to around 100 by 2024–2025**. **Glassware, Tableware & Household Utensils** fluctuates slightly but generally remains within the **97–101 range**. **Household Appliances** increases from approximately **95 to around 100** before stabilising.
+
+**Household Services & Supplies** shows moderate growth from about **94 to around 100**. **Tools & Equipment for House & Garden** rises more sharply from around **86 to about 100 by 2023**, then fluctuates slightly afterwards. In contrast, **Household Textiles** displays the greatest variability, moving between roughly **90 and 102**, with a noticeable decline towards **2025**.
+
+
 ```{r}
 
 create_cpi_plot(cpi_h, plot_level = 2, category = "Household Durables & Services (HDS)")
@@ -1441,7 +1430,12 @@ create_cpi_plot(cpi_h, plot_level = 2, category = "Household Durables & Services
 
 ##### Facet View
 
-```{r}
+Within the **Household Durables & Services sub-categories**, **Furniture & Furnishings** rises from about **92 in 2020 to around 100–101 by 2024**, before fluctuating slightly thereafter. **Glassware, Tableware & Household Utensils** remains relatively stable, moving within the **96–102 range** over the period. **Household Appliances** increases gradually from around **94 to about 100 by 2023**, followed by minor fluctuations.
+
+**Household Services & Supplies** shows a steady upward trend from approximately **94 to around 100–101 by 2025**. **Tools & Equipment for House & Garden** rises sharply from about **86 in 2020 to around 101 by 2023**, before moderating slightly afterwards. In contrast, **Household Textiles** displays the greatest variability, fluctuating around **98–102** before declining to roughly **91–93 by 2025**.
+
+
+```{r, fig.width=12, fig.height=8}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
@@ -1472,6 +1466,11 @@ unique(cpi_h$series[cpi_h$division=="Health"& cpi_h$level==2])
 
 ##### Single View
 
+The overall Health index (black reference line) follows a gradual upward path, increasing from about 89 in 2020 to around 105 by 2025.
+
+**Medicines & Health Products** fluctuates within a narrower range, generally between **95 and 101**. **Health Insurance** records the largest rise, increasing from about **88 in 2020 to around 122 by 2025**. **Other Health Services** grows steadily from approximately **89 to around 103**. **Inpatient Services** rises gradually from around **89 to about 100**.  **Outpatient Services** increases gradually from about **88 to around 100** by **2025**.
+
+
 ```{r}
 
 create_cpi_plot(cpi_h, plot_level = 2, category = "Health")
@@ -1480,13 +1479,15 @@ create_cpi_plot(cpi_h, plot_level = 2, category = "Health")
 
 ##### Facet View
 
-```{r}
+Within the **Health CPI sub-categories**, **Health Insurance** records the largest increase, rising from about **86 in 2020 to around 122 by 2025**. **Other Health Services (OHS)** shows a steady upward trend, increasing from approximately **87 to around 103**. **Outpatient Services** also rises gradually from about **88 to around 100** by **2024–2025**. **Inpatient Services** increases moderately from around **88 to about 100**, with small fluctuations towards the end of the period. In contrast, **Medicines & Health Products** remains relatively stable, fluctuating within the **95–101 range** throughout the period.
+
+```{r, fig.width=12, fig.height=8}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Health",
   facet_by = TRUE,
-  facet_ncol = 2,
+  facet_ncol = 3,
   interactive = FALSE
 )
 ```
@@ -1509,6 +1510,13 @@ unique(cpi_h$series[cpi_h$division=="Transport"& cpi_h$level==2])
 
 ##### Single View
 
+The overall **Transport index** (black reference line) increases from about **75 in 2020 to around 104 by 2025**, with a noticeable rise between **2021 and 2023**, followed by moderate fluctuations.
+
+**Land Transport Services** increases gradually from about **84 to around 106** by **2025**. **Private Transport** rises from approximately **71 in 2020 to around 105 by 2024–2025**, showing one of the largest increases among the subcategories.
+
+**Other Transport Services** displays greater volatility, fluctuating between roughly **90 and 112**, with several peaks around **2022–2023** before moderating later in the period. **Transport Services of Goods** remains relatively stable, moving within the **88–104 range** with moderate fluctuations.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Transport")
 
@@ -1516,7 +1524,12 @@ create_cpi_plot(cpi_h, plot_level = 2, category = "Transport")
 
 ##### Facet View
 
-```{r}
+Within the **Transport CPI sub-categories**, **Land Transport Services** increases steadily from about **84 in 2020 to around 107 by 2025**, with gradual upward movement throughout the period. **Private Transport** shows a stronger increase, rising from approximately **72 in 2020 to around 105 by 2024–2025**, followed by moderate fluctuations.
+
+**Other Transport Services** displays greater volatility, fluctuating roughly between **90 and 112**, with several peaks around **2022–2023** before moderating later in the period. **Transport Services of Goods** declines from about **94 to around 88 during 2020–2021**, then rises gradually to approximately **100 by 2024**, before stabilising with minor fluctuations thereafter.
+
+
+```{r, fig.width=8, fig.height=8}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
@@ -1543,19 +1556,31 @@ unique(cpi_h$series[cpi_h$division=="Information & Communication (InfoComm)"& cp
 
 ##### Single View
 
+The overall **Information & Communication index** (black reference line) remains relatively stable, fluctuating between approximately **96 and 100** over the period.
+
+**Information & Communication Services** moves within a narrow range of about **95 to 100**, with moderate fluctuations but no clear long term upward trend. **Information & Communication Equipment** shows greater variability, fluctuating between roughly **93 and 103**, with several noticeable peaks and declines throughout the period.
+
+In contrast, **Software Excluding Games** remains largely stable around **103 until 2023**, before declining and stabilising near **100 during 2024–2025**.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Information & Communication (InfoComm)")
 ```
 
 ##### Facet View
 
-```{r}
+Within the **Information & Communication CPI sub-categories**, **InfoComm Services** fluctuates within a narrow range, moving roughly between **95 and 101** over the period. **Information & Communication Equipment** shows greater variability, fluctuating between approximately **93 and 103**, with several noticeable peaks and declines.
+
+In contrast, **Software Excluding Games** remains stable at around **103 from 2020 to 2023**, before declining to approximately **100 from 2024 onwards** and remaining flat thereafter.
+
+
+```{r, fig.width=12, fig.height=4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Information & Communication (InfoComm)",
   facet_by = TRUE,
-  facet_ncol = 2,
+  facet_ncol = 3,
   interactive = FALSE
 )
 ```
@@ -1584,19 +1609,33 @@ unique(cpi_h$series[cpi_h$division=="Recreation, Sport & Culture (RSC)"& cpi_h$l
 
 ##### Single View
 
+The overall **Recreation, Sport & Culture index** (black reference line) increases steadily from about **85 in 2020 to around 101 by 2024–2025**, before fluctuating slightly thereafter.
+
+**Cultural Services** rises gradually from approximately **89 to around 101** by **2025**. **Garden Products & Pets** increases from about **87 to around 101**, with moderate fluctuations. **Holiday Expenses** shows greater variability, rising from roughly **84 to around 101**, with noticeable peaks and dips.
+
+**Newspapers, Books & Stationery (NBS)** remains relatively stable, fluctuating around **96–100**. **Other Recreational Goods (ORG)** also stays within a narrow range, generally between **99 and 103**. **Recreational & Cultural Goods** shows moderate growth from around **94 to about 100**, while **Recreational Services** rises from approximately **83 to around 101** by **2025**.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Recreation, Sport & Culture (RSC)")
 ```
 
 ##### Facet View
 
-```{r}
+Within the **Recreation, Sport & Culture CPI sub-categories**, **Cultural Services** rises steadily from about **88 in 2020 to around 101–102 by 2025**. **Garden Products & Pets** increases from approximately **87 to around 101**, with gradual upward movement.
+
+**Holiday Expenses** shows the greatest volatility, rising from roughly **83 in 2020 to peaks above 103 during 2023–2024**, followed by noticeable fluctuations thereafter. **Newspapers, Books & Stationery (NBS)** remains relatively stable, increasing slightly from about **96 to around 101**.
+
+**Other Recreational Goods (ORG)** fluctuates within a narrow range, generally between **99 and 102**. **Recreational & Cultural Goods** increases from roughly **94 to around 100**, before stabilising with minor fluctuations. **Recreational Services** records one of the largest increases, rising from about **82 in 2020 to around 102 by 2024–2025**.
+
+
+```{r, fig.width=12, fig.height=12}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Recreation, Sport & Culture (RSC)",
   facet_by = TRUE,
-  facet_ncol = 2,
+  facet_ncol = 3,
   interactive = FALSE
 )
 ```
@@ -1617,19 +1656,33 @@ unique(cpi_h$series[cpi_h$division=="Education"& cpi_h$level==2])
 
 ##### Single View
 
+The overall **Education index** (black reference line) increases gradually from about **91 in 2020 to around 101 by 2025**, showing a steady upward trend over the period.
+
+**General, Vocational & Higher Education** rises moderately from approximately **94 to around 101** by **2025**, with gradual increases throughout the period. **School Textbooks & Study Guides** remains relatively stable, moving from about **96 to around 101** with small incremental changes.
+
+In contrast, **Private Tuition & Other Educational Courses** records the largest increase, rising from around **84 in 2020 to approximately 103 by 2025**, with noticeable step increases around **2023–2024**.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Education")
 ```
 
 ##### Facet View
 
-```{r}
+Within the **Education CPI sub-categories**, **General, Vocational & Higher Education** increases gradually from about **95 in 2020 to around 101 by 2025**, with steady incremental growth over the period.
+
+**Private Tuition & Other Educational Courses** records the largest increase, rising from approximately **84 in 2020 to around 103 by 2025**, with several step increases observed between **2022 and 2024**.
+
+In contrast, **School Textbooks & Study Guides** remains relatively stable, increasing modestly from about **96 to around 101**, with gradual changes throughout the period.
+
+
+```{r, fig.width=12, fig.height=4}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Education",
   facet_by = TRUE,
-  facet_ncol = 2,
+  facet_ncol = 3,
   interactive = FALSE
 )
 ```
@@ -1654,19 +1707,33 @@ unique(cpi_h$series[cpi_h$division=="Miscellaneous Goods & Services (MG&S)"& cpi
 
 ##### Single View
 
+The overall **Miscellaneous Goods & Services index** (black reference line) fluctuates slightly but shows a gradual increase from about **96 in 2020 to around 100 by 2024–2025**.
+
+**Alcoholic Drinks & Tobacco** rises from approximately **87 in 2020 to around 101–102 by 2025**, with a noticeable step increase around **2023**. **Other Miscellaneous Services** fluctuates within the **97–105 range**, with higher levels observed in the earlier period before moderating slightly.
+
+**Personal Care** remains relatively stable, moving between roughly **93 and 100** over the period. **Personal Effects** shows moderate variability, fluctuating around **97–103** with several short term peaks. In contrast, **Social Services** remains above **100 for most of the period**, before declining briefly to around **94 in 2025** and partially recovering thereafter.
+
+
 ```{r}
 create_cpi_plot(cpi_h, plot_level = 2, category = "Miscellaneous Goods & Services (MG&S)")
 ```
 
 ##### Facet View
 
-```{r}
+Within the **Miscellaneous Goods & Services CPI sub-categories**, **Alcoholic Drinks & Tobacco** rises from about **87 in 2020 to around 101–102 by 2025**, with a noticeable step increase around **2023**. **Other Miscellaneous Services** declines from approximately **104 in 2020 to around 98 by 2022**, before recovering gradually to about **101 by 2025**.
+
+**Personal Care** increases steadily from roughly **96 to around 100–101** by **2024–2025**. **Personal Effects** fluctuates within a moderate range, moving between approximately **95 and 103** throughout the period.
+
+In contrast, **Social Services** remains around **100–103 during 2020–2024**, before dropping sharply to about **94 in 2025**, followed by a partial recovery towards **96–97** thereafter.
+
+
+```{r, fig.width=12, fig.height=8}
 plot_cpi_time_series(
   data = cpi_h,
   plot_level = 2,
   category = "Miscellaneous Goods & Services (MG&S)",
   facet_by = TRUE,
-  facet_ncol = 2,
+  facet_ncol = 3,
   interactive = FALSE
 )
 ```
@@ -1685,44 +1752,73 @@ The `plot_cpi_seasonal()` function generates seasonal diagnostic plots for CPI s
 plot_cpi_seasonal <- function(data, 
                               plot_level,
                               category = NULL,
-                              group = NULL,
+                              group_name = NULL,
+                              series_select = NULL,
                               interactive = FALSE,
                               geom = "boxplot",
-                              #facet_vars = NULL,
                               geom_color = "#2c3e50",
                               feature_set = c("month.lbl", "quarter", "year"),
                               return_plots = FALSE,
-                              pause_between = FALSE) {
+                              pause_between = FALSE,
+                              add_caption = TRUE,
+                              caption_text = "Source: CEIC Database | Index: 2024 = 100") {
   
-  # Determine series list based on level
+  # First filter by level to get available series
   if (plot_level == 0) {
-    series_list <- data %>% 
+    available_series <- data %>% 
       filter(level == 0) %>% 
       distinct(series) %>% 
       pull(series)
-      
+    date_range <- "2002-2025"
+    level_name <- "Top Level"
+    
   } else if (plot_level == 1) {
-    series_list <- data %>% 
+    available_series <- data %>% 
       filter(level == 1) %>% 
       distinct(series) %>% 
       pull(series)
-      
+    date_range <- "2020-2025"
+    level_name <- "Major Groups"
+    
   } else if (plot_level == 2) {
     if (is.null(category)) stop("For level 2, specify a category (division name)")
-    series_list <- data %>% 
+    available_series <- data %>% 
       filter(level == 2, division == category) %>% 
       distinct(series) %>% 
       pull(series)
-      
+    date_range <- "2020-2025"
+    level_name <- category
+    
   } else if (plot_level == 3) {
-    if (is.null(group)) stop("For level 3, specify a group")
-    series_list <- data %>% 
-      filter(level == 3, group == group) %>% 
+    if (is.null(group_name)) stop("For level 3, specify a group")
+    available_series <- data %>% 
+      filter(level == 3, group == group_name) %>% 
       distinct(series) %>% 
       pull(series)
-      
+    date_range <- "2020-2025"
+    level_name <- group_name
+    
   } else {
     stop("plot_level must be 0, 1, 2, or 3")
+  }
+  
+  # Apply series selection if specified
+  if (!is.null(series_select)) {
+    # Check if selected series exist in available series
+    missing_series <- setdiff(series_select, available_series)
+    if (length(missing_series) > 0) {
+      stop(
+        paste(
+          "These series were not found at the specified level:\n",
+          paste(missing_series, collapse = ", "),
+          "\n\nAvailable series:\n",
+          paste(available_series, collapse = "\n")
+        )
+      )
+    }
+    series_list <- series_select
+  } else {
+    series_list <- available_series
   }
   
   if (length(series_list) == 0) {
@@ -1730,12 +1826,25 @@ plot_cpi_seasonal <- function(data,
   }
   
   cat("Plotting", length(series_list), "series\n")
+  if (!is.null(series_select)) {
+    cat("Selected series:", paste(series_list, collapse = ", "), "\n")
+  }
   
   plots <- list()
   
   for (s in series_list) {
     plot_data <- data %>% filter(series == s)
-
+    
+    # Create title with date range
+    if (plot_level == 0) {
+      title_text <- paste("Seasonal Diagnostics:", s, "- Top Level (2002-2025)")
+    } else if (plot_level == 1) {
+      title_text <- paste("Seasonal Diagnostics:", s, "- Major Group (2020-2025)")
+    } else if (plot_level == 2) {
+      title_text <- paste("Seasonal Diagnostics:", s, "-", category, "Sub-Category (2020-2025)")
+    } else {
+      title_text <- paste("Seasonal Diagnostics:", s, "-", group_name, "Detailed Class (2020-2025)")
+    }
     
     p <- plot_seasonal_diagnostics(
       .data = plot_data,
@@ -1744,12 +1853,37 @@ plot_cpi_seasonal <- function(data,
       .feature_set = feature_set,
       .geom = geom,
       .geom_color = geom_color,
-      .title = paste("Seasonal Diagnostics:", s),
+      .title = title_text,
       .x_lab = "Date",
       .y_lab = "CPI Index",
-      #.facet_vars = facet_vars,
       .interactive = interactive
     )
+    
+    # Add caption based on interactive mode
+    if (add_caption) {
+      if (interactive) {
+        # For plotly objects, add annotation
+        p <- p %>%
+          plotly::layout(
+            annotations = list(
+              list(
+                text = caption_text,
+                x = 1,
+                y = -0.15,
+                xref = "paper",
+                yref = "paper",
+                showarrow = FALSE,
+                xanchor = "right",
+                font = list(size = 10, color = "gray50")
+              )
+            ),
+            margin = list(b = 80)
+          )
+      } else {
+        # For ggplot objects, use labs()
+        p <- p + labs(caption = caption_text)
+      }
+    }
     
     if (return_plots) {
       plots[[s]] <- p
@@ -1764,7 +1898,6 @@ plot_cpi_seasonal <- function(data,
   
   if (return_plots) invisible(plots)
 }
-
 ```
 
 #### Top Level CPIs
@@ -1773,7 +1906,10 @@ In this section, CPI: All Items is first used as a demonstration of the cycle pl
 
 ##### Cycle Plot
 
-The cycle plot shows overall CPI by month (Jan–Dec), with separate lines for each year (2020–2025). Year-over-year levels increase consistently from 2020 (lowest, 85) to 2025 (highest, 101–102). Within each year, CPI values tend to be slightly lower in April–May and higher in November–December. The gap between consecutive years is largest between 2021 and 2022, indicating the fastest year-over-year inflation during that period.
+The cycle plot shows **overall CPI by month (Jan–Dec)** with separate lines for each year (**2020–2025**). The CPI level increases steadily across years, rising from around **85–86 in 2020** to approximately **101–102 in 2025**.
+
+Within each year, CPI values are generally **lower around April–May** and **higher towards November–December**. The **largest gap between consecutive years occurs between 2021 and 2022**, where the index increases from about **87–88 to around 95–96**, indicating the most pronounced year-over-year increase during the period.
+
 
 ```{r}
 #| code-fold: true
@@ -1853,24 +1989,42 @@ exact_replica_plot
 
 ##### Sesonal Plot
 
-Three boxplot panels show CPI distribution by month, quarter, and year. By month: medians gradually increase from January (92) to December (96), with similar interquartile ranges across months. By quarter: Q3 and Q4 medians are slightly higher than Q1 and Q2. By year: the boxes shift upward progressively from 2020 (85) to 2025 (101), with 2022 showing the widest spread. The 2024 box is notably tight with a single outlier.
+
+- Consumer Price Index (CPI)
+
+  - Three boxplot panels show the **CPI distribution by month, quarter, and year**.
+
+  - By **month**, the medians increase gradually from about 92 in January to around 96 in December, while the interquartile ranges remain similar across months.
+
+  - By **quarter**, **Q3 and Q4** have slightly higher medians than **Q1 and Q2**, indicating marginally higher CPI levels in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around 85 in 2020 to about 101 in 2025. **2022** shows the **widest spread**, while **2024** has a tighter distribution with a single outlier.
+  
+
+- CPI distribution for All Items Less Accommodation
+
+  - By **month**, the medians increase gradually from about 93 in January to around 97–98 in December, while the interquartile ranges remain similar across months.
+
+  - By **quarter**, **Q3 and Q4** have slightly higher medians than **Q1 and Q2**, indicating marginally higher index levels in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around 85 in 2020 to about 101 in 2025. **2022** shows the **largest spread**, while **2024** appears relatively tight with a small outlier.
+
+
+- CPI distribution for All Items Less Imputed Rentals for Housing
+
+  - **By month**, the medians increase gradually from about 93 in January to around 98 in December, while the interquartile ranges remain relatively similar across months.
+
+  - **By quarter**, **Q3 and Q4** show slightly higher medians than **Q1 and Q2**, indicating somewhat higher index levels in the later part of the year.
+
+  - **By year**, the distributions shift upward consistently from around 85 in 2020 to about 101 in 2025. **2022** shows the **widest spread**, while **2024** appears relatively tight with a small outlier.
 
 ```{r}
-#| code-fold: true
-#| code-summary: "SHOW"
-
-cpi_h %>%
-  filter(series == "Consumer Price Index (CPI)") %>%
-  plot_seasonal_diagnostics(
-    .date_var = date,
-    .value = cpi,
-    .feature_set = c("month.lbl", "quarter", "year"),
-    .geom = "boxplot",
-    .geom_color = "scale_color",
-    .title = "Seasonal Diagnostics: Consumer Price Index (CPI)",
-    .interactive = FALSE
-  )
+plot_cpi_seasonal(
+  data = cpi_h,
+  plot_level = 0,
+  series_select = c("Consumer Price Index (CPI)"), interactive = TRUE)
 ```
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 0, interactive = FALSE)
@@ -1882,7 +2036,14 @@ To examine the major groups, we first create a calendar heatmap to visualise the
 
 ##### Calender Heatmap
 
-The heatmap uses viridis colour scale across 10 major groups (rows) and dates (columns). Transport stands out with bright yellow/green tiles in early 2020 (lowest CPI 78), transitioning to dark purple by 2023–2025 (highest CPI 100+). Education and Clothing & Footwear show relatively dark purple throughout, indicating consistently higher index values. Food and Housing transition from lighter to darker shades over time. The visual gradient from left to right confirms general upward CPI movement across all groups.
+The heatmap displays **CPI levels across the 10 major groups over time**, using the **viridis colour scale** where lighter colours indicate lower index values and darker colours represent higher CPI levels.
+
+**Transport** stands out with bright yellow–green tiles in early 2020 (around 72–75), gradually transitioning to **dark purple by 2023–2025 (above 100)**. **Education** and **Clothing & Footwear** remain relatively **dark across the period**, indicating consistently higher CPI levels compared with other groups.
+
+**Food** and **Housing & Utilities** show a clear shift from lighter shades in 2020–2021 to darker tones after 2022, reflecting rising index levels over time. Other groups such as **Health**, **Household Durables & Services**, and **Miscellaneous Goods & Services** also display a gradual colour transition.
+
+Overall, the left-to-right colour gradient across most rows confirms the upward movement of CPI levels across categories during 2020–2025.
+
 
 ```{r}
 #| code-fold: true
@@ -1976,11 +2137,123 @@ ggplotly(p, tooltip = "text") %>%
 
 Each of the 10 major group decomposition plots displays distinct seasonal and trend characteristics. Transport's seasonal component shows the largest amplitude. Education exhibits step-like seasonal patterns. Food and Health show minimal seasonal effects relative to their strong trend components. InfoComm has a relatively flat trend with noticeable seasonal oscillations. The remainder components vary in magnitude across groups.
 
+
+- Food
+
+  - By **month**, the medians increase gradually from about **92–93 in January** to around **97–98 in December**, while the interquartile ranges remain relatively similar across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **86 in 2020** to about **102 in 2025**. **2022** shows a wider spread, while **2024–2025** appear relatively tight with smaller variation.
+
+
+
+- Clothing & Footwear (C&F)
+
+  - By **month**, the medians remain relatively stable, fluctuating between about **97 and 101** across the year, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q1** shows the **highest median values**, while **Q3** and **Q4** display **slightly lower medians**, indicating marginally lower **CPI values** in the later part of the year.
+
+  - By **year**, the distributions vary within a narrower range, moving from around **100 in 2020** to about **95 in 2021**, before recovering to roughly **101 in 2023–2024** and stabilising near **99–100 in 2025**.
+
+
+- Housing & Utilities
+
+  - By **month**, the medians increase gradually from about **92–93 in January** to around **98–99 in December**, while the interquartile ranges remain relatively similar across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **87 in 2020** to about **101 in 2025**. **2022** shows a wider spread, while **2024–2025** appear relatively tight with smaller variation.
+  
+  
+
+- Household Durables & Services (HDS)
+
+  - By **month**, the medians remain relatively stable, ranging between about **97 and 99**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **94 in 2020** to about **100 in 2024–2025**, with relatively tight spreads across the later years.
+  
+  
+- Health
+
+  - By **month**, the medians increase gradually from about **93 in January** to around **97 in December**, with relatively similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **90 in 2020** to about **103 in 2025**, with relatively tight spreads across most years.
+
+
+- Transport
+
+  - By **month**, the medians increase gradually from about **90 in January** to around **100 in December**, with relatively similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **75 in 2020** to about **104 in 2025**, with **2022** showing a relatively wider spread compared with the later years.
+
+
+- Information & Communication (InfoComm)
+
+  -  By **month**, the medians fluctuate within a narrow range, moving between about **97 and 99**, with similar interquartile ranges across months.
+
+  -  By **quarter**, **Q4** shows **slightly higher medians** than **Q1–Q3**, indicating **marginally higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions remain relatively stable, varying between about **97 in 2022** and around **100 in 2024**, with only small differences across years.
+
+
+- Recreation, Sport & Culture (RSC)
+
+  - By **month**, the medians increase gradually from about **90 in January** to around **97–98 in December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **85 in 2020** to about **100 in 2024–2025**, with **2022** showing a wider spread compared with the later years.
+
+
+- Education
+
+  - By **month**, the medians remain relatively stable, fluctuating between about **94 and 97**, with similar interquartile ranges across months.
+ 
+  - By **quarter**, **Q2** and **Q4** show **slightly higher medians** than **Q1** and **Q3**, indicating **higher CPI values** in those periods.
+
+  - By **year**, the distributions shift upward steadily from around **92 in 2020** to about **100 in 2025**, with relatively tight spreads across the years.
+
+
+- Miscellaneous Goods & Services (MG&S)
+
+  - By **month**, the medians fluctuate within a narrow range, moving between about **96 and 99**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q4** shows **slightly higher medians** than **Q1–Q3**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward gradually from around **96 in 2020** to about **100 in 2024–2025**, with relatively tight spreads across the years.
+
+
 ```{r}
 plot_cpi_seasonal(cpi_h, 1,interactive = FALSE)
 ```
 
 #### Food
+
+
+- Food Excl Food & Beverage Serving Services (FFBSS)
+
+  - By **month**, the medians increase gradually from about **94 in January** to around **99–100 in December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **88 in 2020** to about **101 in 2025**, with **2022** showing a wider spread compared with the later years.
+  
+
+- Food & Beverage Serving Services (FBSS)
+
+  - By **month**, the medians increase gradually from about **91–92 in January** to around **97–98 in December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **85 in 2020** to about **102 in 2025**, with **2022** showing a relatively wider spread compared with the later years.
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Food", interactive = FALSE)
@@ -1988,11 +2261,140 @@ plot_cpi_seasonal(cpi_h, 2, category = "Food", interactive = FALSE)
 
 ##### Food: Food Excl Food & Beverage Serving Services (FFBSS)
 
+- FFBSS: Rice & Cereals
+
+  -  By **month**, the medians increase gradually from about **91 in January** to around **97–98 in December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **86 in 2020** to about **101 in 2025**, with **2022** showing a wider spread compared with the later years.
+
+  
+- FFBSS: Meat
+
+  - By **month**, the medians increase gradually from about **93 in January** to around **100 in December**, while the interquartile ranges remain broadly similar across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **86 in 2020** and **2021** to approximately **100–101 in 2023–2025**, with **2022** showing the **largest spread** during the transition period.
+ 
+ 
+- FFBSS: Fish & Seafood
+
+  - By **month**, the medians remain relatively stable, fluctuating around **97–100**, with slightly higher values observed in **January–February** and modestly lower values around **April–May**.
+
+  - By **quarter**, **Q1** shows the **highest median**, while **Q2–Q4** display **slightly lower but similar medians**, indicating mild seasonal variation.
+
+  - By **year**, the distribution increases from around **94 in 2020–2021** to a peak near **104 in 2023**, before easing slightly to about **99–100 in 2024–2025**, suggesting a temporary surge followed by stabilisation.
+
+
+- FFBSS: Milk, Other Dairy & Eggs
+
+  - By **month**, the medians rise gradually from around **92–93 in January** to about **98–99 in December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions increase steadily from around **87 in 2020** and **88 in 2021** to approximately **100–101 in 2024–2025**, with **2022** showing a slightly wider spread during the transition period.
+
+
+- FFBSS: Oils & Fats
+
+  - By **month**, the medians increase gradually from about **91–92 in January** to around **97–98 in December**, with relatively similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **88 in 2020** to approximately **104–105 in 2025**, with **2022** showing a noticeable increase compared with the earlier years.
+
+
+-FFBSS: Fruits & Nuts (FN)
+
+  - By **month**, the medians increase gradually from around **94–95 in January** to about **99–100 in December**, with fairly consistent interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **90 in 2020** to approximately **103–104 in 2025**, showing a clear upward shift over time.
+
+
+- FFBSS: Vegetables
+
+  - By **month**, the medians remain relatively stable, fluctuating around **95–98**, with slightly higher values observed toward **November–December**.
+
+  - By **quarter**, **Q4** shows the **highest median**, followed by **Q3**, while **Q1** and **Q2** are slightly lower, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **88 in 2020** to about **100 in 2025**, showing a consistent increase over time.
+
+
+- FFBSS: Sugar, Confectionery & Desserts (SCD)
+
+  - By **month**, the medians increase gradually from around **96 in January** to approximately **100–101 in October–December**, with fairly similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **93 in 2020** to about **104–105 in 2025**, showing a consistent upward shift over time.
+
+
+- FFBSS: Ready-Made & Oth. Food Nec
+
+  - By **month**, the medians rise gradually from around **91–92 in January** to approximately **97–98 in November–December**, with relatively similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **88 in 2020** to about **101 in 2025**, showing a consistent increase over time.
+
+
+
+- FFBSS: Non-Alcoholic Beverages
+
+  - By **month**, the medians increase gradually from around **91–92 in January** to approximately **98–99 in November–December**, with fairly consistent interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **87 in 2020** to about **104 in 2025**, showing a clear upward shift over time.
+
+
+
 ```{r}
 plot_cpi_seasonal(cpi_h, 3, group = "Food Excl Food & Beverage Serving Services (FFBSS)", interactive = FALSE)
 ```
 
 ##### Food: Food & Beverage Serving Services (FBSS)
+
+- FBSS: Restaurants, Cafes & Pubs
+
+  - By **month**, the medians increase gradually from around **91–92 in January** to approximately **97–98 in November–December**, with relatively similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **86 in 2020** to about **101 in 2025**, showing a consistent increase over time.
+  
+  
+- FBSS: Fast Food
+
+  - By **month**, the medians increase gradually from around **90–91 in January** to approximately **96–97 in November–December**, with broadly similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **85 in 2020** to about **102 in 2025**, showing a clear upward shift over time.
+
+
+- FBSS: Hawker Food Incl. Food Courts (HF&FC)
+
+  - By **month**, the medians increase gradually from around **91–92 in January** to approximately **97–98 in November–December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **86 in 2020** to about **101 in 2025**, showing a consistent increase over time.
+
+
+- FBSS: Oth Catering Services, Incl Vending Machines
+
+   - By **month**, the medians increase gradually from around **91–92 in January** to approximately **97–98 in November–December**, with relatively consistent interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **90 in 2020** to about **100–101 in 2024–2025**, showing a clear upward shift over time.
+
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 3, group = "Food & Beverage Serving Services (FBSS)", interactive = FALSE)
@@ -2000,11 +2402,48 @@ plot_cpi_seasonal(cpi_h, 3, group = "Food & Beverage Serving Services (FBSS)", i
 
 #### Clothing and Footwear (C&F)
 
+
+- C&F: Clothing
+
+  - By **month**, the medians remain relatively stable around **99–101**, with slightly **higher values in March–April** and **lower values around November**, suggesting mild seasonal variation.
+
+  - By **quarter**, **Q1** and **Q2** show **slightly higher medians** than **Q3** and **Q4**, indicating **slightly higher CPI values** in the earlier part of the year.
+
+  - By **year**, the distributions fluctuate within a narrow range, declining from around **101 in 2020** to about **96 in 2021**, before recovering to around **99–100 in 2023–2025**, suggesting relatively stable long term movement compared with other CPI categories.
+  
+  
+- C&F: Footwear
+
+  - By **month**, the medians fluctuate around **97–101**, with **higher values in January–May** and **lower values around October–November**, suggesting moderate seasonal variation.
+
+  - By **quarter**, **Q1** and **Q2** display **higher medians** than **Q3** and **Q4**, indicating **slightly higher CPI values** in the earlier part of the year.
+
+  - By **year**, the distributions vary within a relatively narrow range, declining from around **99 in 2020** to about **94 in 2021**, before increasing to around **102 in 2023** and stabilising near **99–100 in 2024–2025**.
+
+
 ```{r}
-plot_cpi_seasonal(cpi_h, 2, category = "Food", interactive = FALSE)
+plot_cpi_seasonal(cpi_h, 2, category = "Clothing and Footwear (C&F)", interactive = FALSE)
 ```
 
 #### Housing & Utilities
+
+- Housing & Utilities: Accommodation
+
+  - By **month**, the medians increase gradually from around **92–93 in January** to approximately **98–99 in November–December**, with fairly consistent interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **89 in 2020** to about **101 in 2025**, showing a clear upward shift over time.
+
+
+- Housing & Utilities: Utilities & Other Fuels
+
+  - By **month**, the medians increase gradually from around **88–89 in January** to approximately **94–95 in November–December**, with similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise markedly from around **82 in 2020–2021** to about **100–101 in 2024–2025**, showing a strong upward shift over time.
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Housing & Utilities", interactive = FALSE)
@@ -2012,11 +2451,103 @@ plot_cpi_seasonal(cpi_h, 2, category = "Housing & Utilities", interactive = FALS
 
 #### Household Durables & Services (HDS)
 
+- HDS: Furniture & Furnishings
+
+  - By **month**, the medians remain relatively stable, fluctuating around **95–97**, with slightly higher values observed toward **October–November**.
+
+  - By **quarter**, **Q3** and **Q4** show **slightly higher medians** than **Q1** and **Q2**, indicating **slightly higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **92 in 2020** to about **99–100 in 2024–2025**, showing a gradual upward trend over time.
+
+
+- HDS: Household Textiles
+
+  - By **month**, the medians remain relatively stable around **98–100**, with minor fluctuations and a few lower outliers appearing in **September–December**.
+
+  - By **quarter**, the medians across **Q1–Q4** are broadly similar, suggesting **limited seasonal variation** in CPI values.
+
+  - By **year**, the distributions fluctuate within a narrow range, remaining around **99–101 from 2020 to 2024**, before declining slightly to about **94–96 in 2025**, indicating a recent moderation in CPI levels.
+  
+  
+- HDS: Household Appliances
+
+  - By **month**, the medians remain relatively stable around **98–100**, with minor fluctuations and occasional lower outliers appearing in **August** and **November**.
+
+  - By **quarter**, the medians across **Q1–Q4** are broadly similar, suggesting **limited seasonal variation** in CPI values.
+
+  - By **year**, the distributions increase from around **95 in 2020** to about **100–101 in 2023–2024**, before easing slightly to around **99 in 2025**, indicating a modest upward trend followed by stabilisation.
+  
+  
+
+- HDS: Glassware, Tableware & Household Utensils
+
+  - By **month**, the medians remain relatively stable around **98–100**, with small fluctuations and occasional lower outliers around **July** and **November**.
+
+  - By **quarter**, the medians across **Q1–Q4** are broadly similar, indicating **limited seasonal variation** in CPI values.
+
+  - By **year**, the distributions fluctuate within a narrow range, declining slightly from around **98–99 in 2020** to about **97 in 2021**, before increasing to around **101 in 2023** and stabilising near **99–100 in 2024–2025**.
+
+
+- HDS: Tools & Equipment For House & Garden
+
+  - By **month**, the medians increase gradually from around **92–93 in January** to approximately **97–98 in November–December**, with fairly similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **88 in 2020** to about **100 in 2024–2025**, showing a clear upward shift over time.
+  
+
+
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Household Durables & Services (HDS)", interactive = FALSE)
 ```
 
 #### Health
+
+- Health: Medicines & Health Products
+
+  - By **month**, the medians remain relatively stable around **97–99**, with only small fluctuations and similar interquartile ranges across months.
+
+  - By **quarter**, the medians across **Q1–Q4** are broadly similar, though **Q3** appears **slightly higher**, indicating only **mild seasonal variation**.
+
+  - By **year**, the distributions rise gradually from around **96 in 2020–2021** to about **100 in 2024**, before easing slightly to around **99 in 2025**, suggesting a modest upward trend followed by stabilisation.
+  
+  
+- Health: Outpatient Services
+
+  - By **month**, the medians increase gradually from around **92–93 in January** to approximately **95–96 in November–December**, with fairly similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** show **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions shift upward steadily from around **89 in 2020–2021** to about **98–99 in 2024–2025**, showing a clear upward trend over time.
+
+
+- Health: Inpatient Services
+
+  - By **month**, the medians increase gradually from around **91–92 in January** to approximately **95–96 in November–December**, with fairly similar interquartile ranges across months.
+
+  - By **quarter**, **Q3** and **Q4** display **higher medians** than **Q1** and **Q2**, indicating **higher CPI values** in the later part of the year.
+
+  - By **year**, the distributions rise steadily from around **89 in 2020** to about **100 in 2024–2025**, showing a clear upward shift over time.
+
+
+- Health: Other Health Services
+
+  - By **month**, the medians show a **gradual increase through the year**, starting around **92–93 in the early months** and reaching roughly **96–97 toward November–December**, with fairly consistent variability across months.
+
+  - By **quarter**, **Q3 and Q4** display **slightly higher median CPI values** compared with **Q1 and Q2**, suggesting stronger price levels in the second half of the year.
+
+  - By **year**, the CPI levels increase steadily from around **88–89 in 2020** to approximately **101–102 in 2025**, indicating a **clear long term upward trend** in other health service costs.
+
+
+- Health: Health Insurance
+
+  - By **month**, the median CPI values remain relatively stable around **93–98**, but several **high outliers** appear from **March onward**, reaching above **110–120**, indicating occasional sharp price adjustments in certain months.
+
+ - By **quarter**, the medians increase slightly from **Q1 to Q4**, while **Q2–Q4** also show wider spreads and occasional extreme values, suggesting intermittent premium adjustments during the year.
+
+  - By **year**, there is a **strong upward shift in the CPI distribution**, rising from about **88 in 2020** to around **110–115 in 2025**, reflecting a **significant increase in health insurance costs over the period**.
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Health", interactive = FALSE)
@@ -2024,11 +2555,77 @@ plot_cpi_seasonal(cpi_h, 2, category = "Health", interactive = FALSE)
 
 #### Transport
 
+- Transport: Private Transport
+
+  - By **month**, the median CPI values gradually rise through the year, starting around **85–90 in January** and reaching roughly **95–100 toward October–December**, suggesting a mild upward seasonal pattern in the second half of the year.
+
+  - By **quarter**, the medians increase from **Q1 to Q4**, with **Q3 and Q4 showing higher values** than the earlier quarters, indicating stronger price levels later in the year.
+
+  - By **year**, the CPI distribution shows a **sharp upward shift from 2020 to 2023**, rising from about **70 in 2020** to around **100 in 2023–2025**, reflecting the significant rise in private transport costs over the period.
+
+- Transport: Land Transport Services
+
+  - By **month**, the median CPI values remain relatively stable throughout the year, generally ranging between **90 and 96**, with only slight increases toward the later months.
+
+  - By **quarter**, the medians show a **gradual increase from Q1 to Q4**, suggesting slightly higher transport service costs toward the end of the year.
+
+  - By **year**, the CPI distribution shifts **consistently upward**, rising from about **85 in 2020** to around **105 in 2025**, indicating a clear **long term increase in land transport service prices** over the period.
+
+
+- Transport: Other Transport Services
+
+  - By **month**, the median CPI values fluctuate modestly across the year, generally ranging between **95 and 105**. Higher values appear in **January and December**, while **May to August** show slightly lower medians, indicating mild seasonal variation.
+
+  - By **quarter**, **Q1 and Q4** tend to have **higher median CPI levels** compared with **Q2 and Q3**, suggesting stronger price levels at the beginning and end of the year.
+
+  - By **year**, the CPI rises from around **92 in 2020** to a **peak around 108 in 2022**, then shows a **slight moderation from 2023 to 2025**, stabilising around **100–102**.
+
+
+- Transport: Transport Services Of Goods
+
+- By **month**, the median CPI values lie roughly between **95 and 110**, with higher values in **January, March and August**, and slightly lower medians from **April to July** and in **November–December**.  
+
+- By **quarter**, **Q1 and Q4** have **higher median CPI levels** than **Q2 and Q3**, with Q1 showing the widest spread of values and Q3 the narrowest.  
+
+- By **year**, the CPI rises from around **92–95 in 2020** to a **peak near 110 in 2022**, then moderates over **2023–2025**, with medians around **100–104**.
+
+
+
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Transport", interactive = FALSE)
 ```
 
 #### Information & Communication (InfoComm)
+
+
+- InfoComm: Information & Communication Equipment
+
+  - By **month**, the median CPI values are tightly clustered between **about 97 and 102**, with slightly higher medians in **January–March** and **October**, and lower medians in **May–July**.  
+
+  - By **quarter**, **Q1 and Q4** show **higher median CPI levels** than **Q2 and Q3**, with Q1 having a somewhat wider spread and Q3 a more compressed range.  
+
+  - By **year**, the CPI medians move from around **100–101 in 2020**, dip to **about 96–98 in 2021**, rise back to **around 100–101 in 2022–2024**, and edge down slightly to **around 98–99 in 2025**.
+  
+
+- InfoComm: Software Excl Games  
+
+
+  - By **month**, the median CPI values are almost flat, clustered narrowly between about **101 and 103** across all months.  
+
+  - By **quarter**, median CPI levels for **Q1 to Q4** are similarly close, all lying around **101–103** with negligible dispersion.  
+
+  - By **year**, the CPI remains around **103 from 2020 to 2023**, then edges down slightly to about **100–101 in 2024–2025**.
+  
+
+- InfoComm: InfoComm Services  
+
+  - By **month**, the median CPI values mostly range between **96 and 101**, with relatively higher medians in **January–February and October–December**, and lower medians in **March–July**.  
+
+  - By **quarter**, **Q1 and Q4** record **higher median CPI levels** than **Q2 and Q3**, with Q1 showing the greatest spread and Q3 a narrower range.  
+
+  - By **year**, the CPI moves from around **97–99 in 2020–2021** to a lower level near **95 in 2022**, then increases to around **100 in 2023–2024**, before easing slightly to about **98–99 in 2025**.
+
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Information & Communication (InfoComm)", interactive = FALSE)
@@ -2036,11 +2633,104 @@ plot_cpi_seasonal(cpi_h, 2, category = "Information & Communication (InfoComm)",
 
 #### Recreation, Sport & Culture (RSC)
 
+- RSC: Recreational & Cultural Goods  
+
+  - By **month**, the median CPI values are generally between **96 and 101**, with somewhat higher medians in **January–February, May–June and November**, and lower medians in **March–April and September–October**.  
+
+  - By **quarter**, **Q2 and Q3** show **slightly higher median CPI levels** than **Q1 and Q4**, with Q2 having the widest spread and Q4 the narrowest.  
+
+  - By **year**, the CPI rises from around **96–97 in 2020** to about **98–99 in 2021**, increases further to **around 100–101 in 2022–2023**, and then remains close to **99–100 in 2024–2025**.
+  
+
+- RSC: Other Recreational Goods (ORG)  
+
+  - By **month**, the median CPI values mostly range between **99 and 104**, with higher medians in **March–April, July–August and October**, and lower medians in **February, June and December**.  
+
+  - By **quarter**, **Q2 and Q3** show **higher median CPI levels** than **Q1 and Q4**, with Q2 exhibiting the widest spread and Q4 a relatively narrower range.  
+
+  - By **year**, the CPI is around **101–102 in 2020**, dips slightly to about **100–101 in 2021**, rises to **around 102–103 in 2022–2023**, and then eases to about **100–101 in 2024–2025**.
+
+
+
+- RSC: Garden Products & Pets  
+
+  - By **month**, the median CPI values are relatively stable between **about 90 and 98**, with slightly higher medians in **May–August and December**, and lower medians in **January–March**.  
+
+  - By **quarter**, **Q3 and Q4** record **higher median CPI levels** than **Q1 and Q2**, with Q2 showing the widest spread and Q1 the narrowest.  
+
+  - By **year**, the CPI rises steadily from around **88–89 in 2020** to **about 90–91 in 2021**, then to **around 93–95 in 2022**, and further to **about 97–99 in 2023–2025**.
+
+
+- RSC: Recreational Services  
+
+  - By **month**, the median CPI values generally range between **86 and 96**, with slightly higher medians in **May–August and December**, and lower medians in **January–March**.  
+
+  - By **quarter**, **Q3 and Q4** record **higher median CPI levels** than **Q1 and Q2**, with Q2 showing the widest spread and Q1 the narrowest.  
+
+  - By **year**, the CPI rises steadily from around **83–85 in 2020–2021** to about **87–89 in 2022**, then to **around 92–94 in 2023**, and further to **about 99–101 in 2024–2025**.
+
+
+- RSC: Cultural Services  
+
+  - By **month**, the median CPI values mostly range between **90 and 97**, with slightly higher medians in **May–August and December**, and lower medians in **January–March**.  
+
+  - By **quarter**, **Q3 and Q4** show **higher median CPI levels** than **Q1 and Q2**, with Q3 exhibiting the widest spread and Q1 the narrowest.  
+
+  - By **year**, the CPI increases from around **89–90 in 2020–2021** to about **92–93 in 2022**, rises further to **around 96–97 in 2023–2024**, and reaches about **98–99 in 2025**.
+
+
+RSC: Newspapers, Books & Stationery (NBS)  
+
+  - By **month**, the median CPI values are tightly grouped between **about 97 and 100**, with slightly higher medians in **January–February, May–June and October–December**, and marginally lower medians in **March–April and July–September**.  
+
+  - By **quarter**, **Q2 and Q3** show **slightly higher median CPI levels** than **Q1 and Q4**, though the spreads across quarters are generally narrow.  
+
+  - By **year**, the CPI increases gradually from around **97 in 2020–2021** to about **98 in 2022**, then to **around 99 in 2023–2024**, and reaches **about 100 in 2025**.
+
+
+
+- RSC: Holiday Expenses  
+
+  - By **month**, the median CPI values generally range between **87 and 96**, with higher medians in **June–August and December**, and lower medians in **January–April**.  
+
+  - By **quarter**, **Q3 and Q4** show **higher median CPI levels** than **Q1 and Q2**, with Q4 exhibiting a slightly wider spread.  
+
+  - By **year**, the CPI increases from around **83–85 in 2020–2021** to about **87–89 in 2022**, then to **around 93–95 in 2023**, and further to **about 97–99 in 2024–2025**.
+
+
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Recreation, Sport & Culture (RSC)", interactive = FALSE)
 ```
 
 #### Education
+
+- Education: General, Vocational & Higher Education (GVH Edu)  
+
+- By **month**, the median CPI values are tightly clustered between **about 96 and 100**, with slightly higher medians in **May–August and November–December**, and lower medians in **January–March**.  
+
+- By **quarter**, **Q3 and Q4** show **higher median CPI levels** than **Q1 and Q2**, with Q3 exhibiting a marginally wider spread.  
+
+- By **year**, the CPI rises gradually from around **95–96 in 2020–2021** to about **97–98 in 2022**, then to **around 98–99 in 2023**, and reaches **about 100 in 2024–2025**.
+
+
+- Education: Private Tuition & Other Educational Courses  
+
+- By **month**, the median CPI values lie between **about 94 and 100**, with higher medians in **February–March, June–July and November–December**, and lower medians in **January, April–May and August–October**.  
+
+- By **quarter**, **Q1 and Q4** record **higher median CPI levels** than **Q2 and Q3**, with Q1 showing a somewhat wider spread.  
+
+- By **year**, the CPI increases steadily from around **84–86 in 2020–2021** to about **88–90 in 2022**, then to **around 94–95 in 2023**, and further to **about 99–101 in 2024–2025**.
+
+
+
+- Education: School Textbooks & Study Guides  
+
+- By **month**, the median CPI values are narrowly distributed between **about 97 and 100**, with slightly higher medians in **February, May–June and October–December**, and lower medians in **January–April and July–September**.  
+
+- By **quarter**, **Q2 and Q4** show **slightly higher median CPI levels** than **Q1 and Q3**, with all quarters displaying relatively small spreads.  
+
+- By **year**, the CPI edges up from around **97 in 2020–2022** to about **99 in 2023**, and further to **around 100–101 in 2024–2025**.
+
 
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Education", interactive = FALSE)
@@ -2048,6 +2738,52 @@ plot_cpi_seasonal(cpi_h, 2, category = "Education", interactive = FALSE)
 
 #### Miscellaneous Goods & Services (MG&S)
 
+
+- MG&S: Personal Care  
+
+  - By **month**, the median CPI values mostly range between **95 and 100**, with slightly higher medians in **January–March and July–September**, and lower medians in **April–June and October–December**.  
+
+  - By **quarter**, **Q1 and Q3** show **higher median CPI levels** than **Q2 and Q4**, with Q1 exhibiting the widest spread.  
+
+  - By **year**, the CPI moves from around **95–96 in 2020–2021** to about **96–97 in 2022**, then to **around 99 in 2023**, and further to **about 100–101 in 2024–2025**.
+
+
+-MG&S: Alcoholic Drinks & Tobacco  
+
+  - By **month**, the median CPI values generally range between **90 and 99**, with higher medians in **March–May and July–August**, and lower medians in **January–February and June**.  
+
+  - By **quarter**, **Q1 and Q2** record **higher median CPI levels** than **Q3 and Q4**, with Q1 showing the widest spread.  
+
+  - By **year**, the CPI remains around **88–89 in 2020–2022**, then rises to **about 92–94 in 2023**, and further to **around 99–101 in 2024–2025**.
+
+- MG&S: Personal Effects  
+
+  - By **month**, the median CPI values generally range between **97 and 102**, with higher medians in **January–February, July and October–December**, and lower medians in **March–June and September**.  
+
+  - By **quarter**, **Q1 and Q4** show **higher median CPI levels** than **Q2 and Q3**, with Q4 exhibiting the widest spread.  
+
+  - By **year**, the CPI moves from around **98–99 in 2020–2021** to about **100–101 in 2022–2023**, then increases further to **around 101–102 in 2024**, before edging down slightly to **about 100–101 in 2025**.
+
+
+- MG&S: Social Services  
+
+  - By **month**, the median CPI values are tightly grouped between **about 99 and 102**, with higher medians in **January–June and November–December**, and lower medians in **July–October**, where several lower outliers appear.  
+
+  - By **quarter**, **Q1 and Q2** record **higher median CPI levels** than **Q3 and Q4**, with Q3 showing the widest spread due to lower observations.  
+
+  - By **year**, the CPI edges down from around **102 in 2020** to about **100–101 in 2021–2022**, then declines further to **around 99 in 2023–2024**, before reaching **about 98–99 in 2025**.
+
+
+
+- MG&S: Other Miscellaneous Services  
+
+  - By **month**, the median CPI values mostly range between **100 and 104**, with slightly higher medians in **January–March and August–September**, and lower medians in **April–July and October–December**.  
+
+  - By **quarter**, **Q1 and Q3** show **higher median CPI levels** than **Q2 and Q4**, with Q2 displaying the widest spread.  
+
+  - By **year**, the CPI eases from around **104–105 in 2020–2021** to about **99–101 in 2022–2023**, then rises slightly to **around 101–102 in 2024–2025**.
+  
+  
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Miscellaneous Goods & Services (MG&S)", interactive = FALSE)
 ```
@@ -2056,7 +2792,7 @@ plot_cpi_seasonal(cpi_h, 2, category = "Miscellaneous Goods & Services (MG&S)", 
 
 **Autocorrelation** refers to the relationship between a time series and its own past values over different time lags. It helps identify whether observations in one period are correlated with observations in earlier periods, such as the previous month, previous quarter, or previous year. In the context of monthly CPI data, autocorrelation can reveal whether price movements persist over time or follow recurring lagged patterns. In this section, we first create a reusable function based on functions from the **timetk** package, with additional customisable features to support flexible analysis and prepare the visualisation components for the **Shiny** application.
 
-#### Autocorrelation function
+#### Autocorrelation Function
 
 The code below creates a reusable function to plot the **Autocorrelation Function (ACF), Partial Autocorrelation Function (PACF), and Cross Correlation Function (CCF)**.
 
@@ -2069,11 +2805,11 @@ In this analysis, **24** monthly lags are used when computing the ACF, PACF, and
 ```{r}
 #| code-fold: true
 #| code-summary: "SHOW"
-
 plot_cpi_acf <- function(data,
                          plot_level,
                          category = NULL,
                          group_name = NULL,
+                         series_select = NULL,  
                          lags = 24,
                          interactive = FALSE,
                          facet_ncol = 3,
@@ -2094,31 +2830,36 @@ plot_cpi_acf <- function(data,
                          plotly_slider = FALSE,
                          return_plot = FALSE,
                          ccf_target = NULL,
-                         ccf_predictors = NULL) {
+                         ccf_predictors = NULL,
+                         add_caption = TRUE,
+                         caption_text = "Source: CEIC Database | Index: 2024 = 100") {
   
-  
-  # Step 1: filter hierarchy
+  # Step 1: filter hierarchy and get available series
   if (plot_level == 0) {
     plot_data <- data %>% filter(level == 0)
-    plot_title <- "CPI Top Level: Lag Diagnostics"
+    available_series <- unique(plot_data$series)
+    plot_title <- paste("CPI Autocorrelation Diagnostics, 2002-2025 (Lags =", lags, ")")
     
   } else if (plot_level == 1) {
     plot_data <- data %>% filter(level == 1)
-    plot_title <- "CPI Major Groups: Lag Diagnostics"
+    available_series <- unique(plot_data$series)
+    plot_title <- paste("CPI Major Groups Autocorrelation Diagnostics, 2020-2025 (Lags =", lags, ")")
     
   } else if (plot_level == 2) {
     if (is.null(category)) {
       stop("For level 2, specify a category")
     }
     plot_data <- data %>% filter(level == 2, division == category)
-    plot_title <- paste(category, ": Sub-Categories Lag Diagnostics")
+    available_series <- unique(plot_data$series)
+    plot_title <- paste(category, ": Autocorrelation Diagnostics, 2020-2025 (Lags =", lags, ")")
     
   } else if (plot_level == 3) {
     if (is.null(group_name)) {
       stop("For level 3, specify a group_name")
     }
     plot_data <- data %>% filter(level == 3, group == group_name)
-    plot_title <- paste(group_name, ": Detailed Classes Lag Diagnostics")
+    available_series <- unique(plot_data$series)
+    plot_title <- paste(group_name, ": Autocorrelation Diagnostics, 2020-2025 (Lags =", lags, ")")
     
   } else {
     stop("plot_level must be 0, 1, 2, or 3")
@@ -2128,18 +2869,38 @@ plot_cpi_acf <- function(data,
     stop("No data found for the specified criteria")
   }
   
+  # Apply series selection if specified
+  if (!is.null(series_select)) {
+    # Check if selected series exist in available series
+    missing_series <- setdiff(series_select, available_series)
+    if (length(missing_series) > 0) {
+      stop(
+        paste(
+          "These series were not found at the specified level:\n",
+          paste(missing_series, collapse = ", "),
+          "\n\nAvailable series:\n",
+          paste(available_series, collapse = "\n")
+        )
+      )
+    }
+    plot_data <- plot_data %>% filter(series %in% series_select)
+    
+    # Update title to reflect selection
+    if (length(series_select) <= 3) {
+      series_text <- paste(series_select, collapse = ", ")
+      plot_title <- paste0(plot_title, " | Selected: ", series_text)
+    } else {
+      plot_title <- paste0(plot_title, " | ", length(series_select), " series selected")
+    }
+  }
+  
   use_ccf <- !is.null(ccf_target) && !is.null(ccf_predictors)
   
   # Step 2A: ACF/PACF mode
   if (!use_ccf) {
     
-    if (plot_level == 0) {
-      acf_data <- plot_data
-    } else if (plot_level == 1) {
-      acf_data <- plot_data %>% group_by(division)
-    } else {
-      acf_data <- plot_data %>% group_by(series)
-    }
+    # Always group by series for proper faceting at all levels
+    acf_data <- plot_data %>% group_by(series)
     
     p <- timetk::plot_acf_diagnostics(
       .data = acf_data,
@@ -2229,6 +2990,32 @@ plot_cpi_acf <- function(data,
     )
   }
   
+  # Add caption based on interactive mode
+  if (add_caption) {
+    if (interactive) {
+      # For plotly objects, add annotation
+      p <- p %>%
+        plotly::layout(
+          annotations = list(
+            list(
+              text = caption_text,
+              x = 1,
+              y = -0.15,
+              xref = "paper",
+              yref = "paper",
+              showarrow = FALSE,
+              xanchor = "right",
+              font = list(size = 10, color = "gray50")
+            )
+          ),
+          margin = list(b = 80)
+        )
+    } else {
+      # For ggplot objects, use labs()
+      p <- p + labs(caption = caption_text)
+    }
+  }
+  
   if (return_plot) {
     return(p)
   } else {
@@ -2239,25 +3026,51 @@ plot_cpi_acf <- function(data,
 
 #### Top Level CPIs
 
+At **lag 24**, the ACF and PACF are essentially near zero for all three CPI series, staying within the significance bands.  
+
+This means that beyond **two years of monthly lags**, there is **no notable remaining linear autocorrelation or partial autocorrelation** visible in these diagnostics.
+
+```{r, fig.width=9, fig.height=6}
+plot_cpi_acf(cpi_h, plot_level = 0, lag =24)
+```
+
+
 ```{r}
-plot_cpi_acf(cpi_h, plot_level = 0)
+plot_cpi_acf(cpi_h, plot_level = 0, series_select = c("Consumer Price Index (CPI)"),interactive = TRUE)
 ```
 
 #### Major CPIs
 
-```{r, fig.height=15, fig.width=40}
+The faceted ACF plot for lag 24 shows all 10 major CPI groups. For most groups, ACF values decline steadily from **1.0 at lag 0** to near zero or slightly negative by around lag 24. Clothing & Footwear decays the fastest, reaching near-zero correlation by about lag 12–15. Transport has a more curved pattern, with the ACF dipping slightly below zero around lag 18 and then hovering close to zero.  
+
+In the PACF panels, each group has a single large spike at **lag 1**, with subsequent lags up to 24 close to zero and within the confidence bands.
+
+```{r, fig.height=6, fig.width=30}
 plot_cpi_acf(cpi_h, plot_level = 1)
 ```
 
-#### Food
+#### Food Subgroups
 
-```{r}
+The faceted plot for lag 24 shows two food subgroups.  
+
+- For **ACF**, both Food excl Food & Beverage Serving Services (FFBSS) and Food & Beverage Serving Services (FBSS) start near **1.0 at lag 0** and decline smoothly toward values close to zero by lag 24, with FFBSS decaying slightly faster than FBSS.  
+
+- For **PACF**, each series has one large spike at **lag 1**, and the remaining lags up to 24 are very small and cluster around zero, with FFBSS showing slightly more fluctuation than FBSS.
+
+```{r, fig.width=6, fig.height=6}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Food")
 ```
 
 ##### Food: Food Excl Food & Beverage Serving Services (FFBSS)
 
-```{r, fig.height=15, fig.width=40}
+
+The faceted plot for lag 24 shows the detailed FFBSS food classes.  
+
+- For **ACF**, all classes start near **1.0 at lag 0** and decline smoothly toward values close to zero or slightly negative by around lag 20–24, with Rice & Cereals, Fruits & Nuts and Vegetables decaying a bit faster than categories such as Meat and Non‑Alcoholic Beverages.  
+
+- For **PACF**, each class has one large spike at **lag 1**, while subsequent lags up to 24 are small, oscillating around zero with modest fluctuations across categories.
+
+```{r, fig.height=6, fig.width=30}
 plot_cpi_acf(
   cpi_h,
   plot_level = 3,
@@ -2268,7 +3081,13 @@ plot_cpi_acf(
 
 ##### Food: Food & Beverage Serving Services (FBSS)
 
-```{r}
+The faceted plot for lag 24 shows the detailed FBSS food classes.  
+
+- For **ACF**, all four classes (Restaurants/Cafes/Pubs, Fast Food, Hawker Food incl. Food Courts, Other Catering Services incl. Vending Machines) start close to **1.0 at lag 0** and decline smoothly toward values near zero by around lag 20–24, with very similar decay profiles across classes.  
+
+- For **PACF**, each class shows one large spike at **lag 1**, while subsequent lags up to 24 are small and fluctuate around zero, indicating limited additional autocorrelation beyond the first lag.
+
+```{r, fig.height=6, fig.width=12}
 plot_cpi_acf(
   cpi_h,
   plot_level = 3,
@@ -2279,61 +3098,123 @@ plot_cpi_acf(
 
 #### Clothing and Footwear (C&F)
 
-```{r}
-plot_cpi_acf(cpi_h, plot_level = 2, category = "Clothing and Footwear (C&F)")
+The faceted plots display the autocorrelation patterns for the Clothing and Footwear (C&F) sub‑categories.  
+
+- For **ACF**, both Clothing and Footwear start near **1.0 at lag 0** and decline more quickly than many other CPI series. Clothing crosses zero around **lag 10–11** and becomes moderately negative between about **lag 12 and lag 17** before moving back toward zero, while Footwear decays more gradually and stays close to zero from roughly **lag 12 onward**.  
+
+- For **PACF**, each sub‑category has a strong spike at **lag 1**, with later lags up to 24 small and oscillating around zero, though Clothing shows somewhat larger fluctuations than Footwear at higher lags.
+
+```{r, fig.height=6, fig.width=8}
+plot_cpi_acf(cpi_h, plot_level = 2, category = "Clothing and Footwear (C&F)", lag =24)
 ```
 
 #### Housing & Utilities
 
-```{r}
+The faceted plots display the autocorrelation patterns for the Housing & Utilities sub‑categories.  
+
+- For **ACF**, both Accommodation and Utilities & Other Fuels start near **1.0 at lag 0** and decline steadily with lag. Accommodation falls more quickly and reaches values close to zero by around **lag 20–22**, while Utilities & Other Fuels decays more gradually and is still slightly positive at **lag 24**.  
+
+- For **PACF**, each series has a strong spike at **lag 1**. Accommodation then shows a sizeable negative bar at about **lag 4** followed by smaller oscillations around zero, whereas Utilities & Other Fuels displays smaller positive and negative bars across higher lags, all relatively close to zero.
+
+```{r, fig.height=6, fig.width=8}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Housing & Utilities")
 ```
 
 #### Household Durables & Services (HDS)
 
-```{r, fig.height=10, fig.width=20}
+The faceted plots display the autocorrelation patterns for the Household Durables & Services (HDS) sub‑categories.  
+
+- For **ACF**, all classes begin close to **1.0 at lag 0** and show a steady decline with lag. Furniture & Furnishings, Household Appliances, Tools & Equipment for House & Garden, and Household Services & Supplies retain positive correlations out to around **lag 20–24**, while Household Textiles and Glassware/Tableware/Household Utensils decay more quickly and move slightly below zero by the later lags.  
+
+- For **PACF**, each series has a strong spike at **lag 1**, after which the bars up to lag 24 are relatively small and oscillate around zero, with some classes (such as Household Textiles and Glassware/Tableware/Household Utensils) showing somewhat larger but still modest fluctuations at selected lags.
+
+```{r, fig.height=6, fig.width=18}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Household Durables & Services (HDS)")
 ```
 
 #### Health
 
-```{r, fig.height=15, fig.width=30}
+The faceted plots display the autocorrelation patterns for the Health sub‑categories.  
+
+- For **ACF**, all series (Medicines & Health Products, Outpatient Services, Inpatient Services, Other Health Services, Health Insurance) start near **1.0 at lag 0** and decline smoothly with lag. Outpatient, Inpatient and Other Health Services show a near‑linear decay towards values close to zero by around **lag 22–24**, while Medicines & Health Products and Health Insurance drop more quickly and touch or cross zero slightly earlier.  
+
+- For **PACF**, each sub‑category has a strong spike at **lag 1**, with subsequent lags up to 24 small and oscillating around zero, although Medicines & Health Products shows somewhat larger negative bars around **lag 12–14** than the other series.
+
+```{r, fig.height=6, fig.width=15}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Health")
 ```
 
 #### Transport
 
-```{r, fig.height=10, fig.width=20}
+The faceted plots display the autocorrelation patterns for the Transport sub‑categories.  
+
+- For **ACF**, Private Transport, Land Transport Services, and Transport Services of Goods all start near **1.0 at lag 0** and decline roughly linearly towards zero, with correlations close to zero by around **lag 22–24**. Other Transport Services decays more quickly, crosses zero at about **lag 10–11**, and becomes modestly negative through the later lags.  
+
+- For **PACF**, each series has a strong spike at **lag 1**, with subsequent lags up to 24 generally small and oscillating around zero. Other Transport Services and Transport Services of Goods show somewhat larger higher‑lag movements than Private Transport and Land Transport Services, but these still remain relatively modest.
+
+```{r, fig.height=6, fig.width=12}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Transport")
 ```
 
 #### Information & Communication (InfoComm)
 
-```{r}
+
+The faceted plots display the autocorrelation patterns for the Information & Communication (InfoComm) sub‑categories.  
+
+- For **ACF**, Information & Communication Equipment shows a rapid drop from **1.0 at lag 0** to slightly negative values by about **lag 6–7**, then a modest rebound back towards zero by **lag 20–24**. Software excl Games decays almost linearly towards zero by **lag 22–24**, while InfoComm Services declines more gradually and turns slightly negative between roughly **lag 14 and lag 24**.  
+
+- For **PACF**, all three series have a strong spike at **lag 1**. Higher lags up to 24 are small and fluctuate around zero, with Equipment and Services displaying somewhat more visible oscillation than Software excl Games, whose PACF bars after lag 1 are very close to zero.
+
+```{r, fig.height=6, fig.width=9}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Information & Communication (InfoComm)")
 ```
 
 #### Recreation, Sport & Culture (RSC)
 
-```{r, fig.height=10, fig.width=20}
+The faceted plots display the autocorrelation patterns for the Recreation, Sport & Culture (RSC) sub‑categories.  
+
+- For **ACF**, all series start near **1.0 at lag 0** and trend downwards with lag. Recreational & Cultural Goods, Garden Products & Pets, Recreational Services, Cultural Services, Newspapers/Books & Stationery and Holiday Expenses show smooth, near‑linear decays towards values close to zero by around **lag 22–24**. Other Recreational Goods decays faster, crossing zero at about **lag 10–12** and becoming slightly negative at later lags.  
+
+- For **PACF**, each sub‑category has a strong spike at **lag 1**, with subsequent lags up to 24 generally small and oscillating around zero. Other Recreational Goods and Holiday Expenses show somewhat larger higher‑lag movements than the other series, but these remain relatively modest.
+
+```{r, fig.height=6, fig.width=18}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Recreation, Sport & Culture (RSC)")
 ```
 
 #### Education
 
-```{r}
+The faceted plots display the autocorrelation patterns for the Education sub‑categories.  
+
+- For **ACF**, all three series (General, Vocational & Higher Education; Private Tuition & Other Educational Courses; School Textbooks & Study Guides) start near **1.0 at lag 0** and decline smoothly and almost linearly towards zero, with correlations close to zero by around **lag 22–24**.  
+
+- For **PACF**, each sub‑category has a strong spike at **lag 1**, while subsequent lags up to 24 are small and oscillate around zero, with only minor higher‑lag movements visible across the three series.
+
+```{r, fig.height=6, fig.width=9}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Education")
 ```
 
 #### Miscellaneous Goods & Services (MG&S)
 
-```{r}
+The faceted plots display the autocorrelation patterns for the Miscellaneous Goods & Services (MG&S) sub‑categories.  
+
+- For **ACF**, Personal Care, Alcoholic Drinks & Tobacco, and Other Miscellaneous Services start near **1.0 at lag 0** and decline smoothly towards zero, with correlations close to zero by around **lag 22–24**. Personal Effects and Social Services decay more quickly: Personal Effects crosses zero around **lag 10–11** and becomes modestly negative at later lags, while Social Services drops sharply to low positive values by about **lag 6–7** and then flattens out.  
+
+- For **PACF**, all sub‑categories show a strong spike at **lag 1**, with higher lags up to 24 small and oscillating around zero. Personal Effects and Social Services exhibit somewhat larger higher‑lag movements than the other series, but these remain relatively modest.
+
+```{r, fig.height=6, fig.width=15}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Miscellaneous Goods & Services (MG&S)")
 ```
 
-### CCF
+#### CCF
+The plot summarises lag diagnostics for the FFBSS detailed classes and their relationship with Vegetables and Meat.  
 
-```{r, fig.height=12, fig.width=20}
+- For **ACF** (top panel), the aggregate FFBSS index starts near **1.0 at lag 0** and declines smoothly towards values close to zero by around **lag 22–24**, showing persistent but gradually weakening autocorrelation.  
+
+- For **PACF** (second panel), FFBSS has a strong spike at **lag 1**, with subsequent lags up to 24 relatively small and oscillating around zero, indicating limited additional dependence beyond the first lag.  
+
+- For the **cross‑correlations (CCF)**, both Vegetables and Meat show positive correlations with FFBSS at short lags that decline gradually as the lag increases, remaining moderately positive even at longer lags up to **lag 24**.
+
+```{r, fig.height=8, fig.width=10}
 plot_cpi_acf(
   cpi_h,
   plot_level = 3,
