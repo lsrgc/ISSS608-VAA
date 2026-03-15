@@ -44,6 +44,23 @@ This approach offers several advantages. First, it enables systematic modelling 
 
 By combining exploratory data visualisation with nested forecasting techniques, this study aims to provide a comprehensive analysis of Singapore’s CPI dynamics and produce reliable forecasts for its key components.
 
+
+
+## Methodology
+
+
+After completing the hands on exercises [`Extra_01`](https://isss608-ypan.netlify.app/hands-on_ex/hands-on_extra/hands-on_extra_1), [`Extra_02`](https://isss608-ypan.netlify.app/hands-on_ex/hands-on_extra/hands-on_extra_2), and [`Extra_03`](https://isss608-ypan.netlify.app/hands-on_ex/hands-on_extra/hands-on_extra_3), several time series forecasting frameworks were evaluated, including **tidyverts, forecast, timetk, and modeltime**. Each package provides different capabilities for exploratory analysis, modelling, and forecasting workflows.
+
+The **tidyverts ecosystem**, developed by Professor [**Rob Hyndman**](https://tidyverts.org/) and his research team at Monash University, represents a modern replacement for the widely used **forecast** package. It adopts a tidy data framework and integrates several specialised packages, including **feasts** for exploratory time series diagnostics and **fable** for statistical forecasting models such as ARIMA and exponential smoothing. These tools provide a structured workflow for analysing time series data and producing elegant visualisations.
+
+However, some limitations were observed when applying tidyverts in this study. Certain functionality has been distributed across additional packages, such as **ggtime**, which may not integrate smoothly with interactive visualisation tools such as **plotly**. Furthermore, the **fable framework is primarily designed for modelling individual time series**, which can limit flexibility when conducting larger scale model comparison or integrating machine learning approaches.
+
+
+In contrast, **modeltime**, which is built on the **tidymodels framework**, offers a more flexible and extensible modelling environment. It integrates both **classical statistical models and modern machine learning algorithms** within a unified workflow. In addition, the framework supports **nested forecasting**, which allows multiple models to be trained and evaluated across hierarchical or grouped time series in a scalable manner. When used together with **timetk**, the framework enables efficient time series **feature engineering, preprocessing, model training, and evaluation**. Furthermore, modeltime provides better compatibility with **interactive visualisation tools**, which is particularly useful for developing **interactive dashboards and Shiny applications**.
+
+Therefore, this study primarily adopts the **timetk and modeltime packages** for the forecasting workflow and the subsequent development of the **Shiny application**, as they provide greater flexibility, scalability, and compatibility with modern interactive data visualisation tools.
+
+
 ## Analytical Workflow
 
 To analyse and forecast Singapore’s CPI data, a structured analytical workflow was implemented to ensure systematic exploration, modelling, and evaluation of the time series.
@@ -775,7 +792,7 @@ plot_cpi_time_series <- function(data,
                                  y_lab = "CPI Index",
                                  color_lab = "Year",
                                  line_color = "#2c3e50",
-                                 return_plot = FALSE) {
+                                 return_plot = TRUE) {
   
   data <- data %>%
     mutate(year = factor(lubridate::year(date)))
@@ -812,8 +829,22 @@ plot_cpi_time_series <- function(data,
     stop("plot_level must be 0, 1, 2, or 3")
   }
   
-  # NEW: Apply series selection if specified
+  # Apply series selection if specified
   if (!is.null(series_select)) {
+    # Check if selected series exist
+    available_series <- unique(plot_data$series)
+    missing_series <- setdiff(series_select, available_series)
+    if (length(missing_series) > 0) {
+      stop(
+        paste(
+          "These series were not found at the specified level:\n",
+          paste(missing_series, collapse = ", "),
+          "\n\nAvailable series:\n",
+          paste(available_series, collapse = "\n")
+        )
+      )
+    }
+    
     plot_data <- plot_data %>%
       filter(series %in% series_select)
     
@@ -929,41 +960,57 @@ plot_cpi_time_series <- function(data,
     )
   }
   
-  if (!interactive && add_caption) {
-    p <- p +
-      labs(caption = caption_text) +
-      theme(
-        plot.caption = element_text(
-          size = 9,
-          colour = "grey40",
-          hjust = 1
+  # Add caption based on interactive mode
+  if (add_caption) {
+    if (interactive) {
+      # For plotly objects, add annotation
+      p <- p %>%
+        plotly::layout(
+          annotations = list(
+            list(
+              text = caption_text,
+              x = 1,
+              y = -0.18,
+              xref = "paper",
+              yref = "paper",
+              showarrow = FALSE,
+              xanchor = "right",
+              font = list(size = 10, color = "gray50")
+            )
+          ),
+          margin = list(b = 90)
         )
-      )
-  }
-  
-  if (interactive && add_caption) {
-    p <- p %>%
-      plotly::layout(
-        annotations = list(
-          list(
-            text = caption_text,
-            x = 1,
-            y = -0.18,
-            xref = "paper",
-            yref = "paper",
-            showarrow = FALSE,
-            xanchor = "right",
-            font = list(size = 10, color = "gray50")
+    } else {
+      # For ggplot objects, use labs()
+      p <- p +
+        labs(caption = caption_text) +
+        theme(
+          plot.caption = element_text(
+            size = 9,
+            colour = "grey40",
+            hjust = 1
           )
-        ),
-        margin = list(b = 90)
-      )
+        )
+    }
   }
   
+  # Handle return vs printing
   if (return_plot) {
     return(p)
   } else {
-    print(p)
+    if (interactive) {
+      # For plotly objects
+      if (isTRUE(getOption('knitr.in.progress'))) {
+        # In R Markdown/Quarto
+        htmltools::tagList(p)
+      } else {
+        # In interactive R session
+        print(p)
+      }
+    } else {
+      # For static ggplot
+      print(p)
+    }
   }
 }
 ```
@@ -2828,7 +2875,6 @@ plot_cpi_acf <- function(data,
                          show_ccf_vars_only = FALSE,
                          show_white_noise_bars = TRUE,
                          plotly_slider = FALSE,
-                         return_plot = FALSE,
                          ccf_target = NULL,
                          ccf_predictors = NULL,
                          add_caption = TRUE,
@@ -3016,11 +3062,23 @@ plot_cpi_acf <- function(data,
     }
   }
   
-  if (return_plot) {
-    return(p)
+  # Automatically print based on context
+  if (interactive) {
+    # For plotly objects
+    if (isTRUE(getOption('knitr.in.progress'))) {
+      # In R Markdown/Quarto
+      htmltools::tagList(p)
+    } else {
+      # In interactive R session
+      print(p)
+    }
   } else {
+    # For static ggplot
     print(p)
   }
+  
+  # Return invisibly for potential further use
+  invisible(p)
 }
 ```
 
@@ -3226,18 +3284,29 @@ plot_cpi_acf(
 )
 ```
 
-## Consulsion
+## Conculsion
 
-This exploratory data analysis begins with **data wrangling**, where the dataset is cleaned and structured into a **hierarchical table** to reflect the CPI classification framework. The analysis then examines the **trend, seasonality, and autocorrelation patterns** of individual CPI series to build a basic understanding of their behaviour and support future forecasting modelling. Rather than focusing on the expenditure weights within the overall CPI index, the study zooms into **individual CPI components** to observe their underlying patterns over time. The dataset used in this study is obtained from the **CEIC database**, which is accessible through the university library. The CPI data is also available as part of Singapore’s **open government data**, which can be downloaded from [data.gov.sg](data.gov.sg).
+This exploratory data analysis begins with **data wrangling**, where the dataset is cleaned and structured into a **hierarchical table** to reflect the CPI classification framework. The analysis then examines the **trend, seasonality, and autocorrelation patterns** of individual CPI series to build a basic understanding of their behaviour and support future forecasting modelling. Rather than focusing on the expenditure weights within the overall CPI index, the study zooms into **individual CPI components** to observe their underlying patterns over time. The dataset used in this study is obtained from the **CEIC database**, which is accessible through the university library. The CPI data is also available as part of Singapore’s **open government data**, which can be downloaded from [data.gov.sg](data.gov.sg). 
 
-One limitation of this analysis is that it focuses mainly on exploratory techniques. Future research could incorporate **external** explanatory variables, such as foreign exchange rates, to further investigate potential relationships and patterns in CPI movements.
 
-Overall, this study demonstrates how publicly available statistical data can be transformed into useful insights that support a clearer understanding of CPI trends.
+In terms of **seasonality**, many CPI series show higher median values in Q4, suggesting stronger price levels toward the end of the year. However, this seasonal pattern is not uniform across all CPI categories, and some series display weaker or less consistent seasonal effects.
 
+For the **autocorrelation** analysis, a lag of 24 months was applied to all CPI series. In general, many series exhibit a repeating pattern around the **24 month lag**, where the autocorrelation gradually declines and approaches zero. However, the initial autocorrelation magnitudes differ across CPI categories, and the rate at which the autocorrelation decays also varies. For example, the **Transport** category returns to near zero autocorrelation at around 24 months, whereas the detailed component Other Transport Services reaches near zero autocorrelation earlier, at approximately 15 months, indicating a faster decay in temporal dependence for this series.
+
+
+One limitation of this analysis is that it focuses mainly on exploring the CPI series itself. Future research could incorporate **external explanatory variables**, such as foreign exchange rates, to further investigate potential relationships and drivers of CPI movements.
+
+In addition, alternative visualisation techniques, such as **horizon plots** introduced in **Hands on Exercise Extra_01** using the **ggHoriPlot** package, could also be explored to represent time series patterns in a more compact form. However, to maintain visual consistency across the analysis, and because horizon plots are generally more suitable for **high level overviews rather than detailed granularity**, they were not applied in this study.
+
+
+Overall, this study demonstrates how publicly available statistical data can be transformed into useful insights that support a clearer understanding of CPI trends and patterns for broader users.
 
 ## Shiny App Prototype
 
-In this section, we create several design sketches for the group project to support the implementation of the **Shiny application**. Due to limited drawing skills, the final illustrations were generated with the assistance of AI tools, based on initial **hand drawn sketches** prepared by human.
+In this section, we create several design sketches for the group project to support the implementation of the **Shiny application**. Due to limited drawing skills, the final illustrations were generated with the assistance of AI tools, based on initial **hand drawn sketches** prepared by human. For the Shnny app inputId and outputID, to avoid poientl bugs we plan to follow aa,bb,cc prefix for EDA, decomstiption and forcsgintd 
+
+
+For the Shiny application, the **inputId** and **outputId** naming conventions are carefully structured to reduce potential coding errors. To avoid possible bugs and improve code organisation, we plan to adopt a **prefix** based naming scheme, such as **`aa_`**, **`bb_`**, and **`cc_`**, representing the **EDA**, **decomposition**, and **forecasting** modules respectively.
 
 
 ### Overview Dashboard Tab
@@ -3256,7 +3325,7 @@ The **Data Explorer** tab allows users to browse the Singapore CPI dataset in a 
 
 ![](images/landing.jpeg)
 
-The **EDA Dashboard** provides interactive visual tools for exploring CPI behaviour across different hierarchy levels. Users can analyse **trend, seasonality, and autocorrelation** patterns by selecting divisions, series, and date ranges from the control panel. The dashboard also supports options such as smoothing, colour by year, faceting, and lag selection to facilitate flexible exploratory analysis.
+The **EDA Dashboard** provides interactive visual tools for exploring CPI behaviour across different hierarchy levels. Users can analyse **trend, seasonality, and autocorrelation** patterns by selecting divisions, series, and date ranges from the control panel. The dashboard also supports options such as `smoothing`, `colour by year`, `faceting`, and `lag` selection to facilitate flexible exploratory analysis.
 
 ### Code
 
