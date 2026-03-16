@@ -17,7 +17,7 @@ format:
     code-link: true
 
 number-sections: true
-number-depth: 6
+number-depth: 7
 
 editor: visual
 ---
@@ -591,8 +591,7 @@ In this section, we conduct an **exploratory data analysis (EDA)** of Singaporeâ
 
 In the **trend analysis section**, the temporal behaviour of CPI items is examined through time series visualisation. A custom plotting function is first developed by incorporating `geom_line()` from the **ggplot2** package to produce a **consolidated view of the series**. In addition, `plot_time_series()` from the **timetk** package is used to generate **faceted plots** to have clearer comparisons across multiple CPI categories. This workflow also supports the **early prototyping of visual components for the Shiny application** prior to the full development of the dashboard.
 
-:::panel-tabset
-
+::: panel-tabset
 #### Single-view Function
 
 The `create_cpi_plot()` function generates an **interactive** CPI time series visualisation across different levels of the CPI hierarchy. It filters the dataset based on the selected `plot_level` and optional category, and plots the relevant CPI series while optionally including a **reference line** from the higher level CPI index for comparison. The function then converts the ggplot output into an interactive Plotly chart with customised styling, legends, and source annotations for clearer interpretation and potential integration into a Shiny dashboard.
@@ -1011,11 +1010,9 @@ plot_cpi_time_series <- function(data,
   }
 }
 ```
-
 :::
 
-:::panel-tabset
-
+::: panel-tabset
 #### Top Level CPIs
 
 There are three top level CPI series at the aggregated level: Overall CPI (Consumer Price Index CPI), All Items Less Accommodation, and All Items Less Imputed Rentals.
@@ -1230,10 +1227,6 @@ make_cpi_plot_improved <- function(data, level_val,
 }
 
 ```
-
-
-
-
 
 #### Food
 
@@ -1765,9 +1758,7 @@ plot_cpi_time_series(
   interactive = FALSE
 )
 ```
-
 :::
-
 
 ### Seasonality
 
@@ -1931,10 +1922,7 @@ plot_cpi_seasonal <- function(data,
 }
 ```
 
-
-
-:::panel-tabset
-
+::: panel-tabset
 #### Top Level CPIs
 
 In this section, CPI: All Items is first used as a demonstration of the cycle plot based on monthly observations.
@@ -2249,7 +2237,6 @@ Each of the 10 major group decomposition plots displays distinct seasonal and tr
 ```{r}
 plot_cpi_seasonal(cpi_h, 1,interactive = FALSE)
 ```
-
 
 #### Food
 
@@ -2738,10 +2725,7 @@ plot_cpi_seasonal(cpi_h, 2, category = "Education", interactive = FALSE)
 ```{r}
 plot_cpi_seasonal(cpi_h, 2, category = "Miscellaneous Goods & Services (MG&S)", interactive = FALSE)
 ```
-
-
 :::
-
 
 ### Autocorrelation
 
@@ -2975,9 +2959,7 @@ plot_cpi_acf <- function(data,
 }
 ```
 
-:::panel-tabset
-
-
+::: panel-tabset
 #### Top Level CPIs
 
 At **lag 24**, the ACF and PACF are essentially near zero for all three CPI series, staying within the significance bands.
@@ -3001,7 +2983,6 @@ In the PACF panels, each group has a single large spike at **lag 1**, with subse
 ```{r, fig.height=6, fig.width=30}
 plot_cpi_acf(cpi_h, plot_level = 1)
 ```
-
 
 #### Food
 
@@ -3156,7 +3137,6 @@ The faceted plots display the autocorrelation patterns for the Miscellaneous Goo
 ```{r, fig.height=6, fig.width=15}
 plot_cpi_acf(cpi_h, plot_level = 2, category = "Miscellaneous Goods & Services (MG&S)")
 ```
-
 :::
 
 #### CCF
@@ -3181,21 +3161,23 @@ plot_cpi_acf(
 )
 ```
 
-## Conculsion
+## Conclusion
 
 This exploratory data analysis begins with **data wrangling**, where the dataset is cleaned and structured into a **hierarchical table** to reflect the CPI classification framework. The analysis then examines the **trend, seasonality, and autocorrelation patterns** of individual CPI series to build a basic understanding of their behaviour and support future forecasting modelling. Rather than focusing on the expenditure weights within the overall CPI index, the study zooms into **individual CPI components** to observe their underlying patterns over time. The dataset used in this study is obtained from the **CEIC database**, which is accessible through the university library. The CPI data is also available as part of Singaporeâ€™s **open government data**, which can be downloaded from [data.gov.sg](data.gov.sg).
 
-In terms of **seasonality**, many CPI series show higher median values in Q4, suggesting stronger price levels toward the end of the year. However, this seasonal pattern is not uniform across all CPI categories, and some series display weaker or less consistent seasonal effects.
+Overall, Singapore CPI series exhibit an upward trend over the study period. Examining the CPI at more detailed category levels reveals that movements in individual components may be masked by the aggregated index. For instance, while the overall **Health CPI** increases moderately from around 89 in 2020 to about 105 in 2025 **(18% increase)**, **Health Insurance** shows a much stronger rise, increasing from approximately 86 to around 122 **(about 41% increase)** over the same period. This sharper increase may be less visible in the aggregate index because categories such as **Outpatient Services** and **Inpatient Services**, which carry larger weights, exhibit more stable price movements. This suggests that aggregate CPI measures may understate certain sector specific cost pressures faced by households. Understanding these underlying dynamics can provide useful insights for both household budgeting decisions and policy considerations.
+
+In terms of **seasonality**, many CPI series show slightly higher median values in Q4, suggesting stronger price levels toward the end of the year. However, this pattern is not consistent across all CPI categories. For example, the **Household Appliances** series does not display a strong Q4 effect; instead, median prices remain relatively stable across quarters, with greater variability observed in January. This indicates that seasonal dynamics may vary across CPI components and can become clearer when analysing more granular categories rather than only the major group index.
 
 For the **autocorrelation** analysis, a lag of 24 months was applied to all CPI series. In general, many series exhibit a repeating pattern around the **24 month lag**, where the autocorrelation gradually declines and approaches zero. However, the initial autocorrelation magnitudes differ across CPI categories, and the rate at which the autocorrelation decays also varies. For example, the **Transport** category returns to near zero autocorrelation at around 24 months, whereas the detailed component Other Transport Services reaches near zero autocorrelation earlier, at approximately 15 months, indicating a faster decay in temporal dependence for this series.
 
-One limitation of this analysis is that it focuses mainly on exploring the CPI series itself. Future research could incorporate **external explanatory variables**, such as foreign exchange rates, to further investigate potential relationships and drivers of CPI movements.
+One limitation of this analysis is that it focuses primarily on examining the CPI series itself. Future research could incorporate **external** variables, such as foreign exchange rates, global supply chain stress indicators, or trade policies. For example, the **reciprocal tariffs** imposed during the Trump administration in 2025 may influence import prices and subsequently affect domestic inflation. Including such macroeconomic factors could help further investigate the underlying drivers of CPI movements and improve the explanatory power of the analysis.
 
 In addition, alternative visualisation techniques, such as **horizon plots** introduced in **Hands on Exercise Extra_01** using the **ggHoriPlot** package, could also be explored to represent time series patterns in a more compact form. However, to maintain visual consistency across the analysis, and because horizon plots are generally more suitable for **high level overviews rather than detailed granularity**, they were not applied in this study.
 
 Overall, this study demonstrates how publicly available statistical data can be transformed into useful insights that support a clearer understanding of CPI trends and patterns for broader users.
 
-## Shiny App Prototype
+## Shiny App UI Design
 
 In this section, we create several design sketches for the group project to support the implementation of the **Shiny application**. Due to limited drawing skills, the final illustrations were generated with the assistance of AI tools, based on initial **hand drawn sketches** prepared by human. For the Shnny app inputId and outputID, to avoid poientl bugs we plan to follow aa,bb,cc prefix for EDA, decomstiption and forcsgintd
 

@@ -58,7 +58,7 @@ reactablefmtr, gt, gtExtras, tidyverse)
 
 ## Importing Microsoft Access Database
 
-## The data set
+### The data set
 
 For the purpose of this study, a personal database in Microsoft Access *mdb* format called **Coffee Chain** will be used.
 
@@ -152,6 +152,16 @@ In ggplot2, `coord_flip()` only changes the visual orientation (such as axis tic
 
 
 :::
+
+
+## Plotting sparklines using ggplot2
+
+In this section, we learn how to plot sparklines by using **ggplot2**.
+
+
+### Preparing the data
+
+
 
 ## Reference
 
