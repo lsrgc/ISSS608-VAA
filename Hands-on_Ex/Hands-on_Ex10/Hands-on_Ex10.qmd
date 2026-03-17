@@ -361,7 +361,8 @@ bullet<- coffeechain %>%
   ungroup()
 sales_data = left_join(sales_data, bullet)
 ```
-The code chunk below plots the sparklines and bullet charts together in the **gt** table.
+
+The code chunk below plots the sparklines and bullet charts together in the **gt** table. 
 
 ```{r}
 sales_data %>%
@@ -369,15 +370,16 @@ sales_data %>%
   fmt_number(columns = 2:4, decimals = 0) %>%
   gt_plt_sparkline(`Monthly Sales`,same_limit = FALSE,type = "shaded", fig_dim = c(5,45)) %>%
   gt_plt_bullet(
-    column = Actual,target = Target,width = 30,palette = c("lightblue", "green")) %>%
+    column = Actual,target = Target,width = 30,palette = c("lightblue", "black")) %>%
   cols_label(Actual = "Actual*") %>%
   gt_theme_nytimes() %>%
   tab_header(title = "Coffee Chain Sales Report, 2013") %>%
-  tab_source_note(source_note = "*The green bar marks the total target sales.") %>%
+  tab_source_note(source_note = "*The back bar marks the total sales target.") %>%
   tab_style(style = cell_text(size = "small", align = "right"),
                               locations = cells_source_notes())
 ```
  
+The gt table above looks nice, but the colour options in `gt_plt_bullet()` are quite limited, and there is not much flexibility in `gt_plt_sparkline()`. It works well for a clean static dashboard, but it is not dynamic enough.
  
 ## Interactive Information Dashboard Design: reactable and reactablefmtr methods
 
