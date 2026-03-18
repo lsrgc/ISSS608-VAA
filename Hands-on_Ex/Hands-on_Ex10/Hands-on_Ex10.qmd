@@ -393,6 +393,178 @@ remotes::install_github("timelyportfolio/dataui")
 pacman::p_load(dataui)
 ```
 
+###  Plotting interactive sparklines
+
+To create interactive sparklines in **reactablefmtr**, we first need to aggregate the monthly sales and store them as `list` columns. This is because the function works on vectorised values. This approach is similar to what we did earlier with **gtExtras**.
+
+```{r}
+report <- report %>%
+  group_by(Product) %>%
+  summarise(`Monthly Sales` = list(Sales))
+```
+
+[`reactable()`](https://glin.github.io/reactable/articles/examples.html) from the **reactable** package constructs an interactive table with features such as scrolling, sorting, and filtering.` colDef()` is used to define how individual columns are displayed in a reactable.
+
+```{r}
+reactable(sales) 
+```
+
+Next, we create a `reactable` object using `reactable()` and integrate sparklines using [`react_sparkline()`](https://kcuilla.github.io/reactablefmtr/reference/react_sparkline.html).
+
+```{r}
+ report %>%
+  reactable(.,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkline(.,
+        height = 50, show_line = TRUE, line_color = "black",statline = "mean",
+        statline_color = "red", bandline = "innerquartiles", bandline_color = "darkgreen"
+      )
+    )
+  )
+)
+```
+
+
+### Changing the pagesize
+
+
+Here, we use [`defaultPageSize()`](https://glin.github.io/reactable/reference/reactable.html) from **reactable** to display 13 rows per page, so there is no need to navigate to a second page. By default, the table displays 10 rows.
+
+
+```{r}
+ report %>%
+  reactable(.,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkline(.,
+        height = 50, show_line = TRUE, line_color = "black",statline = "mean",
+        statline_color = "red", bandline = "innerquartiles", bandline_color = "darkgreen"
+      )
+    )
+  )
+)
+```
+
+### Adding points and labels
+
+We add the `highlight_points` argument to `react_sparkline()` to highlight the minimum and maximum values. We also use `labels = c("first", "last")` to label the first and last points in the sparkline.
+
+```{r}
+report %>%
+  reactable(
+    .,
+    defaultPageSize = 13,
+    columns = list(
+      Product = colDef(maxWidth = 200),
+      `Monthly Sales` = colDef(
+        cell = react_sparkline(
+          .,
+          height = 50,
+          show_line = TRUE,
+          line_color = "black",
+          bandline = "innerquartiles",
+          bandline_color = "darkgreen",
+          highlight_points = highlight_points(min = "red", max = "blue"),
+          labels = c("first", "last")
+        )
+      )
+    )
+  )
+
+```
+
+### Adding reference line
+
+Next, we use the `statline` argument to display a reference line (e.g. mean) in the sparkline. Other available options include `"mean", "median", "min", and "max"`, with the default colour Red. The `statline_label_size` argument controls the size of the label shown next to the reference line, with a default value of `"0.8em"`.
+
+```{r}
+report %>%
+  reactable(
+    .,
+    defaultPageSize = 13,
+    columns = list(
+      Product = colDef(maxWidth = 200),
+      `Monthly Sales` = colDef(
+        cell = react_sparkline(
+          .,
+          height = 50,
+          show_line = TRUE,
+          line_color = "black",
+          bandline = "innerquartiles",
+          bandline_color = "darkgreen",
+          highlight_points = highlight_points(min = "red", max = "blue"),
+          statline = "mean", statline_color = "grey", statline_label_size = '0.7em'
+        )
+      )
+    )
+  )
+
+```
+
+
+### Adding bandline
+
+As explored earlier, we can also add a `bandline` to display a horizontal band that highlights ranges of interest. Available options include `"innerquartiles"` and `"range"` (from minimum to maximum). The colour of the band can be customised using bandline_color, with the default set to red.
+
+
+```{r}
+report %>%
+  reactable(
+    .,
+    defaultPageSize = 13,
+    columns = list(
+      Product = colDef(maxWidth = 200),
+      `Monthly Sales` = colDef(
+        cell = react_sparkline(
+          .,
+          height = 50,
+          show_line = TRUE,
+          line_color = "black",
+          bandline = "innerquartiles",
+          bandline_color = "darkgreen",
+          statline = "mean",
+          statline_color = "grey",
+          statline_label_size = "0.7em",
+          highlight_points = highlight_points(
+            first = "red",
+            last  = "blue"
+          )
+        )
+      )
+    )
+  )
+```
+
+
+### Changing from sparkline to sparkbar
+
+Another useful function is [`react_sparkbar()`](https://kcuilla.github.io/reactablefmtr/reference/react_sparkbar.html), which is similar to react_sparkline() in terms of its arguments.
+
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkbar(
+        report,
+        highlight_bars = highlight_bars(
+          min = "red", max = "blue"),
+        bandline = "innerquartiles",
+        statline = "mean")
+    )
+  )
+)
+```
+
+
+
 
 
 ## Reference
