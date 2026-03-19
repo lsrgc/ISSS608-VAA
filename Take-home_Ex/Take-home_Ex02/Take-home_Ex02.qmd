@@ -76,7 +76,7 @@ Third, a nested forecasting workflow was implemented using the Modeltime package
 There are **13** packages that will be used in this exercise.
 
 | Package | Description |
-|----|----|
+|------------------------------------|------------------------------------|
 | [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
 | [knitr](https://cran.r-project.org/web/packages/knitr/index.html/) | Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques. |
 | [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
@@ -317,6 +317,12 @@ cpi_h <- cpi %>%
   left_join(series_meta, by = c("series", "level"))
 
 ```
+
+```{r}
+#| eval: false
+write_rds(cpi_h, "data/cpi_h.rds")
+```
+
 
 #### Step 2: MOdifying the Table for Interactivity
 
