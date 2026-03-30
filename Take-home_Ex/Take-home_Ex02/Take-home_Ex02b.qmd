@@ -1,0 +1,541 @@
+---
+title: "02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)"
+author: "Yiqiong PAN"
+date: "24 Feb, 2026"
+date-modified: last-modified
+
+execute:
+  echo: true    # display the code
+  eval: true    # run the code
+  message: false
+  warning: false
+  freeze: true  # do not re-render if nothing edited
+
+format: 
+  html:
+    toc: true
+    code-link: true
+
+number-sections: true
+number-depth: 7
+
+editor: visual
+---
+
+## Introduction
+
+Here we explore the different design for dashboard page.
+
+## Getting Started
+
+### Installing and Loading the Required Libraries
+
+::: panel-tabset
+#### Package Description
+
+There are **13** packages that will be used in this exercise.
+
+| Package | Description |
+|------------------------------------|------------------------------------|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), dplyr, tidyr, [ggplot2](https://ggplot2.tidyverse.org/)). |
+| [knitr](https://cran.r-project.org/web/packages/knitr/index.html/) | Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques. |
+| [DT](https://rstudio.github.io/DT/) | Displays data frames as interactive HTML tables with sorting, filtering, and pagination. |
+| [scales](https://cran.r-project.org/web/packages/scales/index.html) | Provides graphical scales map data to aesthetics. |
+| [ggthemes](https://cran.r-project.org/web/packages/ggthemes/index.html) | Provides 'ggplot2' themes and scales that replicate some of the famous looks. |
+| [readxl](https://cran.r-project.org/web/packages/readxl/readxl.pdf) | Imports excel files into R. |
+| [rlang](https://cran.r-project.org/web/packages/rlang/index.html) | Tools for working with base types, expressions, environments, and especially “tidy evaluation. |
+| [plotly](https://plotly.com/r/) | Creates interactive and publication-ready graphs. |
+| [viridis](https://cran.r-project.org/web/packages/gapminder/index.html) | A dataset and visualisation concept popularised by Hans Rosling. In ggplot and gganimate, Gapminder data is often used as an example to demonstrate animated plots over time, such as countries moving across income and life expectancy.Used here solely to apply its country color scheme. |
+| [htmltools](https://rstudio.github.io/htmltools/) | Useful tools for creating, manipulating, and writing HTML from R. |
+| [timetk](https://github.com/business-science/timetk) | A cutting-edge toolkit for time series preparation and exploration. |
+| [stringr](https://cran.r-project.org/web/packages/stringr/index.html) | Provides a consistent and user friendly set of functions for performing common string manipulation tasks, with functions such as `str_detect()`, `str_replace()` and `str_extract()` etc |
+| [lubridate](https://cran.r-project.org/web/packages/lubridate/index.html) | A Tidyverse package that handles date-time objects |
+
+The code below installs and loads the required packages into R environment.
+
+#### The Code
+
+```{r}
+pacman::p_load(tidyverse, DT, readxl,
+             knitr, scales,ggthemes,
+               plotly, timetk, lubridate, stringr, htmltools, viridis, rlang, reactable,reactablefmtr)
+```
+:::
+
+## Importing Data
+
+```{r}
+cpi_data <- read_rds("data/cpi_h.rds")
+```
+
+## Building CPI Weights Table
+
+```{r}
+names(cpi_data)
+```
+
+```{r}
+
+cpi_data$series[1:66]
+```
+
+```{r}
+
+aa_weights <- tribble(
+  ~level, ~series, ~weight,
+
+  # All items
+  0, "Consumer Price Index (CPI)", 10000,
+  0, "All Items Less Accommodation", 7344,
+  0, "All Items Less Imputed Rentals For Housing", 7862,
+
+
+  # Division (level 1)
+  1, "Food", 2042,
+  1, "Clothing and Footwear (C&F)", 165,
+  1, "Housing & Utilities", 2938,
+  1, "Household Durables & Services (HDS)", 547,
+  1, "Health", 1008,
+  1, "Transport", 1307,
+  1, "Information & Communication (InfoComm)", 381,
+  1, "Recreation, Sport & Culture (RSC)", 595,
+  1, "Education", 579,
+  1, "Miscellaneous Goods & Services (MG&S)", 438,
+
+
+  # Group (level 2)
+  2, "Food Excl Food & Beverage Serving Services (FFBSS)", 651,
+  2, "Food & Beverage Serving Services (FBSS)", 1391,
+  2, "C&F: Clothing", 129,
+  2, "C&F: Footwear", 36,
+  2, "Housing & Utilities: Accommodation", 2656,
+  2, "Housing & Utilities: Utilities & Other Fuels", 282,
+  2, "HDS: Furniture & Furnishings", 128,
+  2, "HDS: Household Textiles", 17,
+  2, "HDS: Household Appliances", 101,
+  2, "HDS: Glassware, Tableware & Household Utensils", 17,
+  2, "HDS: Tools & Equipment For House & Garden", 5,
+  2, "HDS: Household Services & Supplies (HSS)", 279,
+  2, "Health: Medicines & Health Products", 94,
+  2, "Health: Outpatient Services", 428,
+  2, "Health: Inpatient Services", 238,
+  2, "Health: Other Health Services (OHS)", 23,
+  2, "Health: Health Insurance", 225,
+  2, "Transport: Private Transport", 906,
+  2, "Transport: Land Transport Services", 262,
+  2, "Transport: Other Transport Services", 131,
+  2, "Transport: Transport Services Of Goods", 8,
+  2, "InfoComm: Information & Communication Equipment", 91,
+  2, "InfoComm: Software Excl Games", 3,
+  2, "InfoComm: InfoComm Services", 287,
+  2, "RSC: Recreational & Cultural Goods", 9,
+  2, "RSC: Other Recreational Goods (ORG)", 33,
+  2, "RSC: Garden Products & Pets", 27,
+  2, "RSC: Recreational Services", 144,
+  2, "RSC: Cultural Services", 52,
+  2, "RSC: Newspapers, Books & Stationery (NBS)", 20,
+  2, "RSC: Holiday Expenses", 310,
+  2, "Education: General, Vocational & Higher Education (GVH Edu)", 391,
+  2, "Education: Private Tuition & Other Educational Courses", 184,
+  2, "Education: School Textbooks & Study Guides", 4,
+  2, "MG&S: Personal Care", 211,
+  2, "MG&S: Alcoholic Drinks & Tobacco", 58,
+  2, "MG&S: Personal Effects", 62,
+  2, "MG&S: Social Services", 32,
+  2, "MG&S: Other Miscellaneous Services", 75,
+  2, "FBSS: Restaurants, Cafes & Pubs", 585,
+  2, "FBSS: Fast Food", 85,
+  2, "FBSS: Hawker Food Incl. Food Courts (HF&FC)", 707,
+  2, "FBSS: Oth Catering Services, Incl Vending Machines", 14,
+
+  # Class (level 3)--
+  3, "FFBSS: Rice & Cereals", 122,
+  3, "FFBSS: Meat", 101,
+  3, "FFBSS: Fish & Seafood", 79,
+  3, "FFBSS: Milk, Other Dairy & Eggs", 64,
+  3, "FFBSS: Oils & Fats", 12,
+  3, "FFBSS: Fruits & Nuts (FN)", 79,
+  3, "FFBSS: Vegetables", 82,
+  3, "FFBSS: Sugar, Confectionery & Desserts (SCD)", 27,
+  3, "FFBSS: Ready-Made & Oth. Food Nec", 44,
+  3, "FFBSS: Non-Alcoholic Beverages", 41
+)
+
+# Save to CSV
+write_csv(aa_weights, "data/cpi_weights_series.csv")
+
+```
+
+```{r}
+(aa_weights)
+```
+
+```{r}
+cpi_weighted <- cpi_data %>%
+  left_join(aa_weights, by = c("series", "level"))
+```
+
+## Exploring CPI Contribution Table
+
+```{r}
+aa_compute_yoy_contribution <- function(data, selected_level = 1) {
+  latest_date <- max(data$date, na.rm = TRUE)
+  prev_year_date <- latest_date %m-% months(12)
+
+  latest_df <- data %>%
+    filter(level == selected_level, date == latest_date) %>%
+    select(series, level, cpi_latest = cpi)
+
+  prev_df <- data %>%
+    filter(level == selected_level, date == prev_year_date) %>%
+    select(series, level, cpi_prev = cpi)
+
+  latest_df %>%
+    left_join(prev_df, by = c("series", "level")) %>%
+    left_join(aa_weights, by = c("series", "level")) %>%
+    mutate(
+      yoy_pct = (cpi_latest / cpi_prev - 1) * 100,
+      contribution_pp = yoy_pct * weight / 10000
+    ) %>%
+    filter(!is.na(contribution_pp)) %>%
+    arrange(desc(contribution_pp))
+}
+```
+
+### Bar Chart
+
+```{r}
+aa_div_contrib <- aa_compute_yoy_contribution(cpi_data, selected_level = 1) %>%
+  mutate(
+    contribution_pp = round(contribution_pp, 2),
+    yoy_pct = round(yoy_pct, 2),
+    weight_pct = round(weight / 100, 2),
+    contrib_label = sprintf("%.2f", contribution_pp),
+    yoy_label = sprintf("%.2f", yoy_pct),
+    weight_label = sprintf("%.2f", weight_pct)
+  )
+
+plot_ly(
+  data = aa_div_contrib,
+  x = ~contribution_pp,
+  y = ~reorder(series, contribution_pp),
+  type = "bar",
+  orientation = "h",
+  text = ~contrib_label,
+  texttemplate = "%{text}",
+  textposition = "inside",
+  hovertext = ~paste0(
+    "<b>", series, "</b>",
+    "<br>YoY: ", yoy_label, "%",
+    "<br>Weight: ", weight_label, "%",
+    "<br>Contribution: ", contrib_label, " pp"
+  ),
+  hovertemplate = "%{hovertext}<extra></extra>"
+) %>%
+  layout(
+    title = "Contribution to CPI by Division",
+    xaxis = list(title = "Contribution (percentage points)"),
+    yaxis = list(title = "")
+  )
+```
+
+### Reactable with Sparklines
+
+```{r}
+
+latest_date <- max(cpi_data$date, na.rm = TRUE)
+start_12m <- latest_date %m-% months(11)
+
+aa_spark <- cpi_data %>%
+  filter(level == 1, date >= start_12m, date <= latest_date) %>%
+  arrange(series, date) %>%
+  group_by(series) %>%
+  summarise(trend_12m = list(cpi), .groups = "drop")
+
+aa_table <- aa_div_contrib %>%
+  left_join(aa_spark, by = "series") %>%
+  mutate(
+    weight_pct = weight / 100,
+    yoy_pct = round(yoy_pct, 2),
+    contribution_pp = round(contribution_pp, 2)
+  ) %>%
+  arrange(desc(contribution_pp))
+
+aa_table %>%
+  reactable(
+    defaultPageSize = 10,
+    defaultSorted = "contribution_pp",
+    defaultSortOrder = "desc",
+    striped = TRUE,
+    highlight = TRUE,
+    bordered = TRUE,
+    compact = TRUE,
+    columns = list(
+      cpi_latest = colDef(show = FALSE),
+      cpi_prev = colDef(show = FALSE),
+      weight = colDef(show = FALSE),
+
+      series = colDef(
+        name = "Division",
+        minWidth = 220
+      ),
+
+      weight_pct = colDef(
+        name = "Weight (%)",
+        align = "right",
+        format = colFormat(digits = 2)
+      ),
+
+      yoy_pct = colDef(
+        name = "YoY %",
+        align = "right",
+        cell = function(value) {
+          color <- if (is.na(value)) {
+            "#666"
+          } else if (value > 0) {
+            "#b22222"
+          } else if (value < 0) {
+            "#1f77b4"
+          } else {
+            "#444"
+          }
+
+          div(
+            style = paste0("color:", color, "; font-weight: 600;"),
+            ifelse(is.na(value), "NA", sprintf("%.2f%%", value))
+          )
+        }
+      ),
+
+      contribution_pp = colDef(
+        name = "Contribution (pp)",
+        align = "left",
+        cell = function(value) {
+          bar_width <- min(abs(value) * 90, 120)
+          bar_color <- if (is.na(value)) {
+            "#999999"
+          } else if (value > 0) {
+            "#d73027"
+          } else if (value < 0) {
+            "#4575b4"
+          } else {
+            "#999999"
+          }
+
+          div(
+            style = "display:flex; align-items:center; gap:8px;",
+            div(
+              style = paste0(
+                "height:14px; width:", bar_width, "px; background:", bar_color,
+                "; border-radius:4px;"
+              )
+            ),
+            div(ifelse(is.na(value), "NA", sprintf("%.2f", value)))
+          )
+        }
+      ),
+
+      trend_12m = colDef(
+        name = "12M Trend",
+        minWidth = 160,
+        cell = react_sparkline(
+          aa_table,
+          height = 45,
+          show_line = TRUE,
+          line_color = "black",
+          show_area = FALSE,
+          highlight_points = highlight_points(
+            first = "red",
+            last = "blue"
+          )
+        )
+      )
+    )
+  )
+```
+
+### 12 Month Trend Data
+
+```{r}
+latest_date <- max(cpi_data$date, na.rm = TRUE)
+dashboard_start <- latest_date %m-% months(12)
+
+cpi_dashboard <- cpi_weighted %>%
+  filter(
+    date >= dashboard_start,
+    date <= latest_date,
+    !series %in% c(
+      "All Items Less Accommodation",
+      "All Items Less Imputed Rentals For Housing"
+    )
+  ) %>%
+  mutate(
+    weight_pct = weight / 100
+  ) %>%
+  group_by(level, division, group, class, series) %>%
+  arrange(date, .by_group = TRUE) %>%
+  mutate(
+    cpi_prev = lag(cpi, 12),
+    yoy_pct = (cpi / cpi_prev - 1) * 100,
+    contribution_pp = yoy_pct * weight / 10000
+  ) %>%
+  ungroup()
+```
+
+```{r}
+write_rds(cpi_dashboard, "data/cpi_dashboard.rds")
+```
+
+#### Reactable
+
+```{r}
+aa_latest_date <- max(cpi_dashboard$date, na.rm = TRUE)
+aa_start_12m <- aa_latest_date %m-% months(11)
+
+aa_spark <- cpi_dashboard %>%
+  filter(
+    level == 1,
+    date >= aa_start_12m,
+    date <= aa_latest_date
+  ) %>%
+  arrange(series, date) %>%
+  group_by(series) %>%
+  summarise(
+    trend_12m = list(cpi),
+    .groups = "drop"
+  )
+
+aa_latest <- cpi_dashboard %>%
+  filter(
+    level == 1,
+    date == aa_latest_date
+  ) %>%
+  select(series, cpi, yoy_pct, contribution_pp, weight_pct) %>%
+  mutate(
+    yoy_pct = round(yoy_pct, 2),
+    contribution_pp = round(contribution_pp, 2),
+    weight_pct = round(weight_pct, 2)
+  ) %>%
+  left_join(aa_spark, by = "series") %>%
+  arrange(desc(contribution_pp))
+
+aa_latest <- aa_latest %>%
+  select(series, cpi, trend_12m, yoy_pct, weight_pct, contribution_pp)
+
+aa_latest %>%
+  reactable(
+    .,
+    defaultPageSize = 10,
+    defaultSorted = "contribution_pp",
+    defaultSortOrder = "desc",
+    compact = TRUE,
+    bordered = FALSE,
+    striped = FALSE,
+    highlight = TRUE,
+    defaultColDef = colDef(
+      align = "center"
+    ),
+    columns = list(
+      series = colDef(
+        name = "Division",
+        minWidth = 150,
+        align = "left"
+      ),
+
+      cpi = colDef(
+        name = "Latest CPI",
+        format = colFormat(digits = 2),
+        minWidth = 65
+      ),
+
+      trend_12m = colDef(
+        name = "12M Trend",
+        minWidth = 260,
+        cell = react_sparkline(
+          .,
+          height = 55,
+          show_line = TRUE,
+          line_color = "black",
+          bandline = "innerquartiles",
+          bandline_color = "lightblue",
+          statline = "mean",
+          statline_color = "grey",
+          statline_label_size = "0.7em",
+          highlight_points = highlight_points(
+            min = "black",
+            max = "black"
+          )
+        )
+      ),
+
+      yoy_pct = colDef(
+        name = "YoY %",
+        minWidth = 60,
+        cell = function(value) {
+          color <- if (is.na(value)) {
+            "#666"
+          } else if (value > 0) {
+            "#b22222"
+          } else if (value < 0) {
+            "#1f77b4"
+          } else {
+            "#444"
+          }
+
+          div(
+            style = paste0("color:", color, "; font-weight: 600;"),
+            ifelse(is.na(value), "NA", sprintf("%.2f", value))
+          )
+        }
+      ),
+
+      weight_pct = colDef(
+        name = "Weight (%)",
+        format = colFormat(digits = 2),
+        minWidth = 75
+      ),
+
+      contribution_pp = colDef(
+        name = "Contribution (pp)",
+        minWidth = 140,
+        align = "right",
+        cell = function(value) {
+          bar_width <- min(abs(value) * 120, 140)
+          bar_color <- if (is.na(value)) {
+            "#bdbdbd"
+          } else if (value > 0) {
+            "#d73027"
+          } else if (value < 0) {
+            "#4575b4"
+          } else {
+            "#bdbdbd"
+          }
+
+          div(
+            style = "display:flex; align-items:center; justify-content:flex-end; gap:8px;",
+            div(
+              style = paste0(
+                "height:12px; width:", bar_width, "px; ",
+                "background:", bar_color, "; ",
+                "border-radius:6px; opacity:0.8;"
+              )
+            ),
+            div(
+              style = "min-width:45px; text-align:right;",
+              ifelse(is.na(value), "NA", sprintf("%.2f", value))
+            )
+          )
+        }
+      )
+    )
+  )
+```
+
+
+```{r}
+bs_icon("car-front-fill")
+```
+
+## Reference
+
+Kam, Tin Seong (2026), [R for Visual Analytics](https://r4va.netlify.app)

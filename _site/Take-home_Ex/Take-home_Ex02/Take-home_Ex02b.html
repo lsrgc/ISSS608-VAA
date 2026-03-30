@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.23">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Yiqiong PAN">
+<meta name="dcterms.date" content="2026-02-24">
+<title>02: Exploratory Data Analysis for Singapore CPI (2020 to 2025) – ISSS608-VAA-yiqiong-pan</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6f6599830d51be977da3b6af758f8eff.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-1fe81d0376b2c50856e68e651e390326.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-24772959a0e306aba8d7698078628ce7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><link href="../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../site_libs/plotly-binding-4.11.0/plotly.js"></script><script src="../../site_libs/typedarray-0.1/typedarray.min.js"></script><script src="../../site_libs/jquery-3.5.1/jquery.min.js"></script><link href="../../site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><link href="../../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script><script src="../../site_libs/core-js-2.5.3/shim.min.js"></script><script src="../../site_libs/react-18.2.0/react.min.js"></script><script src="../../site_libs/react-18.2.0/react-dom.min.js"></script><script src="../../site_libs/reactwidget-2.0.0/react-tools.js"></script><link href="../../site_libs/reactable-0.4.5/reactable.css" rel="stylesheet">
+<script src="../../site_libs/reactable-binding-0.4.5/reactable.js"></script><script src="../../site_libs/dataui-binding-0.0.1/dataui.js"></script><link rel="stylesheet" href="../../styles.css">
+</head>
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608-VAA-yiqiong-pan</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">
+<li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
+ <span class="dropdown-text">01: A Layered Grammar of Graphics: ggplot2 methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">02: Beyond ggplot2 Fundamentals</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_1.html">
+ <span class="dropdown-text">03-1: Programming Interactive Data Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_2.html">
+ <span class="dropdown-text">03-2: Programming Animated Statistical Graphics with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_1.html">
+ <span class="dropdown-text">04-1: Visualising Distribution</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_2.html">
+ <span class="dropdown-text">04-2: Visual Statistical Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_3.html">
+ <span class="dropdown-text">04-3: Visualising Uncertainty</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_4.html">
+ <span class="dropdown-text">04-4: Building Funnel Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_1.html">
+ <span class="dropdown-text">05-1: Building Ternary Plot with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_2.html">
+ <span class="dropdown-text">05-2: Visual Correlation Analysis</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_3.html">
+ <span class="dropdown-text">05-3: Visual Multivariate Analysis with Heatmap</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_4.html">
+ <span class="dropdown-text">05-4: Visual Multivariate Analysis with Parallel Coordinates Plot</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05_5.html">
+ <span class="dropdown-text">05-5: Treemap Visualisation with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html">
+ <span class="dropdown-text">07: Visualising and Analysing Time-oriented Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_1.html">
+ <span class="dropdown-text">08-1: Choropleth Mapping in R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_2.html">
+ <span class="dropdown-text">08-2: Visualising Geospatial Point Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08_3.html">
+ <span class="dropdown-text">08-3: Analytical Mapping</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html">
+ <span class="dropdown-text">09: Modelling, Visualising and Analysing Network Data with R</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html">
+ <span class="dropdown-text">10: Information Dashboard Design: R methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Extra/Hands-on_Extra_1.html">
+ <span class="dropdown-text">Extra01: Time on the Horizon: ggHoriPlot methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Extra/Hands-on_Extra_2.html">
+ <span class="dropdown-text">Extra02: Visualising, Analysing and Forecasting Time-series Data: tidyverts methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Extra/Hands-on_Extra_3.html">
+ <span class="dropdown-text">Extra03: Visualising, Analysing and Forecasting Time-series Data: timetk and modeltime methods</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">
+<li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex06/In-class_Ex06.html">
+ <span class="dropdown-text">06: A Basic Shiny App</span></a>
+  </li>  
+    </ul>
+</li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">
+<li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
+ <span class="dropdown-text">01: Factors Associated with Academic Performance: A Visual Analysis of Student Survey Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
+ <span class="dropdown-text">02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)</span></a>
+  </li>  
+    </ul>
+</li>
+</ul>
+<ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/lsrgc"> <i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://isss608-ay2025-26jan.netlify.app/"> <i class="bi bi-eyeglasses" role="img" aria-label="Course Textbook">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li>
+<a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><span class="header-section-number">2</span> Getting Started</a>
+  <ul class="collapse">
+<li><a href="#installing-and-loading-the-required-libraries" id="toc-installing-and-loading-the-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-the-required-libraries"><span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</a></li>
+  </ul>
+</li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data"><span class="header-section-number">3</span> Importing Data</a></li>
+  <li><a href="#building-cpi-weights-table" id="toc-building-cpi-weights-table" class="nav-link" data-scroll-target="#building-cpi-weights-table"><span class="header-section-number">4</span> Building CPI Weights Table</a></li>
+  <li>
+<a href="#exploring-cpi-contribution-table" id="toc-exploring-cpi-contribution-table" class="nav-link" data-scroll-target="#exploring-cpi-contribution-table"><span class="header-section-number">5</span> Exploring CPI Contribution Table</a>
+  <ul class="collapse">
+<li><a href="#bar-chart" id="toc-bar-chart" class="nav-link" data-scroll-target="#bar-chart"><span class="header-section-number">5.1</span> Bar Chart</a></li>
+  <li><a href="#reactable-with-sparklines" id="toc-reactable-with-sparklines" class="nav-link" data-scroll-target="#reactable-with-sparklines"><span class="header-section-number">5.2</span> Reactable with Sparklines</a></li>
+  <li><a href="#month-trend-data" id="toc-month-trend-data" class="nav-link" data-scroll-target="#month-trend-data"><span class="header-section-number">5.3</span> 12 Month Trend Data</a></li>
+  </ul>
+</li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">6</span> Reference</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yiqiong PAN </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 24, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">March 29, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header><section id="introduction" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="introduction">
+<span class="header-section-number">1</span> Introduction</h2>
+<p>Here we explore the different design for dashboard page.</p>
+</section><section id="getting-started" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="getting-started">
+<span class="header-section-number">2</span> Getting Started</h2>
+<section id="installing-and-loading-the-required-libraries" class="level3" data-number="2.1"><h3 data-number="2.1" class="anchored" data-anchor-id="installing-and-loading-the-required-libraries">
+<span class="header-section-number">2.1</span> Installing and Loading the Required Libraries</h3>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist">
+<li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Package Description</a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">The Code</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>There are <strong>13</strong> packages that will be used in this exercise.</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Package</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.tidyverse.org/">tidyverse</a></td>
+<td>A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., <a href="https://readr.tidyverse.org/">readr</a>, dplyr, tidyr, <a href="https://ggplot2.tidyverse.org/">ggplot2</a>).</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/knitr/index.html/">knitr</a></td>
+<td>Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://rstudio.github.io/DT/">DT</a></td>
+<td>Displays data frames as interactive HTML tables with sorting, filtering, and pagination.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/scales/index.html">scales</a></td>
+<td>Provides graphical scales map data to aesthetics.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/ggthemes/index.html">ggthemes</a></td>
+<td>Provides ‘ggplot2’ themes and scales that replicate some of the famous looks.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/readxl/readxl.pdf">readxl</a></td>
+<td>Imports excel files into R.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/rlang/index.html">rlang</a></td>
+<td>Tools for working with base types, expressions, environments, and especially “tidy evaluation.</td>
+</tr>
+<tr class="even">
+<td><a href="https://plotly.com/r/">plotly</a></td>
+<td>Creates interactive and publication-ready graphs.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/gapminder/index.html">viridis</a></td>
+<td>A dataset and visualisation concept popularised by Hans Rosling. In ggplot and gganimate, Gapminder data is often used as an example to demonstrate animated plots over time, such as countries moving across income and life expectancy.Used here solely to apply its country color scheme.</td>
+</tr>
+<tr class="even">
+<td><a href="https://rstudio.github.io/htmltools/">htmltools</a></td>
+<td>Useful tools for creating, manipulating, and writing HTML from R.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/business-science/timetk">timetk</a></td>
+<td>A cutting-edge toolkit for time series preparation and exploration.</td>
+</tr>
+<tr class="even">
+<td><a href="https://cran.r-project.org/web/packages/stringr/index.html">stringr</a></td>
+<td>Provides a consistent and user friendly set of functions for performing common string manipulation tasks, with functions such as <code>str_detect()</code>, <code>str_replace()</code> and <code>str_extract()</code> etc</td>
+</tr>
+<tr class="odd">
+<td><a href="https://cran.r-project.org/web/packages/lubridate/index.html">lubridate</a></td>
+<td>A Tidyverse package that handles date-time objects</td>
+</tr>
+</tbody>
+</table>
+<p>The code below installs and loads the required packages into R environment.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">pacman</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pacman/man/p_load.html">p_load</a></span><span class="op">(</span><span class="va">tidyverse</span>, <span class="va">DT</span>, <span class="va">readxl</span>,</span>
+<span>             <span class="va">knitr</span>, <span class="va">scales</span>,<span class="va">ggthemes</span>,</span>
+<span>               <span class="va">plotly</span>, <span class="va">timetk</span>, <span class="va">lubridate</span>, <span class="va">stringr</span>, <span class="va">htmltools</span>, <span class="va">viridis</span>, <span class="va">rlang</span>, <span class="va">reactable</span>,<span class="va">reactablefmtr</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="importing-data" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="importing-data">
+<span class="header-section-number">3</span> Importing Data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cpi_data</span> <span class="op">&lt;-</span> <span class="fu">read_rds</span><span class="op">(</span><span class="st">"data/cpi_h.rds"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="building-cpi-weights-table" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="building-cpi-weights-table">
+<span class="header-section-number">4</span> Building CPI Weights Table</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">cpi_data</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "date"     "series"   "cpi"      "level"    "division" "group"    "class"   </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cpi_data</span><span class="op">$</span><span class="va">series</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">66</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Consumer Price Index (CPI)"                                 
+ [2] "Food"                                                       
+ [3] "Food Excl Food &amp; Beverage Serving Services (FFBSS)"         
+ [4] "FFBSS: Rice &amp; Cereals"                                      
+ [5] "FFBSS: Meat"                                                
+ [6] "FFBSS: Fish &amp; Seafood"                                      
+ [7] "FFBSS: Milk, Other Dairy &amp; Eggs"                            
+ [8] "FFBSS: Oils &amp; Fats"                                         
+ [9] "FFBSS: Fruits &amp; Nuts (FN)"                                  
+[10] "FFBSS: Vegetables"                                          
+[11] "FFBSS: Sugar, Confectionery &amp; Desserts (SCD)"               
+[12] "FFBSS: Ready-Made &amp; Oth. Food Nec"                          
+[13] "FFBSS: Non-Alcoholic Beverages"                             
+[14] "Clothing and Footwear (C&amp;F)"                                
+[15] "C&amp;F: Clothing"                                              
+[16] "C&amp;F: Footwear"                                              
+[17] "Housing &amp; Utilities"                                        
+[18] "Housing &amp; Utilities: Accommodation"                         
+[19] "Housing &amp; Utilities: Utilities &amp; Other Fuels"               
+[20] "Household Durables &amp; Services (HDS)"                        
+[21] "HDS: Furniture &amp; Furnishings"                               
+[22] "HDS: Household Textiles"                                    
+[23] "HDS: Household Appliances"                                  
+[24] "HDS: Glassware, Tableware &amp; Household Utensils"             
+[25] "HDS: Tools &amp; Equipment For House &amp; Garden"                  
+[26] "HDS: Household Services &amp; Supplies (HSS)"                   
+[27] "Health"                                                     
+[28] "Health: Medicines &amp; Health Products"                        
+[29] "Health: Outpatient Services"                                
+[30] "Health: Inpatient Services"                                 
+[31] "Health: Other Health Services (OHS)"                        
+[32] "Health: Health Insurance"                                   
+[33] "Transport"                                                  
+[34] "Transport: Private Transport"                               
+[35] "Transport: Land Transport Services"                         
+[36] "Transport: Other Transport Services"                        
+[37] "Transport: Transport Services Of Goods"                     
+[38] "Information &amp; Communication (InfoComm)"                     
+[39] "InfoComm: Information &amp; Communication Equipment"            
+[40] "InfoComm: Software Excl Games"                              
+[41] "InfoComm: InfoComm Services"                                
+[42] "Recreation, Sport &amp; Culture (RSC)"                          
+[43] "RSC: Recreational &amp; Cultural Goods"                         
+[44] "RSC: Other Recreational Goods (ORG)"                        
+[45] "RSC: Garden Products &amp; Pets"                                
+[46] "RSC: Recreational Services"                                 
+[47] "RSC: Cultural Services"                                     
+[48] "RSC: Newspapers, Books &amp; Stationery (NBS)"                  
+[49] "RSC: Holiday Expenses"                                      
+[50] "Education"                                                  
+[51] "Education: General, Vocational &amp; Higher Education (GVH Edu)"
+[52] "Education: Private Tuition &amp; Other Educational Courses"     
+[53] "Education: School Textbooks &amp; Study Guides"                 
+[54] "Miscellaneous Goods &amp; Services (MG&amp;S)"                      
+[55] "MG&amp;S: Personal Care"                                        
+[56] "MG&amp;S: Alcoholic Drinks &amp; Tobacco"                           
+[57] "MG&amp;S: Personal Effects"                                     
+[58] "MG&amp;S: Social Services"                                      
+[59] "MG&amp;S: Other Miscellaneous Services"                         
+[60] "Food &amp; Beverage Serving Services (FBSS)"                    
+[61] "FBSS: Restaurants, Cafes &amp; Pubs"                            
+[62] "FBSS: Fast Food"                                            
+[63] "FBSS: Hawker Food Incl. Food Courts (HF&amp;FC)"                
+[64] "FBSS: Oth Catering Services, Incl Vending Machines"         
+[65] "All Items Less Accommodation"                               
+[66] "All Items Less Imputed Rentals For Housing"                 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aa_weights</span> <span class="op">&lt;-</span> <span class="fu">tribble</span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">level</span>, <span class="op">~</span><span class="va">series</span>, <span class="op">~</span><span class="va">weight</span>,</span>
+<span></span>
+<span>  <span class="co"># All items</span></span>
+<span>  <span class="fl">0</span>, <span class="st">"Consumer Price Index (CPI)"</span>, <span class="fl">10000</span>,</span>
+<span>  <span class="fl">0</span>, <span class="st">"All Items Less Accommodation"</span>, <span class="fl">7344</span>,</span>
+<span>  <span class="fl">0</span>, <span class="st">"All Items Less Imputed Rentals For Housing"</span>, <span class="fl">7862</span>,</span>
+<span></span>
+<span></span>
+<span>  <span class="co"># Division (level 1)</span></span>
+<span>  <span class="fl">1</span>, <span class="st">"Food"</span>, <span class="fl">2042</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Clothing and Footwear (C&amp;F)"</span>, <span class="fl">165</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Housing &amp; Utilities"</span>, <span class="fl">2938</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Household Durables &amp; Services (HDS)"</span>, <span class="fl">547</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Health"</span>, <span class="fl">1008</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Transport"</span>, <span class="fl">1307</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Information &amp; Communication (InfoComm)"</span>, <span class="fl">381</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Recreation, Sport &amp; Culture (RSC)"</span>, <span class="fl">595</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Education"</span>, <span class="fl">579</span>,</span>
+<span>  <span class="fl">1</span>, <span class="st">"Miscellaneous Goods &amp; Services (MG&amp;S)"</span>, <span class="fl">438</span>,</span>
+<span></span>
+<span></span>
+<span>  <span class="co"># Group (level 2)</span></span>
+<span>  <span class="fl">2</span>, <span class="st">"Food Excl Food &amp; Beverage Serving Services (FFBSS)"</span>, <span class="fl">651</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Food &amp; Beverage Serving Services (FBSS)"</span>, <span class="fl">1391</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"C&amp;F: Clothing"</span>, <span class="fl">129</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"C&amp;F: Footwear"</span>, <span class="fl">36</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Housing &amp; Utilities: Accommodation"</span>, <span class="fl">2656</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Housing &amp; Utilities: Utilities &amp; Other Fuels"</span>, <span class="fl">282</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Furniture &amp; Furnishings"</span>, <span class="fl">128</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Household Textiles"</span>, <span class="fl">17</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Household Appliances"</span>, <span class="fl">101</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Glassware, Tableware &amp; Household Utensils"</span>, <span class="fl">17</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Tools &amp; Equipment For House &amp; Garden"</span>, <span class="fl">5</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"HDS: Household Services &amp; Supplies (HSS)"</span>, <span class="fl">279</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Health: Medicines &amp; Health Products"</span>, <span class="fl">94</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Health: Outpatient Services"</span>, <span class="fl">428</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Health: Inpatient Services"</span>, <span class="fl">238</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Health: Other Health Services (OHS)"</span>, <span class="fl">23</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Health: Health Insurance"</span>, <span class="fl">225</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Transport: Private Transport"</span>, <span class="fl">906</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Transport: Land Transport Services"</span>, <span class="fl">262</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Transport: Other Transport Services"</span>, <span class="fl">131</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Transport: Transport Services Of Goods"</span>, <span class="fl">8</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"InfoComm: Information &amp; Communication Equipment"</span>, <span class="fl">91</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"InfoComm: Software Excl Games"</span>, <span class="fl">3</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"InfoComm: InfoComm Services"</span>, <span class="fl">287</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Recreational &amp; Cultural Goods"</span>, <span class="fl">9</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Other Recreational Goods (ORG)"</span>, <span class="fl">33</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Garden Products &amp; Pets"</span>, <span class="fl">27</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Recreational Services"</span>, <span class="fl">144</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Cultural Services"</span>, <span class="fl">52</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Newspapers, Books &amp; Stationery (NBS)"</span>, <span class="fl">20</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"RSC: Holiday Expenses"</span>, <span class="fl">310</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Education: General, Vocational &amp; Higher Education (GVH Edu)"</span>, <span class="fl">391</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Education: Private Tuition &amp; Other Educational Courses"</span>, <span class="fl">184</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"Education: School Textbooks &amp; Study Guides"</span>, <span class="fl">4</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"MG&amp;S: Personal Care"</span>, <span class="fl">211</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"MG&amp;S: Alcoholic Drinks &amp; Tobacco"</span>, <span class="fl">58</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"MG&amp;S: Personal Effects"</span>, <span class="fl">62</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"MG&amp;S: Social Services"</span>, <span class="fl">32</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"MG&amp;S: Other Miscellaneous Services"</span>, <span class="fl">75</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"FBSS: Restaurants, Cafes &amp; Pubs"</span>, <span class="fl">585</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"FBSS: Fast Food"</span>, <span class="fl">85</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"FBSS: Hawker Food Incl. Food Courts (HF&amp;FC)"</span>, <span class="fl">707</span>,</span>
+<span>  <span class="fl">2</span>, <span class="st">"FBSS: Oth Catering Services, Incl Vending Machines"</span>, <span class="fl">14</span>,</span>
+<span></span>
+<span>  <span class="co"># Class (level 3)--</span></span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Rice &amp; Cereals"</span>, <span class="fl">122</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Meat"</span>, <span class="fl">101</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Fish &amp; Seafood"</span>, <span class="fl">79</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Milk, Other Dairy &amp; Eggs"</span>, <span class="fl">64</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Oils &amp; Fats"</span>, <span class="fl">12</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Fruits &amp; Nuts (FN)"</span>, <span class="fl">79</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Vegetables"</span>, <span class="fl">82</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Sugar, Confectionery &amp; Desserts (SCD)"</span>, <span class="fl">27</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Ready-Made &amp; Oth. Food Nec"</span>, <span class="fl">44</span>,</span>
+<span>  <span class="fl">3</span>, <span class="st">"FFBSS: Non-Alcoholic Beverages"</span>, <span class="fl">41</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Save to CSV</span></span>
+<span><span class="fu">write_csv</span><span class="op">(</span><span class="va">aa_weights</span>, <span class="st">"data/cpi_weights_series.csv"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">aa_weights</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 66 × 3
+   level series                                     weight
+   &lt;dbl&gt; &lt;chr&gt;                                       &lt;dbl&gt;
+ 1     0 Consumer Price Index (CPI)                  10000
+ 2     0 All Items Less Accommodation                 7344
+ 3     0 All Items Less Imputed Rentals For Housing   7862
+ 4     1 Food                                         2042
+ 5     1 Clothing and Footwear (C&amp;F)                   165
+ 6     1 Housing &amp; Utilities                          2938
+ 7     1 Household Durables &amp; Services (HDS)           547
+ 8     1 Health                                       1008
+ 9     1 Transport                                    1307
+10     1 Information &amp; Communication (InfoComm)        381
+# ℹ 56 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cpi_weighted</span> <span class="op">&lt;-</span> <span class="va">cpi_data</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">aa_weights</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"series"</span>, <span class="st">"level"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="exploring-cpi-contribution-table" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="exploring-cpi-contribution-table">
+<span class="header-section-number">5</span> Exploring CPI Contribution Table</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aa_compute_yoy_contribution</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">selected_level</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">latest_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">prev_year_date</span> <span class="op">&lt;-</span> <span class="va">latest_date</span> <span class="op">%m-%</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">latest_df</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">level</span> <span class="op">==</span> <span class="va">selected_level</span>, <span class="va">date</span> <span class="op">==</span> <span class="va">latest_date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">select</span><span class="op">(</span><span class="va">series</span>, <span class="va">level</span>, cpi_latest <span class="op">=</span> <span class="va">cpi</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">prev_df</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">level</span> <span class="op">==</span> <span class="va">selected_level</span>, <span class="va">date</span> <span class="op">==</span> <span class="va">prev_year_date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">select</span><span class="op">(</span><span class="va">series</span>, <span class="va">level</span>, cpi_prev <span class="op">=</span> <span class="va">cpi</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">latest_df</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">left_join</span><span class="op">(</span><span class="va">prev_df</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"series"</span>, <span class="st">"level"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">left_join</span><span class="op">(</span><span class="va">aa_weights</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"series"</span>, <span class="st">"level"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">mutate</span><span class="op">(</span></span>
+<span>      yoy_pct <span class="op">=</span> <span class="op">(</span><span class="va">cpi_latest</span> <span class="op">/</span> <span class="va">cpi_prev</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>      contribution_pp <span class="op">=</span> <span class="va">yoy_pct</span> <span class="op">*</span> <span class="va">weight</span> <span class="op">/</span> <span class="fl">10000</span></span>
+<span>    <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">contribution_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">contribution_pp</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="bar-chart" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="bar-chart">
+<span class="header-section-number">5.1</span> Bar Chart</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aa_div_contrib</span> <span class="op">&lt;-</span> <span class="fu">aa_compute_yoy_contribution</span><span class="op">(</span><span class="va">cpi_data</span>, selected_level <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    contribution_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">contribution_pp</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    yoy_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">yoy_pct</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    weight_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">/</span> <span class="fl">100</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    contrib_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">contribution_pp</span><span class="op">)</span>,</span>
+<span>    yoy_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">yoy_pct</span><span class="op">)</span>,</span>
+<span>    weight_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">weight_pct</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu">plot_ly</span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">aa_div_contrib</span>,</span>
+<span>  x <span class="op">=</span> <span class="op">~</span><span class="va">contribution_pp</span>,</span>
+<span>  y <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span><span class="op">(</span><span class="va">series</span>, <span class="va">contribution_pp</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"bar"</span>,</span>
+<span>  orientation <span class="op">=</span> <span class="st">"h"</span>,</span>
+<span>  text <span class="op">=</span> <span class="op">~</span><span class="va">contrib_label</span>,</span>
+<span>  texttemplate <span class="op">=</span> <span class="st">"%{text}"</span>,</span>
+<span>  textposition <span class="op">=</span> <span class="st">"inside"</span>,</span>
+<span>  hovertext <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>    <span class="st">"&lt;b&gt;"</span>, <span class="va">series</span>, <span class="st">"&lt;/b&gt;"</span>,</span>
+<span>    <span class="st">"&lt;br&gt;YoY: "</span>, <span class="va">yoy_label</span>, <span class="st">"%"</span>,</span>
+<span>    <span class="st">"&lt;br&gt;Weight: "</span>, <span class="va">weight_label</span>, <span class="st">"%"</span>,</span>
+<span>    <span class="st">"&lt;br&gt;Contribution: "</span>, <span class="va">contrib_label</span>, <span class="st">" pp"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  hovertemplate <span class="op">=</span> <span class="st">"%{hovertext}&lt;extra&gt;&lt;/extra&gt;"</span></span>
+<span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/layout.html">layout</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Contribution to CPI by Division"</span>,</span>
+<span>    xaxis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Contribution (percentage points)"</span><span class="op">)</span>,</span>
+<span>    yaxis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-c6f7f24c4e491c4aae85" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-c6f7f24c4e491c4aae85">{"x":{"visdat":{"7afc6e3cdad":["function () ","plotlyVisDat"]},"cur_data":"7afc6e3cdad","attrs":{"7afc6e3cdad":{"x":{},"y":{},"orientation":"h","text":{},"texttemplate":"%{text}","textposition":"inside","hovertext":{},"hovertemplate":"%{hovertext}<extra><\/extra>","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Contribution to CPI by Division","xaxis":{"domain":[0,1],"automargin":true,"title":"Contribution (percentage points)"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","type":"category","categoryorder":"array","categoryarray":["Information & Communication (InfoComm)","Clothing and Footwear (C&F)","Household Durables & Services (HDS)","Miscellaneous Goods & Services (MG&S)","Recreation, Sport & Culture (RSC)","Housing & Utilities","Education","Food","Health","Transport"]},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[0.46999999999999997,0.41999999999999998,0.25,0.070000000000000007,0.059999999999999998,0.02,0,-0.02,-0.02,-0.080000000000000002],"y":["Transport","Health","Food","Education","Housing & Utilities","Recreation, Sport & Culture (RSC)","Miscellaneous Goods & Services (MG&S)","Clothing and Footwear (C&F)","Household Durables & Services (HDS)","Information & Communication (InfoComm)"],"orientation":"h","text":["0.47","0.42","0.25","0.07","0.06","0.02","0.00","-0.02","-0.02","-0.08"],"texttemplate":["%{text}","%{text}","%{text}","%{text}","%{text}","%{text}","%{text}","%{text}","%{text}","%{text}"],"textposition":["inside","inside","inside","inside","inside","inside","inside","inside","inside","inside"],"hovertext":["<b>Transport<\/b><br>YoY: 3.60%<br>Weight: 13.07%<br>Contribution: 0.47 pp","<b>Health<\/b><br>YoY: 4.21%<br>Weight: 10.08%<br>Contribution: 0.42 pp","<b>Food<\/b><br>YoY: 1.23%<br>Weight: 20.42%<br>Contribution: 0.25 pp","<b>Education<\/b><br>YoY: 1.17%<br>Weight: 5.79%<br>Contribution: 0.07 pp","<b>Housing & Utilities<\/b><br>YoY: 0.21%<br>Weight: 29.38%<br>Contribution: 0.06 pp","<b>Recreation, Sport & Culture (RSC)<\/b><br>YoY: 0.26%<br>Weight: 5.95%<br>Contribution: 0.02 pp","<b>Miscellaneous Goods & Services (MG&S)<\/b><br>YoY: 0.07%<br>Weight: 4.38%<br>Contribution: 0.00 pp","<b>Clothing and Footwear (C&F)<\/b><br>YoY: -0.97%<br>Weight: 1.65%<br>Contribution: -0.02 pp","<b>Household Durables & Services (HDS)<\/b><br>YoY: -0.31%<br>Weight: 5.47%<br>Contribution: -0.02 pp","<b>Information & Communication (InfoComm)<\/b><br>YoY: -2.00%<br>Weight: 3.81%<br>Contribution: -0.08 pp"],"hovertemplate":["%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>","%{hovertext}<extra><\/extra>"],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section><section id="reactable-with-sparklines" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="reactable-with-sparklines">
+<span class="header-section-number">5.2</span> Reactable with Sparklines</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">latest_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">cpi_data</span><span class="op">$</span><span class="va">date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">start_12m</span> <span class="op">&lt;-</span> <span class="va">latest_date</span> <span class="op">%m-%</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_spark</span> <span class="op">&lt;-</span> <span class="va">cpi_data</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">level</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">date</span> <span class="op">&gt;=</span> <span class="va">start_12m</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="va">latest_date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">series</span>, <span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">series</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>trend_12m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">cpi</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_table</span> <span class="op">&lt;-</span> <span class="va">aa_div_contrib</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">aa_spark</span>, by <span class="op">=</span> <span class="st">"series"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    weight_pct <span class="op">=</span> <span class="va">weight</span> <span class="op">/</span> <span class="fl">100</span>,</span>
+<span>    yoy_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">yoy_pct</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    contribution_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">contribution_pp</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">contribution_pp</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_table</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">reactable</span><span class="op">(</span></span>
+<span>    defaultPageSize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    defaultSorted <span class="op">=</span> <span class="st">"contribution_pp"</span>,</span>
+<span>    defaultSortOrder <span class="op">=</span> <span class="st">"desc"</span>,</span>
+<span>    striped <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    highlight <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    bordered <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    compact <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>      cpi_latest <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>      cpi_prev <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>      weight <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span></span>
+<span>      series <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Division"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">220</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      weight_pct <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Weight (%)"</span>,</span>
+<span>        align <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>        format <span class="op">=</span> <span class="fu">colFormat</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      yoy_pct <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"YoY %"</span>,</span>
+<span>        align <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>        cell <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="va">color</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#666"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#b22222"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#1f77b4"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="st">"#444"</span></span>
+<span>          <span class="op">}</span></span>
+<span></span>
+<span>          <span class="fu">div</span><span class="op">(</span></span>
+<span>            style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"color:"</span>, <span class="va">color</span>, <span class="st">"; font-weight: 600;"</span><span class="op">)</span>,</span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, <span class="st">"NA"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f%%"</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      contribution_pp <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Contribution (pp)"</span>,</span>
+<span>        align <span class="op">=</span> <span class="st">"left"</span>,</span>
+<span>        cell <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="va">bar_width</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">*</span> <span class="fl">90</span>, <span class="fl">120</span><span class="op">)</span></span>
+<span>          <span class="va">bar_color</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#999999"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#d73027"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#4575b4"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="st">"#999999"</span></span>
+<span>          <span class="op">}</span></span>
+<span></span>
+<span>          <span class="fu">div</span><span class="op">(</span></span>
+<span>            style <span class="op">=</span> <span class="st">"display:flex; align-items:center; gap:8px;"</span>,</span>
+<span>            <span class="fu">div</span><span class="op">(</span></span>
+<span>              style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>                <span class="st">"height:14px; width:"</span>, <span class="va">bar_width</span>, <span class="st">"px; background:"</span>, <span class="va">bar_color</span>,</span>
+<span>                <span class="st">"; border-radius:4px;"</span></span>
+<span>              <span class="op">)</span></span>
+<span>            <span class="op">)</span>,</span>
+<span>            <span class="fu">div</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, <span class="st">"NA"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      trend_12m <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"12M Trend"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">160</span>,</span>
+<span>        cell <span class="op">=</span> <span class="fu">react_sparkline</span><span class="op">(</span></span>
+<span>          <span class="va">aa_table</span>,</span>
+<span>          height <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>          show_line <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          line_color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>          show_area <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>          highlight_points <span class="op">=</span> <span class="fu">highlight_points</span><span class="op">(</span></span>
+<span>            first <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>            last <span class="op">=</span> <span class="st">"blue"</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="reactable html-widget html-fill-item" id="htmlwidget-a8c5047bcfa8626fcdd6" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a8c5047bcfa8626fcdd6">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"series":["Transport","Health","Food","Education","Housing & Utilities","Recreation, Sport & Culture (RSC)","Miscellaneous Goods & Services (MG&S)","Clothing and Footwear (C&F)","Household Durables & Services (HDS)","Information & Communication (InfoComm)"],"level":[1,1,1,1,1,1,1,1,1,1],"cpi_latest":[104.378,104.715,101.79,101.269,101.529,101.381,99.903,97.135,99.272,98.101],"cpi_prev":[100.755,100.485,100.551,100.094,101.316,101.123,99.838,98.084,99.577,100.103],"weight":[1307,1008,2042,579,2938,595,438,165,547,381],"yoy_pct":[3.6,4.21,1.23,1.17,0.21,0.26,0.07,-0.97,-0.31,-2],"contribution_pp":[0.47,0.42,0.25,0.07,0.06,0.02,0,-0.02,-0.02,-0.08],"weight_pct":[13.07,10.08,20.42,5.79,29.38,5.95,4.38,1.65,5.47,3.81],"contrib_label":["0.47","0.42","0.25","0.07","0.06","0.02","0.00","-0.02","-0.02","-0.08"],"yoy_label":["3.60","4.21","1.23","1.17","0.21","0.26","0.07","-0.97","-0.31","-2.00"],"weight_label":["13.07","10.08","20.42","5.79","29.38","5.95","4.38","1.65","5.47","3.81"],"trend_12m":[[102.277,101.462,101.22,101.883,101.82,101.602,101.822,102.053,103.679,104.846,103.399,104.378],[100.732,100.776,100.946,102.263,102.808,102.798,102.613,102.698,102.855,103.916,104.711,104.715],[100.875,100.898,100.95,101.07,100.925,100.865,101.05,101.137,101.307,101.617,101.678,101.79],[100.12,100.286,100.351,100.486,100.483,100.501,100.633,100.718,101.051,101.187,101.191,101.269],[98.461,101.207,101.215,99.094,101.436,101.425,99.792,101.395,101.397,99.914,101.486,101.529],[97.135,97.342,97.779,98.752,98.359,98.652,98.925,98.659,99.329,100.578,100.091,101.381],[100.145,100.143,99.845,100.022,99.521,99.472,99.461,99.415,99.433,100.342,99.98,99.903],[99.579,100.987,100.697,100.122,100.07,100.893,98.31,98.496,99.171,99.186,94.886,97.135],[99.6,100.025,99.64,99.664,99.983,99.573,99.577,99.342,99.721,99.429,99.286,99.272],[99.902,99.679,97.91,97.847,98.347,97.278,97.229,97.527,97.56,98.004,98.169,98.101]]},"columns":[{"id":"series","name":"Division","type":"character","minWidth":220},{"id":"level","name":"level","type":"numeric"},{"id":"cpi_latest","name":"cpi_latest","type":"numeric","show":false},{"id":"cpi_prev","name":"cpi_prev","type":"numeric","show":false},{"id":"weight","name":"weight","type":"numeric","show":false},{"id":"yoy_pct","name":"YoY %","type":"numeric","cell":[{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["3.60%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["4.21%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["1.23%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["1.17%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.21%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.26%"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.07%"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-0.97%"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-0.31%"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-2.00%"]}],"align":"right"},{"id":"contribution_pp","name":"Contribution (pp)","type":"numeric","cell":[{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"42.3px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.47"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"37.8px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.42"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"22.5px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.25"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"6.3px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.07"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"5.4px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.06"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"1.8px","background":"#d73027","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"0px","background":"#999999","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["0.00"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"1.8px","background":"#4575b4","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["-0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"1.8px","background":"#4575b4","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["-0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"14px","width":"7.2px","background":"#4575b4","border-radius":"4px"}},"children":[]},{"name":"div","attribs":{},"children":["-0.08"]}]}],"align":"left"},{"id":"weight_pct","name":"Weight (%)","type":"numeric","format":{"cell":{"digits":2},"aggregated":{"digits":2}},"align":"right"},{"id":"contrib_label","name":"contrib_label","type":"character"},{"id":"yoy_label","name":"yoy_label","type":"character"},{"id":"weight_label","name":"weight_label","type":"character"},{"id":"trend_12m","name":"12M Trend","type":"list","cell":[{"name":"WidgetContainer","attribs":{"key":"f12abc7100ba8065789afe39a0dd356d"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-91012c130bf14cba93c3","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-91012c130bf14cba93c3"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[102.277,101.462,101.22,101.883,101.82,101.602,101.822,102.053,103.679,104.846,103.399,104.378],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 102.53675) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"98467753bd038cc8d7562169ae8c3e04"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-8098ddafd314c01e53e7","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-8098ddafd314c01e53e7"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.732,100.776,100.946,102.263,102.808,102.798,102.613,102.698,102.855,103.916,104.711,104.715],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 102.652583333333) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"a0eb5467912504c4d08d66e5991609e8"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-c7d610422ff5e0177a08","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-c7d610422ff5e0177a08"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.875,100.898,100.95,101.07,100.925,100.865,101.05,101.137,101.307,101.617,101.678,101.79],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 101.180166666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"54263f8c643cecbe6348e32f427c495a"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-19e35a9cd86c18e6f703","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-19e35a9cd86c18e6f703"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.12,100.286,100.351,100.486,100.483,100.501,100.633,100.718,101.051,101.187,101.191,101.269],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 100.689666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"717e760f9b09d8fe4ce8e94354eb513b"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-53f6a53250c7502b75eb","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-53f6a53250c7502b75eb"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[98.461,101.207,101.215,99.09399999999999,101.436,101.425,99.792,101.395,101.397,99.914,101.486,101.529],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 100.695916666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"2ed0e1b01a35ce99d91736f4fe5dc4f9"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-3fbf75826df060ce89ee","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-3fbf75826df060ce89ee"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[97.13500000000001,97.342,97.779,98.752,98.35899999999999,98.652,98.925,98.65900000000001,99.32899999999999,100.578,100.091,101.381],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 98.9151666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"79714dd01310150f710c96ab07d17db9"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-b49990eb2b56c5718adc","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-b49990eb2b56c5718adc"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.145,100.143,99.845,100.022,99.521,99.47199999999999,99.461,99.41500000000001,99.43300000000001,100.342,99.98,99.90300000000001],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.8068333333333) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"5c2e75521d398b9d116b2800c5c67857"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-4b737f16f12170b26204","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-4b737f16f12170b26204"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.57899999999999,100.987,100.697,100.122,100.07,100.893,98.31,98.496,99.17100000000001,99.18600000000001,94.886,97.13500000000001],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.1276666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"d8e288e395a527483fbfd17ba85057d9"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-5480a8af4320563dc45a","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-5480a8af4320563dc45a"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.59999999999999,100.025,99.64,99.664,99.983,99.57299999999999,99.577,99.342,99.721,99.429,99.286,99.27200000000001],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.5926666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"f41a3be151394b1120894c0f2fc07176"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-ba2dabe4c47780872670","style":{"width":"100%","height":"45px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-ba2dabe4c47780872670"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.902,99.679,97.91,97.84699999999999,98.34699999999999,97.27800000000001,97.229,97.527,97.56,98.004,98.169,98.101],\"margin\":{\"top\":3,\"right\":13,\"bottom\":2,\"left\":13},\"height\":45,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"red\",\"fill\":\"red\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"blue\",\"fill\":\"blue\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"NA\",\"stroke\":\"transparent\"},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"fill\":\"transparent\"},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 98.1294166666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]}],"minWidth":160}],"defaultSortDesc":true,"defaultSorted":[{"id":"contribution_pp","desc":true}],"defaultPageSize":10,"highlight":true,"bordered":true,"striped":true,"compact":true,"dataKey":"ceab0a023380c622a56efb8af178689e"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section><section id="month-trend-data" class="level3" data-number="5.3"><h3 data-number="5.3" class="anchored" data-anchor-id="month-trend-data">
+<span class="header-section-number">5.3</span> 12 Month Trend Data</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">latest_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">cpi_data</span><span class="op">$</span><span class="va">date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">dashboard_start</span> <span class="op">&lt;-</span> <span class="va">latest_date</span> <span class="op">%m-%</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cpi_dashboard</span> <span class="op">&lt;-</span> <span class="va">cpi_weighted</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">date</span> <span class="op">&gt;=</span> <span class="va">dashboard_start</span>,</span>
+<span>    <span class="va">date</span> <span class="op">&lt;=</span> <span class="va">latest_date</span>,</span>
+<span>    <span class="va">level</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="op">!</span><span class="va">series</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"All Items Less Accommodation"</span>,</span>
+<span>      <span class="st">"All Items Less Imputed Rentals For Housing"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    weight_pct <span class="op">=</span> <span class="va">weight</span> <span class="op">/</span> <span class="fl">100</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">level</span>, <span class="va">division</span>, <span class="va">group</span>, <span class="va">class</span>, <span class="va">series</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span>, .by_group <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    cpi_prev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">cpi</span>, <span class="fl">12</span><span class="op">)</span>,</span>
+<span>    yoy_pct <span class="op">=</span> <span class="op">(</span><span class="va">cpi</span> <span class="op">/</span> <span class="va">cpi_prev</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    contribution_pp <span class="op">=</span> <span class="va">yoy_pct</span> <span class="op">*</span> <span class="va">weight</span> <span class="op">/</span> <span class="fl">10000</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aa_latest_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">cpi_dashboard</span><span class="op">$</span><span class="va">date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">aa_start_12m</span> <span class="op">&lt;-</span> <span class="va">aa_latest_date</span> <span class="op">%m-%</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_spark</span> <span class="op">&lt;-</span> <span class="va">cpi_dashboard</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">level</span> <span class="op">==</span> <span class="fl">1</span>,</span>
+<span>    <span class="va">date</span> <span class="op">&gt;=</span> <span class="va">aa_start_12m</span>,</span>
+<span>    <span class="va">date</span> <span class="op">&lt;=</span> <span class="va">aa_latest_date</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">series</span>, <span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">series</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span></span>
+<span>    trend_12m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">cpi</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_latest</span> <span class="op">&lt;-</span> <span class="va">cpi_dashboard</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">level</span> <span class="op">==</span> <span class="fl">1</span>,</span>
+<span>    <span class="va">date</span> <span class="op">==</span> <span class="va">aa_latest_date</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">series</span>, <span class="va">cpi</span>, <span class="va">yoy_pct</span>, <span class="va">contribution_pp</span>, <span class="va">weight_pct</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    yoy_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">yoy_pct</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    contribution_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">contribution_pp</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    weight_pct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">weight_pct</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">aa_spark</span>, by <span class="op">=</span> <span class="st">"series"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">contribution_pp</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_latest</span> <span class="op">&lt;-</span> <span class="va">aa_latest</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">series</span>,<span class="va">cpi</span>, <span class="va">trend_12m</span>, <span class="va">yoy_pct</span>, <span class="va">weight_pct</span>, <span class="va">contribution_pp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aa_latest</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">reactable</span><span class="op">(</span></span>
+<span>    <span class="va">.</span>,</span>
+<span>    defaultPageSize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    defaultSorted <span class="op">=</span> <span class="st">"contribution_pp"</span>,</span>
+<span>    defaultSortOrder <span class="op">=</span> <span class="st">"desc"</span>,</span>
+<span>    compact <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    bordered <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    striped <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    highlight <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    defaultColDef <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>      align <span class="op">=</span> <span class="st">"center"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>      series <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Division"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">150</span>,</span>
+<span>        align <span class="op">=</span> <span class="st">"left"</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>     cpi <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"CPI"</span>,</span>
+<span>        format <span class="op">=</span> <span class="fu">colFormat</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">65</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      trend_12m <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"12M Trend"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">260</span>,</span>
+<span>        cell <span class="op">=</span> <span class="fu">react_sparkline</span><span class="op">(</span></span>
+<span>          <span class="va">.</span>,</span>
+<span>          height <span class="op">=</span> <span class="fl">55</span>,</span>
+<span>          show_line <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          line_color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>          bandline <span class="op">=</span> <span class="st">"innerquartiles"</span>,</span>
+<span>          bandline_color <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>          statline <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>          statline_color <span class="op">=</span> <span class="st">"grey"</span>,</span>
+<span>          statline_label_size <span class="op">=</span> <span class="st">"0.7em"</span>,</span>
+<span>          highlight_points <span class="op">=</span> <span class="fu">highlight_points</span><span class="op">(</span></span>
+<span>            min <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>            max <span class="op">=</span> <span class="st">"black"</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      yoy_pct <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"YoY %"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>        cell <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="va">color</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#666"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#b22222"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#1f77b4"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="st">"#444"</span></span>
+<span>          <span class="op">}</span></span>
+<span></span>
+<span>          <span class="fu">div</span><span class="op">(</span></span>
+<span>            style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"color:"</span>, <span class="va">color</span>, <span class="st">"; font-weight: 600;"</span><span class="op">)</span>,</span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, <span class="st">"NA"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      weight_pct <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Weight (%)"</span>,</span>
+<span>        format <span class="op">=</span> <span class="fu">colFormat</span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">75</span></span>
+<span>      <span class="op">)</span>,</span>
+<span></span>
+<span>      contribution_pp <span class="op">=</span> <span class="fu">colDef</span><span class="op">(</span></span>
+<span>        name <span class="op">=</span> <span class="st">"Contribution"</span>,</span>
+<span>        minWidth <span class="op">=</span> <span class="fl">140</span>,</span>
+<span>        align <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>        cell <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="va">bar_width</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">*</span> <span class="fl">120</span>, <span class="fl">140</span><span class="op">)</span></span>
+<span>          <span class="va">bar_color</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#bdbdbd"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#d73027"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="st">"#4575b4"</span></span>
+<span>          <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="st">"#bdbdbd"</span></span>
+<span>          <span class="op">}</span></span>
+<span></span>
+<span>          <span class="fu">div</span><span class="op">(</span></span>
+<span>            style <span class="op">=</span> <span class="st">"display:flex; align-items:center; justify-content:flex-end; gap:8px;"</span>,</span>
+<span>            <span class="fu">div</span><span class="op">(</span></span>
+<span>              style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>                <span class="st">"height:12px; width:"</span>, <span class="va">bar_width</span>, <span class="st">"px; "</span>,</span>
+<span>                <span class="st">"background:"</span>, <span class="va">bar_color</span>, <span class="st">"; "</span>,</span>
+<span>                <span class="st">"border-radius:6px; opacity:0.8;"</span></span>
+<span>              <span class="op">)</span></span>
+<span>            <span class="op">)</span>,</span>
+<span>            <span class="fu">div</span><span class="op">(</span></span>
+<span>              style <span class="op">=</span> <span class="st">"min-width:45px; text-align:right;"</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, <span class="st">"NA"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">value</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="op">)</span></span>
+<span>          <span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="reactable html-widget html-fill-item" id="htmlwidget-c31001801c9fc7b76908" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c31001801c9fc7b76908">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"series":["Transport","Health","Food","Education","Housing & Utilities","Recreation, Sport & Culture (RSC)","Miscellaneous Goods & Services (MG&S)","Clothing and Footwear (C&F)","Household Durables & Services (HDS)","Information & Communication (InfoComm)"],"cpi":[104.378,104.715,101.79,101.269,101.529,101.381,99.903,97.135,99.272,98.101],"trend_12m":[[102.277,101.462,101.22,101.883,101.82,101.602,101.822,102.053,103.679,104.846,103.399,104.378],[100.732,100.776,100.946,102.263,102.808,102.798,102.613,102.698,102.855,103.916,104.711,104.715],[100.875,100.898,100.95,101.07,100.925,100.865,101.05,101.137,101.307,101.617,101.678,101.79],[100.12,100.286,100.351,100.486,100.483,100.501,100.633,100.718,101.051,101.187,101.191,101.269],[98.461,101.207,101.215,99.094,101.436,101.425,99.792,101.395,101.397,99.914,101.486,101.529],[97.135,97.342,97.779,98.752,98.359,98.652,98.925,98.659,99.329,100.578,100.091,101.381],[100.145,100.143,99.845,100.022,99.521,99.472,99.461,99.415,99.433,100.342,99.98,99.903],[99.579,100.987,100.697,100.122,100.07,100.893,98.31,98.496,99.171,99.186,94.886,97.135],[99.6,100.025,99.64,99.664,99.983,99.573,99.577,99.342,99.721,99.429,99.286,99.272],[99.902,99.679,97.91,97.847,98.347,97.278,97.229,97.527,97.56,98.004,98.169,98.101]],"yoy_pct":[3.6,4.21,1.23,1.17,0.21,0.26,0.07,-0.97,-0.31,-2],"weight_pct":[13.07,10.08,20.42,5.79,29.38,5.95,4.38,1.65,5.47,3.81],"contribution_pp":[0.47,0.42,0.25,0.07,0.06,0.02,0,-0.02,-0.02,-0.08]},"columns":[{"id":"series","name":"Division","type":"character","align":"left","minWidth":150},{"id":"cpi","name":"CPI","type":"numeric","align":"center","format":{"cell":{"digits":2},"aggregated":{"digits":2}},"minWidth":65},{"id":"trend_12m","name":"12M Trend","type":"list","align":"center","cell":[{"name":"WidgetContainer","attribs":{"key":"5e45a14a6526cea9faeaa00ec6b06a78"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-c09a9c81b0afdfa0b8cf","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-c09a9c81b0afdfa0b8cf"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[102.277,101.462,101.22,101.883,101.82,101.602,101.822,102.053,103.679,104.846,103.399,104.378],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 102.53675) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"3886bb5ceb6cb34703b97f54582a18bf"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-da4480fd2fe3e274ff8a","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-da4480fd2fe3e274ff8a"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.732,100.776,100.946,102.263,102.808,102.798,102.613,102.698,102.855,103.916,104.711,104.715],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 102.652583333333) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"7b82220211152608efb2e399e1c9ba6a"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-fc7277f24d244b06acff","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-fc7277f24d244b06acff"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.875,100.898,100.95,101.07,100.925,100.865,101.05,101.137,101.307,101.617,101.678,101.79],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 101.180166666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"2293e6e5589499f54ab47bfd761ceae6"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-db1ff9cff0ad79bb7065","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-db1ff9cff0ad79bb7065"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.12,100.286,100.351,100.486,100.483,100.501,100.633,100.718,101.051,101.187,101.191,101.269],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 100.689666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"ca6319790f18da001bf0bbfc434e246a"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-a2eee8b9f0ce917652f9","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-a2eee8b9f0ce917652f9"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[98.461,101.207,101.215,99.09399999999999,101.436,101.425,99.792,101.395,101.397,99.914,101.486,101.529],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 100.695916666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"d544048e23ecc7faa7a1617f1fc9250a"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-7b0a7dd0d093f80a3fb2","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-7b0a7dd0d093f80a3fb2"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[97.13500000000001,97.342,97.779,98.752,98.35899999999999,98.652,98.925,98.65900000000001,99.32899999999999,100.578,100.091,101.381],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 98.9151666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"e53f294ef2442048d4a5153d43530a7d"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-31d89292cfc2a9ed9351","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-31d89292cfc2a9ed9351"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[100.145,100.143,99.845,100.022,99.521,99.47199999999999,99.461,99.41500000000001,99.43300000000001,100.342,99.98,99.90300000000001],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.8068333333333) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"67f647c6ac8cc74c155523118d0dae00"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-96c254ab8215ef8e3d7f","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-96c254ab8215ef8e3d7f"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.57899999999999,100.987,100.697,100.122,100.07,100.893,98.31,98.496,99.17100000000001,99.18600000000001,94.886,97.13500000000001],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.1276666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"c347cea28a7017ec1406a8f4832f7884"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-cccd3bd5c54d7b3f83e9","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-cccd3bd5c54d7b3f83e9"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.59999999999999,100.025,99.64,99.664,99.983,99.57299999999999,99.577,99.342,99.721,99.429,99.286,99.27200000000001],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 99.5926666666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]},{"name":"WidgetContainer","attribs":{"key":"7c6c1528d151164c490d2ce217831b4b"},"children":[{"name":"Fragment","attribs":[],"children":[{"name":"div","attribs":{"id":"htmlwidget-9a9913c13b5a09aceecb","style":{"width":"100%","height":"55px"},"className":"dataui html-widget"},"children":[]},{"name":"script","attribs":{"type":"application/json","data-for":"htmlwidget-9a9913c13b5a09aceecb"},"children":["{\"x\":{\"tag\":{\"name\":\"SparklineResponsive\",\"attribs\":{\"data\":[99.902,99.679,97.91,97.84699999999999,98.34699999999999,97.27800000000001,97.229,97.527,97.56,98.004,98.169,98.101],\"margin\":{\"top\":4,\"right\":28,\"bottom\":3,\"left\":13},\"height\":55,\"width\":\"100%\"},\"children\":[{\"name\":\"SparklineLineSeries\",\"attribs\":{\"curve\":\"cardinal\",\"showLine\":true,\"stroke\":\"black\",\"strokeWidth\":1,\"fill\":\"black\",\"fillOpacity\":0.1,\"showArea\":false},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"all\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"first\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"last\"],\"stroke\":\"transparent\",\"fill\":\"transparent\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"min\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"max\"],\"stroke\":\"black\",\"fill\":\"black\",\"size\":1.1},\"children\":[]},{\"name\":\"SparklinePointSeries\",\"attribs\":{\"points\":[\"none\"],\"fill\":\"transparent\",\"stroke\":\"transparent\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '0.8em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"auto\",\"labelOffset\":7},\"children\":[]},{\"name\":\"HorizontalReferenceLine\",\"attribs\":{\"stroke\":\"grey\",\"strokeDasharray\":\"2, 2\",\"strokeWidth\":1,\"strokeOpacity\":0.75,\"reference\":\"mean\",\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'grey', fontWeight: 'bold', fontSize: '0.7em', stroke: 'transparent'}, d.toFixed(0))\",\"labelPosition\":\"right\",\"labelOffset\":5},\"children\":[]},{\"name\":\"PatternLines\",\"attribs\":{\"id\":\"pattern\",\"height\":4,\"width\":4,\"stroke\":\"lightblue\",\"strokeWidth\":1,\"orientation\":[\"diagonal\"]},\"children\":[]},{\"name\":\"BandLine\",\"attribs\":{\"band\":\"innerquartiles\",\"fill\":\"url(#pattern)\",\"fillOpacity\":0.2},\"children\":[]},{\"name\":\"TooltipComponent\",\"attribs\":[],\"children\":[{\"name\":\"SparklinePointSeries\",\"attribs\":{\"size\":0,\"renderLabel\":\"(d) => React.createElement('tspan', {fill: 'black', fontSize: '1.1em', fontWeight: 'bold', stroke: 'white'}, d.toFixed(0))\",\"labelPosition\":\"{(yVal, i) => ((yVal > 98.1294166666667) ? 'bottom'\\n       : 'top')}\",\"labelOffset\":5},\"children\":[]}]}]},\"class\":\"reactR_markup\"},\"evals\":[\"tag.children.6.attribs.renderLabel\",\"tag.children.7.attribs.renderLabel\",\"tag.children.10.children.0.attribs.renderLabel\",\"tag.children.10.children.0.attribs.labelPosition\"],\"jsHooks\":[]}"]}]}]}],"minWidth":260},{"id":"yoy_pct","name":"YoY %","type":"numeric","align":"center","cell":[{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["3.60"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["4.21"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["1.23"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["1.17"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.21"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.26"]},{"name":"div","attribs":{"style":{"color":"#b22222","font-weight":"600"}},"children":["0.07"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-0.97"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-0.31"]},{"name":"div","attribs":{"style":{"color":"#1f77b4","font-weight":"600"}},"children":["-2.00"]}],"minWidth":60},{"id":"weight_pct","name":"Weight (%)","type":"numeric","align":"center","format":{"cell":{"digits":2},"aggregated":{"digits":2}},"minWidth":75},{"id":"contribution_pp","name":"Contribution","type":"numeric","align":"right","cell":[{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"56.4px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.47"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"50.4px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.42"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"30px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.25"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"8.4px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.07"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"7.2px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.06"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"2.4px","background":"#d73027","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"0px","background":"#bdbdbd","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["0.00"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"2.4px","background":"#4575b4","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["-0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"2.4px","background":"#4575b4","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["-0.02"]}]},{"name":"div","attribs":{"style":{"display":"flex","align-items":"center","justify-content":"flex-end","gap":"8px"}},"children":[{"name":"div","attribs":{"style":{"height":"12px","width":"9.6px","background":"#4575b4","border-radius":"6px","opacity":"0.8"}},"children":[]},{"name":"div","attribs":{"style":{"min-width":"45px","text-align":"right"}},"children":["-0.08"]}]}],"minWidth":140}],"defaultSortDesc":true,"defaultSorted":[{"id":"contribution_pp","desc":true}],"defaultPageSize":10,"highlight":true,"compact":true,"dataKey":"3ca935a2990058ccaef8be4ffcdb68b0"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section></section><section id="reference" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="reference">
+<span class="header-section-number">6</span> Reference</h2>
+<p>Kam, Tin Seong (2026), <a href="https://r4va.netlify.app">R for Visual Analytics</a></p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+</body></html>
