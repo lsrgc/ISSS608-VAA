@@ -1,7 +1,7 @@
 ---
-title: "02: Exploratory Data Analysis for Singapore CPI (2020 to 2025)"
+title: "02b: Dashboard for Singapore CPI"
 author: "Yiqiong PAN"
-date: "24 Feb, 2026"
+date: "26 March, 2026"
 date-modified: last-modified
 
 execute:
@@ -531,10 +531,6 @@ aa_latest %>%
   )
 ```
 
-
-```{r}
-bs_icon("car-front-fill")
-```
 
 ## Reference
 
