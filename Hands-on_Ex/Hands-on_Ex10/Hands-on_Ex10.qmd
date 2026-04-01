@@ -27,29 +27,27 @@ In this hands on exercise, we learn how to build information dashboard in R.
 
 By the end of this exercise, we will be able to:
 
--  create bullet charts using **ggplot2**
+-   create bullet charts using **ggplot2**
 
--  create sparklines using **ggplot2**
+-   create sparklines using **ggplot2**
 
-- build an industry standard dashboard using **R Shiny**
-
+-   build an industry standard dashboard using **R Shiny**
 
 ## Getting Started
 
 ### Installing and Loading Packages
 
-In this hands on exercise, four R packages will be used. 
-
+In this hands on exercise, four R packages will be used.
 
 | Package | Description |
-|------------------------------------|------------------------------------|
-| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), [dplyr](https://dplyr.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/), [ggplot2](https://ggplot2.tidyverse.org/)), [tibble](https://tibble.tidyverse.org/),[stringr](https://stringr.tidyverse.org/),[forcats](https://forcats.tidyverse.org/), and [purr](https://purrr.tidyverse.org/)|
+|----|----|
+| [tidyverse](https://www.tidyverse.org/) | A collection of R packages for data importing, cleaning, transformation, and visualisation (e.g., [readr](https://readr.tidyverse.org/), [dplyr](https://dplyr.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/), [ggplot2](https://ggplot2.tidyverse.org/)), [tibble](https://tibble.tidyverse.org/),[stringr](https://stringr.tidyverse.org/),[forcats](https://forcats.tidyverse.org/), and [purr](https://purrr.tidyverse.org/) |
 | [gtExtras](https://jthomasmock.github.io/gtExtras/index.html) | Provides additional helper functions that make it easier to create visually appealing tables with gt. The [gt](https://gt.rstudio.com/) package is designed to help users produce well formatted and attractive tables in R. |
 | [ggthemes](https://cran.r-project.org/web/packages/ggthemes/index.html) | Provides 'ggplot2' themes and scales that replicate some of the famous looks. |
 | [lubridate](https://cran.r-project.org/web/packages/lubridate/index.html) | A Tidyverse package that handles date-time objects |
-| [reactable](https://glin.github.io/reactable/index.html) | Provides functions for creating interactive data tables in R, built on the [React Table](https://github.com/tanstack/table/tree/v7) library and implemented through [reactR](https://github.com/react-R/reactR).|
-| [reactablefmtr](https://kcuilla.github.io/reactablefmtr/index.html) | Offers a range of features that simplify and improve the styling of interactive reactable tables, providing easy to use and highly customisable functions and themes.
-|
+| [reactable](https://glin.github.io/reactable/index.html) | Provides functions for creating interactive data tables in R, built on the [React Table](https://github.com/tanstack/table/tree/v7) library and implemented through [reactR](https://github.com/react-R/reactR). |
+| [reactablefmtr](https://kcuilla.github.io/reactablefmtr/index.html) | Offers a range of features that simplify and improve the styling of interactive reactable tables, providing easy to use and highly customisable functions and themes. |
+|  |  |
 
 ```{r}
 pacman::p_load(lubridate, ggthemes, reactable,
@@ -66,7 +64,6 @@ For the purpose of this study, a personal database in Microsoft Access *mdb* for
 
 In the code chunk below, `odbcConnectAccess()` from the [RODBC](https://cran.r-project.org/web/packages/RODBC/index.html) package is used to import a database query table into **R**.
 
-
 ```{r}
 library(RODBC)
 con <- odbcConnectAccess2007('data/Coffee Chain.mdb')
@@ -75,24 +72,20 @@ write_rds(coffeechain, "data/CoffeeChain.rds")
 odbcClose(con)
 ```
 
-
- An **.mdb** file is a Microsoft Access database file that stores tables, queries, and other database objects.
+An **.mdb** file is a Microsoft Access database file that stores tables, queries, and other database objects.
 
 Next, `sqlFetch()` is used to retrieve the table named *CoffeeChain Query* from the database. The retrieved data is returned to R as a data frame.
 
 Finally, `write_rds()` is used to save the data frame as an **.rds file**. This format stores a single R object efficiently and allows the dataset to be quickly reloaded later using `read_rds()` for further analysis.
 
-
 ```{r}
 knitr::kable(head(coffeechain, 10))
 ```
 
-:::callout-tip
+::: callout-tip
+-   Before running the code chunk, the R environment should be set to the 32 bit version because `odbcConnectAccess()` relies on 32 bit ODBC drivers and may not work properly in a 64 bit R session. The system architecture can be verified using `sessionInfo()` or `.Machine$sizeof.pointer`.
 
-- Before running the code chunk, the R environment should be set to the 32 bit version because `odbcConnectAccess()` relies on 32 bit ODBC drivers and may not work properly in a 64 bit R session. The system architecture can be verified using `sessionInfo()` or `.Machine$sizeof.pointer`.
-
-- I am using R 4.5.2, and the platform shown in `sessionInfo()` is x86_64-w64-mingw32/x64, which indicates a 64 bit R system. In the installation directory, there is no `i386` folder in the bin directory, only the 64 bit version of R is installed. Despite this, the database query table was imported successfully.
-
+-   I am using R 4.5.2, and the platform shown in `sessionInfo()` is x86_64-w64-mingw32/x64, which indicates a 64 bit R system. In the installation directory, there is no `i386` folder in the bin directory, only the 64 bit version of R is installed. Despite this, the database query table was imported successfully.
 :::
 
 We use the `summary()` function from base R to obtain a quick overview of the dataset. The data consists of coffee chain financial records in the United States, covering the period from 1 January 2012 to 1 December 2013.
@@ -109,7 +102,7 @@ The code chunk below is used to import *CoffeeChain.rds* into R.
 coffeechain <- read_rds("data/CoffeeChain.rds")
 ```
 
-The code below aggregates Sales as `current` and aggregates Budgeted Sales as `target`  by Product by using `group_by()`, `summarise()` and `ungroup()` from **dlpyr** package.
+The code below aggregates Sales as `current` and aggregates Budgeted Sales as `target` by Product by using `group_by()`, `summarise()` and `ungroup()` from **dlpyr** package.
 
 ```{r}
 product <- coffeechain %>%
@@ -120,7 +113,6 @@ product <- coffeechain %>%
 ```
 
 ### Bullet chart in ggplot2
-
 
 There are two types of bar charts in **ggplot2**: `geom_bar()` and [`geom_col()`](https://ggplot2.tidyverse.org/reference/geom_bar.html).
 
@@ -151,18 +143,14 @@ ggplot(product, aes(Product, current)) +
  theme(axis.ticks.y = element_blank()) 
  
 ```
-:::callout-tip
 
+::: callout-tip
 In ggplot2, `coord_flip()` only changes the visual orientation (such as axis ticks, labs), but the scales still refer to the original mapping.
-
-
 :::
-
 
 ## Plotting sparklines using ggplot2
 
 In this section, we learn how to plot sparklines by using **ggplot2**.
-
 
 ### Preparing the data
 
@@ -177,8 +165,8 @@ sales_report <- coffeechain %>%
   ungroup() %>%
   select(Month, Product, Sales)
 ```
-The code below creates three grouped data frames to identify the minimum and maximum sales for each product by month, using `group_by()` together with `slice(which.min())` and `slice(which.max())`. It also extracts the latest monthly sales for all 13 products.
 
+The code below creates three grouped data frames to identify the minimum and maximum sales for each product by month, using `group_by()` together with `slice(which.min())` and `slice(which.max())`. It also extracts the latest monthly sales for all 13 products.
 
 ```{r}
 mins <- group_by(sales_report, Product) %>%
@@ -190,7 +178,6 @@ ends <- group_by(sales_report, Product) %>%
 
 ```
 
-
 The code below creates the 25th and 75th percentile (quantile) columns using `quantile(var, 0.25)` and quantile`(var, 0.75)`, and then joins the results to the sales report using a `right_join()` to keep all rows from *sales_report*.
 
 ```{r}
@@ -200,6 +187,7 @@ quarts <- sales_report%>%
             quart2 = quantile(Sales, 0.75)) %>%
   right_join(sales_report)
 ```
+
 ### Sparklines in ggplot2
 
 The code below creates sparklines using `geom_line()`, with a shaded background added via `geom_ribbon()`. It also uses `geom_point()` to highlight the minimum and maximum values, and annotates the end values with labels. Although **ggplot2** sparklines are flexible, the resulting plot can be difficult to read, particularly for product names and their corresponding values.
@@ -226,12 +214,11 @@ ggplot(sales_report, aes(x = Month, y = Sales)) +
 
 In this section we learn how to create a static dashboard using the [gt](https://gt.rstudio.com/) and [gtExtras](https://jthomasmock.github.io/gtExtras/index.html) packages. It is recommended to review their official documentation to gain a general understanding of their features and functionality before getting started.
 
-
 ### Plotting a simple bullet chart
 
 Creating build chart with in a table is quite straightforward using **gt** and **gtExtra** packages. First, we use the [`gt()`](https://gt.rstudio.com/) function from the **gt** package to create a `gt` table object. The [`gt_plt_bullet()`](https://search.r-project.org/CRAN/refmans/gtExtras/html/gt_plt_bullet.html) from **gtExtra** package is then used to generate a bullet chart, where the **current** value is compared **against** a **target** value. By default, the palette displays the bar in grey and the target marker in red. In this case, the colours are customised to light blue for the bar and black for the target. Additionally, the [`gt_theme_538()`](https://search.r-project.org/CRAN/refmans/gtExtras/html/gt_theme_538.html) function **gtExtra** package is used to apply **FiveThirtyEight** theme which alternates the column background colours between grey and white.
 
-Similar to **ggthemes**, other gtExtra themes `gt_theme_dark()`, `gt_theme_espn()`, `gt_theme_excel()`, `gt_theme_guardian()`, `gt_theme_nytimes()`, `gt_theme_pff()` are also available. 
+Similar to **ggthemes**, other gtExtra themes `gt_theme_dark()`, `gt_theme_espn()`, `gt_theme_excel()`, `gt_theme_guardian()`, `gt_theme_nytimes()`, `gt_theme_pff()` are also available.
 
 ```{r}
 make_bullet_table <- function(data, theme = "538") {
@@ -267,10 +254,10 @@ make_bullet_table(product, "espn")
 make_bullet_table(product, "538")
 ```
 
-
 ## Sparklines: gtExtras Method
 
-The code below is used to transformed the data into desired structure. 
+The code below is used to transformed the data into desired structure.
+
 ```{r}
 report <- coffeechain %>%
   mutate(Year = year(Date)) %>%
@@ -280,6 +267,7 @@ report <- coffeechain %>%
   summarise(Sales = sum(Sales)) %>%
   ungroup()
 ```
+
 It is important to note that most functions in the gtExtras package require the input data frame to include list columns. Accordingly, the following code chunk transforms the report data frame into a structure with list columns to ensure compatibility with these functions.
 
 ```{r}
@@ -288,11 +276,9 @@ report %>%
   summarise('Month Sales' = list(Sales), .groups = "drop")
 ```
 
-
 ### Plotting *coffechain* sales report
 
-The code below plot sparklines for the monthly sales for each product by using [`git_plt_sparline()`](https://jthomasmock.github.io/gtExtras/reference/gt_plt_sparkline.html) from **gtExtra** package. Other plottings include `gt_plt_bar_pct()`, `gt_plt_bar_stack()`,` gt_plt_dist()`, `gt_plt_percentile()`, `gt_plt_point()`, `gt_plt_sparkline()`, `gt_plt_winloss()`.
-
+The code below plot sparklines for the monthly sales for each product by using [`git_plt_sparline()`](https://jthomasmock.github.io/gtExtras/reference/gt_plt_sparkline.html) from **gtExtra** package. Other plottings include `gt_plt_bar_pct()`, `gt_plt_bar_stack()`,`gt_plt_dist()`, `gt_plt_percentile()`, `gt_plt_point()`, `gt_plt_sparkline()`, `gt_plt_winloss()`.
 
 ```{r}
 report %>%
@@ -305,14 +291,11 @@ report %>%
                    same_limit = FALSE) # individual axis range
 ```
 
-:::callout-tip
+::: callout-tip
+-   `type`: A string indicating the type of plot to generate, accepts "default", "points", "shaded", "ref_median", 'ref_mean', "ref_iqr", "ref_last". "points" will add points to every observation instead of just the high/low and final. "shaded" will add shading below the sparkline. The "ref\_" options add a thin reference line based off the summary statistic chosen.
 
-- `type`: A string indicating the type of plot to generate, accepts "default", "points", "shaded", "ref_median", 'ref_mean', "ref_iqr", "ref_last". "points" will add points to every observation instead of just the high/low and final. "shaded" will add shading below the sparkline. The "ref_" options add a thin reference line based off the summary statistic chosen.
-
-- `palette`: A character string with 5 elements indicating the colors of various components. Order matters, and palette = sparkline color, final value color, range color low, range color high, and 'type' color (eg shading or reference lines). To show a plot with no points (only the line itself), use: palette = c("black", rep("transparent", 4)).
-
+-   `palette`: A character string with 5 elements indicating the colors of various components. Order matters, and palette = sparkline color, final value color, range color low, range color high, and 'type' color (eg shading or reference lines). To show a plot with no points (only the line itself), use: palette = c("black", rep("transparent", 4)).
 :::
-
 
 ### Adding statistics
 
@@ -327,8 +310,7 @@ report %>%
   fmt_number(columns = 4, decimals = 2) # column average
 ```
 
-
-###  Combining the data.frame with sparklines
+### Combining the data.frame with sparklines
 
 ```{r}
 spark <- report %>%
@@ -341,6 +323,7 @@ sales <- report %>%
             "Average" = mean(Sales, na.rm = T))
 sales_data = left_join(sales, spark)
 ```
+
 ```{r}
 sales_data %>%
   gt() %>%
@@ -348,10 +331,10 @@ sales_data %>%
   gt_plt_sparkline(`Monthly Sales`, same_limit = FALSE, type = 'shaded')
 ```
 
- 
 ### Combining bullet chart and sparklines
- 
-Here we create a data frame with filtered and total actual and toal target sales and left join with sales data. 
+
+Here we create a data frame with filtered and total actual and toal target sales and left join with sales data.
+
 ```{r}
 bullet<- coffeechain %>%
   filter(Date >= "2013-01-01") %>%
@@ -362,7 +345,7 @@ bullet<- coffeechain %>%
 sales_data = left_join(sales_data, bullet)
 ```
 
-The code chunk below plots the sparklines and bullet charts together in the **gt** table. 
+The code chunk below plots the sparklines and bullet charts together in the **gt** table.
 
 ```{r}
 sales_data %>%
@@ -378,22 +361,22 @@ sales_data %>%
   tab_style(style = cell_text(size = "small", align = "right"),
                               locations = cells_source_notes())
 ```
- 
+
 The gt table above looks nice, but the colour options in `gt_plt_bullet()` are quite limited, and there is not much flexibility in `gt_plt_sparkline()`. It works well for a clean static dashboard, but it is not dynamic enough.
- 
+
 ## Interactive Information Dashboard Design: reactable and reactablefmtr methods
 
-In this section, we learn how to create an interactive information dashboard using the [**reactable**](https://glin.github.io/reactable/) and [**reactablefmtr**](https://kcuilla.github.io/reactablefmtr/) packages.
-To enable the creation of interactive sparklines, the [**dataui**](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html) package needs to be installed, as shown in the code chunk below. The interactive table with sparklines looks cool and sleek which might be useful to our CPI project dashboard. 
+In this section, we learn how to create an interactive information dashboard using the [**reactable**](https://glin.github.io/reactable/) and [**reactablefmtr**](https://kcuilla.github.io/reactablefmtr/) packages. To enable the creation of interactive sparklines, the [**dataui**](https://timelyportfolio.github.io/dataui/articles/dataui_reactable.html) package needs to be installed, as shown in the code chunk below. The interactive table with sparklines looks cool and sleek which might be useful to our CPI project dashboard.
 
 ```{r}
 remotes::install_github("timelyportfolio/dataui")
 ```
+
 ```{r}
 pacman::p_load(dataui)
 ```
 
-###  Plotting interactive sparklines
+### Plotting interactive sparklines
 
 To create interactive sparklines in **reactablefmtr**, we first need to aggregate the monthly sales and store them as `list` columns. This is because the function works on vectorised values. This approach is similar to what we did earlier with **gtExtras**.
 
@@ -403,7 +386,7 @@ report <- report %>%
   summarise(`Monthly Sales` = list(Sales))
 ```
 
-[`reactable()`](https://glin.github.io/reactable/articles/examples.html) from the **reactable** package constructs an interactive table with features such as scrolling, sorting, and filtering.` colDef()` is used to define how individual columns are displayed in a reactable.
+[`reactable()`](https://glin.github.io/reactable/articles/examples.html) from the **reactable** package constructs an interactive table with features such as scrolling, sorting, and filtering.`colDef()` is used to define how individual columns are displayed in a reactable.
 
 ```{r}
 reactable(sales) 
@@ -426,12 +409,9 @@ Next, we create a `reactable` object using `reactable()` and integrate sparkline
 )
 ```
 
-
 ### Changing the pagesize
 
-
 Here, we use [`defaultPageSize()`](https://glin.github.io/reactable/reference/reactable.html) from **reactable** to display 13 rows per page, so there is no need to navigate to a second page. By default, the table displays 10 rows.
-
 
 ```{r}
  report %>%
@@ -505,11 +485,9 @@ report %>%
 
 ```
 
-
 ### Adding bandline
 
 As explored earlier, we can also add a `bandline` to display a horizontal band that highlights ranges of interest. Available options include `"innerquartiles"` and `"range"` (from minimum to maximum). The colour of the band can be customised using bandline_color, with the default set to red.
-
 
 ```{r}
 report %>%
@@ -539,11 +517,9 @@ report %>%
   )
 ```
 
-
 ### Changing from sparkline to sparkbar
 
 Another useful function is [`react_sparkbar()`](https://kcuilla.github.io/reactablefmtr/reference/react_sparkbar.html), which is similar to react_sparkline() in terms of its arguments.
-
 
 ```{r}
 reactable(
@@ -563,10 +539,6 @@ reactable(
 )
 ```
 
-
-
-
-
 ## Reference
 
-Kam, Tin Seong (2026). 31  Information Dashboard Design: R methods https://r4va.netlify.app/chap31
+Kam, Tin Seong (2026). 31 Information Dashboard Design: R methods https://r4va.netlify.app/chap31

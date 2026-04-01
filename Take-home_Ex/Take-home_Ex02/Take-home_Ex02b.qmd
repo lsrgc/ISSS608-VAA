@@ -143,10 +143,7 @@ aa_weights <- tribble(
   2, "MG&S: Personal Effects", 62,
   2, "MG&S: Social Services", 32,
   2, "MG&S: Other Miscellaneous Services", 75,
-  2, "FBSS: Restaurants, Cafes & Pubs", 585,
-  2, "FBSS: Fast Food", 85,
-  2, "FBSS: Hawker Food Incl. Food Courts (HF&FC)", 707,
-  2, "FBSS: Oth Catering Services, Incl Vending Machines", 14,
+ 
 
   # Class (level 3)--
   3, "FFBSS: Rice & Cereals", 122,
@@ -158,7 +155,12 @@ aa_weights <- tribble(
   3, "FFBSS: Vegetables", 82,
   3, "FFBSS: Sugar, Confectionery & Desserts (SCD)", 27,
   3, "FFBSS: Ready-Made & Oth. Food Nec", 44,
-  3, "FFBSS: Non-Alcoholic Beverages", 41
+  3, "FFBSS: Non-Alcoholic Beverages", 41,
+  3, "FBSS: Restaurants, Cafes & Pubs", 585,
+  3, "FBSS: Fast Food", 85,
+  3, "FBSS: Hawker Food Incl. Food Courts (HF&FC)", 707,
+  3, "FBSS: Oth Catering Services, Incl Vending Machines", 14
+  
 )
 
 # Save to CSV
@@ -168,6 +170,7 @@ write_csv(aa_weights, "data/cpi_weights_series.csv")
 
 ```{r}
 (aa_weights)
+nrow(aa_weights)
 ```
 
 ```{r}
@@ -357,6 +360,60 @@ aa_table %>%
 ### 12 Month Trend Data
 
 ```{r}
+library(dplyr)
+library(lubridate)
+library(readr)
+
+# load raw
+cpi_dashboard <- read_rds("data/aa_cpi_dashboard.rds")
+
+# latest date
+aa_latest_date <- max(cpi_dashboard$date, na.rm = TRUE)
+aa_start_12m <- aa_latest_date %m-% months(11)
+
+# sparkline data
+aa_spark <- cpi_dashboard %>%
+  filter(
+    level == 1,
+    date >= aa_start_12m,
+    date <= aa_latest_date
+  ) %>%
+  arrange(series, date) %>%
+  group_by(series) %>%
+  summarise(
+    trend_12m = list(cpi),
+    .groups = "drop"
+  )
+
+# final dashboard table
+aa_dashboard_table <- cpi_dashboard %>%
+  filter(level == 1, date == aa_latest_date) %>%
+  select(series, cpi, yoy_pct, contribution_pp, weight_pct) %>%
+  mutate(
+    cpi = round(cpi, 2),
+    yoy_pct = round(yoy_pct, 2),
+    contribution_pp = round(contribution_pp, 2),
+    weight_pct = round(weight_pct, 2)
+  ) %>%
+  left_join(aa_spark, by = "series") %>%
+  arrange(desc(contribution_pp)) %>%
+  select(series, cpi, trend_12m, yoy_pct, weight_pct, contribution_pp)
+
+# save
+write_rds(aa_dashboard_table, "data/aa_dashboard_table.rds")
+
+```
+
+
+```{r}
+aa_latest_lvl1 <- cpi_dashboard %>%
+  filter(level == 1, date == aa_latest_date) %>%
+  arrange(desc(contribution_pp))
+
+write_rds(aa_latest_lvl1, "data/aa_latest_lvl1.rds")
+```
+
+```{r}
 latest_date <- max(cpi_data$date, na.rm = TRUE)
 dashboard_start <- latest_date %m-% months(12)
 
@@ -370,6 +427,7 @@ cpi_dashboard <- cpi_weighted %>%
     )
   ) %>%
   mutate(
+    weight = as.numeric(weight),
     weight_pct = weight / 100
   ) %>%
   group_by(level, division, group, class, series) %>%
@@ -379,11 +437,37 @@ cpi_dashboard <- cpi_weighted %>%
     yoy_pct = (cpi / cpi_prev - 1) * 100,
     contribution_pp = yoy_pct * weight / 10000
   ) %>%
+  ungroup() %>%
+  mutate(
+    parent_series = case_when(
+      level == 3 ~ group,
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  group_by(date, division) %>%
+  mutate(
+    division_total_weight = sum(weight[level == 2], na.rm = TRUE),
+    division_share_pct = ifelse(
+      level == 2 & is.finite(division_total_weight) & division_total_weight > 0,
+      weight / division_total_weight * 100,
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  group_by(date, division, parent_series) %>%
+  mutate(
+    subgroup_total_weight = sum(weight[level == 3], na.rm = TRUE),
+    subgroup_share_pct = ifelse(
+      level == 3 & !is.na(parent_series) & is.finite(subgroup_total_weight) & subgroup_total_weight > 0,
+      weight / subgroup_total_weight * 100,
+      NA_real_
+    )
+  ) %>%
   ungroup()
 ```
 
 ```{r}
-write_rds(cpi_dashboard, "data/cpi_dashboard.rds")
+write_rds(cpi_dashboard, "data/aa_cpi_dashboard.rds")
 ```
 
 #### Reactable
@@ -530,6 +614,33 @@ aa_latest %>%
     )
   )
 ```
+```{r}
+cpi_data_raw <- read_rds("data/cpi_h.rds")
+
+if (!"class" %in% names(cpi_data_raw)) {
+  cpi_data_raw$class <- NA_character_
+}
+
+cpi_data <- cpi_data_raw %>%
+  mutate(
+    date = as.Date(date),
+    division = trimws(as.character(division)),
+    group = trimws(as.character(group)),
+    series = trimws(as.character(series)),
+    class_name = trimws(as.character(class)),
+    division = na_if(division, ""),
+    group = na_if(group, ""),
+    series = na_if(series, ""),
+    class_name = na_if(class_name, "")
+  )
+
+
+```
+
+```{r}
+write_rds(cpi_data, "data/aa_cpi.rds")
+```
+
 
 
 ## Reference
